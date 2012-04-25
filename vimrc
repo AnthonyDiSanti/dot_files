@@ -1,3 +1,8 @@
+" Activate Pathogen
+runtime bundle/pathogen/autoload/pathogen.vim
+call pathogen#infect()
+call pathogen#helptags()
+
 " Fix the backspace key
 set backspace=indent,eol,start
 
@@ -10,5 +15,5 @@ set softtabstop=2
 syntax on
 set nu
 
-" Enable system clipboard (not working?)
+" Enable system clipboard
 set clipboard=unnamed
