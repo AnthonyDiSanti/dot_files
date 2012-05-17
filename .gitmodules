@@ -7,6 +7,7 @@
 [submodule "vim/bundle/git-runtime"]
 	path = vim/bundle/git-runtime
 	url = git://github.com/tpope/vim-git.git
+	ignore = dirty
 [submodule "vim/bundle/haml-sass-scss"]
 	path = vim/bundle/haml-sass-scss
 	url = git://github.com/tpope/vim-haml.git
