@@ -9,6 +9,3 @@ alias gs='git status'
 
 # Ruby Aliases
 alias be='bundle exec'
-
-# OSX Aliases
-#alias cpcom="echo !! | pbcopy"
