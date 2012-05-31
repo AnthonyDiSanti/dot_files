@@ -11,3 +11,9 @@
 [submodule "vim/bundle/haml-sass-scss"]
 	path = vim/bundle/haml-sass-scss
 	url = git://github.com/tpope/vim-haml.git
+[submodule "vim/bundle/abolish"]
+	path = vim/bundle/abolish
+	url = https://github.com/tpope/vim-abolish.git
+[submodule "vim/bundle/repeat"]
+	path = vim/bundle/repeat
+	url = https://github.com/tpope/vim-repeat.git
