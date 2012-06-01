@@ -4,11 +4,6 @@ export CLICOLOR=1
 # Define aliases
 source ~/.bash_aliases
 
-# Include local settings
-if [ -r ~/.bash_local ]; then
-  source ~/.bash_local
-fi
-
 # Git autocomplete
 source ~/.bash_git_autocomplete
 
@@ -24,3 +19,8 @@ Cyan='\e[0;36m'         # Cyan
 White='\e[0;37m'        # White
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
+
+# Include local settings
+if [ -r ~/.bash_local ]; then
+  source ~/.bash_local
+fi
