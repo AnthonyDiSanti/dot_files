@@ -1,11 +1,16 @@
 # Enable color output
 export CLICOLOR=1
 
-# Define aliases
-source ~/.bash_aliases
+# Set default applications
+export EDITOR=vi
+export VISUAL=vi
+export PAGER=less
 
 # Git autocomplete
 source ~/.bash_git_autocomplete
+
+# Define aliases
+source ~/.bash_aliases
 
 # Setup prompt
 Color_Off='\e[0m'       # Text Reset
