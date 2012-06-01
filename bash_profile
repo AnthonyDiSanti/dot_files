@@ -9,6 +9,9 @@ export PAGER=less
 # Git autocomplete
 source ~/.bash_git_autocomplete
 
+# Add the dot_files bin to PATH
+export PATH=~/.bin:$PATH
+
 # Define aliases
 source ~/.bash_aliases
 
