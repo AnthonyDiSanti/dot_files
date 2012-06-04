@@ -2,8 +2,8 @@
 export CLICOLOR=1
 
 # Set default applications
-export EDITOR=vi
-export VISUAL=vi
+export EDITOR=vim
+export VISUAL=vim
 export PAGER=less
 
 # Git autocomplete
