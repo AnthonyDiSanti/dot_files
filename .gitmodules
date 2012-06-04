@@ -20,3 +20,6 @@
 [submodule ".lib/tmux-osx-pasteboard"]
 	path = .lib/tmux-osx-pasteboard
 	url = https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.git
+[submodule "vim/bundle/surround"]
+	path = vim/bundle/surround
+	url = git://github.com/tpope/vim-surround.git
