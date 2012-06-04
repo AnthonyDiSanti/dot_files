@@ -15,6 +15,7 @@ set backspace=indent,eol,start
 set expandtab
 set shiftwidth=2
 set softtabstop=2
+filetype indent on
 
 " Coding environment options
 set nu
