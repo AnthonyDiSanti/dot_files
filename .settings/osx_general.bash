@@ -18,16 +18,13 @@ defaults write com.apple.finder ShowPathbar -bool true
 echo "Show Status bar in Finder"
 defaults write com.apple.finder ShowStatusBar -bool true
 
-echo "Disable the “Are you sure you want to open this application?” dialog"
+echo 'Disable the "Are you sure you want to open this application?" dialog'
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
-#TODO: Run this command if on one of these Macs
-#echo "Enable AirDrop over Ethernet and on unsupported Macs running Lion"
-#defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+echo "Enable AirDrop over Ethernet and on unsupported Macs running Lion"
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
 echo "Automatically open a new Finder window when a volume is mounted"
-#defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
-#defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
 defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 echo "Avoid creating .DS_Store files on network volumes"
@@ -35,9 +32,6 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
 echo "Empty Trash securely by default"
 defaults write com.apple.finder EmptyTrashSecurely -bool true
-
-echo "Make Safari’s search banners default to Contains instead of Starts With"
-defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
 
 echo "Add a context menu item for showing the Web Inspector in web views"
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
