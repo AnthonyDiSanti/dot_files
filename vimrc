@@ -20,5 +20,9 @@ filetype indent on
 " Coding environment options
 set nu
 
+" Enable and Configure the wildmenu
+set wildmenu
+set wildmode=list:longest,full
+
 " Enable system clipboard
 set clipboard=unnamed
