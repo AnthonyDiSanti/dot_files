@@ -20,6 +20,6 @@ exit_if_error () {
   if [[ $RetCode -ne 0 ]]; then
     exit $RetCode
   else
-    return 0;
+    return 0
   fi
 }
