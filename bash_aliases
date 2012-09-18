@@ -13,3 +13,13 @@ alias gs='git status'
 
 # Ruby Aliases
 alias be='bundle exec'
+
+# Bash Functions
+exit_if_error () {
+  RetCode=$?
+  if [[ $RetCode -ne 0 ]]; then
+    exit $RetCode
+  else
+    return 0;
+  fi
+}
