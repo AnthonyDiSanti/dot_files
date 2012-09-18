@@ -15,6 +15,7 @@ alias gs='git status'
 alias be='bundle exec'
 
 # Functions
+# Finds the dereferenced directory of the current script
 get_SCRIPTDIR () {
   local SOURCE="${BASH_SOURCE[0]}"
   local DIR="$( dirname "$SOURCE" )"
@@ -25,4 +26,14 @@ get_SCRIPTDIR () {
     DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
   done
   SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+}
+
+# Exits a script if the previous command returned an error.  Exits with the same value the previous command returned.
+exit_if_error () {
+  RetCode=$?
+  if [[ $RetCode -ne 0 ]]; then
+    exit $RetCode
+  else
+    return 0
+  fi
 }
