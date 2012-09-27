@@ -26,3 +26,6 @@ set wildmode=list:longest,full
 
 " Enable system clipboard
 set clipboard=unnamed
+
+" Save a read-only file that wasn't opened with sudo
+cmap w!! w !sudo tee % >/dev/null
