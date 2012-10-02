@@ -14,7 +14,7 @@ alias gs='git status'
 # Ruby Aliases
 alias be='bundle exec'
 
-# Functions
+###### Functions ######
 # Finds the dereferenced directory of the current script
 get_SCRIPTDIR () {
   local SOURCE="${BASH_SOURCE[0]}"
