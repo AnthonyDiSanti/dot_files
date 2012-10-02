@@ -6,6 +6,9 @@ export EDITOR=vim
 export VISUAL=vim
 export PAGER=less
 
+# Set shell hotkeys to vim
+set -o vi
+
 # Git autocomplete
 source ~/.git-completion.bash
 
