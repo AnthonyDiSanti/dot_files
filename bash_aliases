@@ -7,6 +7,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias -- -='cd -'
+alias grep='grep --color=auto'
 
 # Git Aliases
 alias gs='git status'
