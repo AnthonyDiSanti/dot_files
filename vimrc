@@ -24,6 +24,10 @@ set nu
 set wildmenu
 set wildmode=list:longest,full
 
+" Configure search
+set incsearch
+set hlsearch
+
 " Enable system clipboard
 set clipboard=unnamed
 
