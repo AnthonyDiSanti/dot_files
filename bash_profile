@@ -1,3 +1,14 @@
+# Determine directory script iis being executed
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do 
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
 # Enable color output
 export CLICOLOR=1
 
@@ -10,13 +21,13 @@ export PAGER=less
 set -o vi
 
 # Git autocomplete
-source ~/.git-completion.bash
+source $DIR/.git-completion.bash
 
 # Add the dot_files bin to PATH
 export PATH=~/.bin:$PATH
 
 # Define aliases
-source ~/.bash_aliases
+source $DIR/.bash_aliases
 
 # Setup prompt
 Color_Off='\e[0m'       # Text Reset
@@ -32,7 +43,7 @@ White='\e[0;37m'        # White
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
 export GIT_PS1_SHOWUPSTREAM='auto'
-source ~/.git-prompt.sh
+source $DIR/.git-prompt.sh
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
 
