@@ -15,6 +15,8 @@ get_SCRIPTDIR () {
 
 get_SCRIPTDIR
 
+# Do not use this crazy-ass shit (but it fucking works!):
+#find $SCRIPTDIR/ -iname *.symlink -execdir basename {} .symlink \; | xargs -I{} ln -s $SCRIPTDIR/{}.symlink ~/.{}
 SYMLINKS=$(ls -1d $SCRIPTDIR/*.symlink)
 for SYMLINK in $SYMLINKS
 do
