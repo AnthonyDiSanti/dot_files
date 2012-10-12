@@ -36,3 +36,6 @@ set mouse=a
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
+
+" immediately start searching when typing
+set incsearch
