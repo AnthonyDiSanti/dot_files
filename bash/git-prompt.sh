@@ -1,1 +1,1 @@
-../.lib/git/contrib/completion/git-prompt.sh
+../lib/git/contrib/completion/git-prompt.sh

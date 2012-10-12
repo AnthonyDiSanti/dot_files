@@ -1,1 +1,1 @@
-../.lib/git/contrib/completion/git-completion.bash
+../lib/git/contrib/completion/git-completion.bash
