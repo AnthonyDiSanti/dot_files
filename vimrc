@@ -15,6 +15,7 @@ set backspace=indent,eol,start
 set expandtab
 set shiftwidth=2
 set softtabstop=2
+set tabstop=2
 filetype indent on
 
 " Coding environment options
@@ -35,3 +36,6 @@ cmap w!! w !sudo tee % >/dev/null
 
 " immediately start searching when typing
 set incsearch
+
+" Enable paste mode
+set paste
