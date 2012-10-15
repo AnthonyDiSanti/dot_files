@@ -25,6 +25,10 @@ set nu
 set wildmenu
 set wildmode=list:longest,full
 
+" Configure search
+set incsearch
+set hlsearch
+
 " Enable system clipboard
 set clipboard=unnamed
 
@@ -33,9 +37,3 @@ set mouse=a
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
-
-" immediately start searching when typing
-set incsearch
-
-" Enable paste mode
-set paste

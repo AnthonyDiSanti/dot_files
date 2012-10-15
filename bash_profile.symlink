@@ -1,14 +1,3 @@
-# Determine directory script iis being executed
-SOURCE="${BASH_SOURCE[0]}"
-DIR="$( dirname "$SOURCE" )"
-while [ -h "$SOURCE" ]
-do 
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
 # Enable color output
 export CLICOLOR=1
 
@@ -20,14 +9,32 @@ export PAGER=less
 # Set shell hotkeys to vim
 set -o vi
 
-# Git autocomplete
-source $DIR/.git-completion.bash
+# Finds the dereferenced directory of the current script
+get_SCRIPTDIR () {
+  local SOURCE="${BASH_SOURCE[0]}"
+  local DIR="$( dirname "$SOURCE" )"
+  while [ -h "$SOURCE" ]
+  do 
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+  done
+  SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+}
 
-# Add the dot_files bin to PATH
-export PATH=~/.bin:$PATH
+get_SCRIPTDIR
+
+# Define functions
+source $SCRIPTDIR/bash/functions.bash
 
 # Define aliases
-source $DIR/.bash_aliases
+source $SCRIPTDIR/bash/aliases.bash
+
+# Git autocomplete
+source $SCRIPTDIR/bash/git-completion.bash
+
+# Add the dot_files bin to PATH
+export PATH=$SCRIPTDIR/bin:$PATH
 
 # Setup prompt
 Color_Off='\e[0m'       # Text Reset
@@ -43,7 +50,7 @@ White='\e[0;37m'        # White
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
 export GIT_PS1_SHOWUPSTREAM='auto'
-source $DIR/.git-prompt.sh
+source $SCRIPTDIR/bash/git-prompt.sh
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
 
