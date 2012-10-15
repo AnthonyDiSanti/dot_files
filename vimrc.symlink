@@ -27,6 +27,8 @@ set wildmode=list:longest,full
 " Configure search
 set incsearch
 set hlsearch
+set ignorecase
+set smartcase
 
 " Enable system clipboard
 set clipboard=unnamed
