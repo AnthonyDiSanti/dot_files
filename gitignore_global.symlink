@@ -1,5 +1,6 @@
-# Hidden OS Folder Settings #
-#############################
+# Hidden OS Folder Settings
 .DS_Store
 Thumbs.db
 
+# Vim Plugins' tags
+/doc/tags
