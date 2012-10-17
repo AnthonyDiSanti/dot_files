@@ -1,4 +1,5 @@
 " Activate Pathogen
+
 runtime bundle/pathogen/autoload/pathogen.vim
 call pathogen#infect()
 call pathogen#helptags()
@@ -35,6 +36,10 @@ set clipboard=unnamed
 
 " Enable the mouse
 set mouse=a
+
+" NerdTree Mappings
+ca tree NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
