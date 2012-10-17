@@ -1,7 +1,31 @@
-" Activate Pathogen
-runtime bundle/pathogen/autoload/pathogen.vim
-call pathogen#infect()
-call pathogen#helptags()
+" Vundle setup
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" Vundle bundle definitions - github repos
+Bundle 'gmarik/vundle'
+Bundle 'altercation/vim-colors-solarized.git'
+Bundle 'tpope/vim-git.git'
+Bundle 'tpope/vim-haml.git'
+Bundle 'tpope/vim-repeat.git'
+Bundle 'tpope/vim-abolish.git'
+Bundle 'scrooloose/nerdtree.git'
+Bundle 'sjl/gundo.vim.git'
+Bundle 'tpope/vim-surround.git'
+
+" Vundle bundle definitions - vim-scripts repos
+"Bundle 'Example'
+
+" Vundle bundle definitions - non-github repos
+Bundle 'git://git.wincent.com/command-t.git'
+
+" Configure indenting
+filetype indent on  " Required for Vundle (in addition to just being a good setting)
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
 
 " Activate solarized color scheme
 syntax enable
@@ -10,13 +34,6 @@ colorscheme solarized
 
 " Fix the backspace key
 set backspace=indent,eol,start
-
-" Configure indenting
-set expandtab
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
-filetype indent on
 
 " Coding environment options
 set nu
