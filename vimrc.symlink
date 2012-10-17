@@ -15,6 +15,7 @@ set backspace=indent,eol,start
 set expandtab
 set shiftwidth=2
 set softtabstop=2
+set tabstop=2
 filetype indent on
 
 " Coding environment options
@@ -47,3 +48,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
+
+" Enable insert paste mode
+set paste
