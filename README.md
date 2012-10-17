@@ -4,13 +4,11 @@ Vim
 1. Open vim
 2. Run :BundleInstall
 
-Updating Plugins
-----------------
+### Updating Plugins ###
 1. Open vim
 2. Run :BundleInstall!
 
-Adding New Plugins
-------------------
+### Adding New Plugins ###
 1. Add the new plugin to vimrc using the Vundle syntax
 2. Open vim
 3. Run :BundleInstall
