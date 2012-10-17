@@ -1,4 +1,5 @@
 " Activate Pathogen
+
 runtime bundle/pathogen/autoload/pathogen.vim
 call pathogen#infect()
 call pathogen#helptags()
@@ -28,12 +29,23 @@ set wildmode=list:longest,full
 " Configure search
 set incsearch
 set hlsearch
+set ignorecase
+set smartcase
 
 " Enable system clipboard
 set clipboard=unnamed
 
 " Enable the mouse
 set mouse=a
+
+" Gundo Settings
+map <Leader>g :GundoToggle<CR>
+let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
+
+" NerdTree settings
+map <Leader>n :NERDTreeToggle<CR>
+let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
