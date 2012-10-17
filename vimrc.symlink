@@ -37,14 +37,17 @@ set clipboard=unnamed
 " Enable the mouse
 set mouse=a
 
-" Gundo Settings
-map <Leader>u :GundoToggle<CR>
+" Gundo settings
+nnoremap <silent> <Leader>u :GundoToggle<CR>
 let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " NerdTree settings
-map <Leader>o :NERDTreeToggle<CR>
+nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
+
+" Command-T settings
+nnoremap <silent> <Leader>f :CommandT<CR>
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
