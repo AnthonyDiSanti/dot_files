@@ -1,5 +1,4 @@
 " Activate Pathogen
-
 runtime bundle/pathogen/autoload/pathogen.vim
 call pathogen#infect()
 call pathogen#helptags()
@@ -38,11 +37,11 @@ set clipboard=unnamed
 set mouse=a
 
 " Gundo Settings
-map <Leader>g :GundoToggle<CR>
+map <Leader>u :GundoToggle<CR>
 let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " NerdTree settings
-map <Leader>n :NERDTreeToggle<CR>
+map <Leader>o :NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
