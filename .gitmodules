@@ -1,12 +1,12 @@
 [submodule "lib/git"]
 	path = lib/git
 	url = https://github.com/git/git.git
-[submodule "lib/solarized"]
-	path = lib/solarized
-	url = https://github.com/altercation/solarized.git
 [submodule "lib/tmux-osx-pasteboard"]
 	path = lib/tmux-osx-pasteboard
 	url = https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.git
 [submodule "vim.symlink/bundle/vundle"]
 	path = vim.symlink/bundle/vundle
 	url = https://github.com/gmarik/vundle.git
+[submodule "settings/solarized"]
+	path = settings/solarized
+	url = https://github.com/altercation/solarized.git
