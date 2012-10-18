@@ -11,6 +11,7 @@ Bundle 'tpope/vim-haml.git'
 Bundle 'tpope/vim-repeat.git'
 Bundle 'tpope/vim-abolish.git'
 Bundle 'scrooloose/nerdtree.git'
+Bundle 'kien/ctrlp.vim.git'
 Bundle 'sjl/gundo.vim.git'
 Bundle 'tpope/vim-surround.git'
 
@@ -18,7 +19,7 @@ Bundle 'tpope/vim-surround.git'
 "Bundle 'Example'
 
 " Vundle bundle definitions - non-github repos
-Bundle 'git://git.wincent.com/command-t.git'
+"Bundle 'git://git.example.com/example.git'
 
 " Configure indenting
 filetype indent on  " Required for Vundle (in addition to just being a good setting)
@@ -63,8 +64,8 @@ nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
-" Command-T settings
-nnoremap <silent> <Leader>f :CommandT<CR>
+" CtrlP settings
+let g:ctrlp_map = '<Leader>f'
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
