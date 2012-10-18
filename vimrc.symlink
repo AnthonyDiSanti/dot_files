@@ -29,6 +29,12 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 
+" Enable the mouse
+set mouse=a
+
+" Link the system clipboard to the unnamed register
+set clipboard=unnamed
+
 " Activate solarized color scheme
 syntax enable
 set background=dark
@@ -37,7 +43,7 @@ colorscheme solarized
 " Fix the backspace key
 set backspace=indent,eol,start
 
-" Coding environment options
+" Enable line numbers
 set nu
 
 " Enable and Configure the wildmenu
@@ -50,11 +56,8 @@ set hlsearch
 set ignorecase
 set smartcase
 
-" Enable system clipboard
-set clipboard=unnamed
-
-" Enable the mouse
-set mouse=a
+" Configure encryption
+set cm=blowfish
 
 " Gundo settings
 nnoremap <silent> <Leader>u :GundoToggle<CR>
