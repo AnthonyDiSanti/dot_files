@@ -1,0 +1,9 @@
+/* Setup Home, End, PageUp, and PageDown */
+{
+  "\UF729"  = "moveToBeginningOfLine:";
+  "$\UF729" = "moveToBeginningOfLineAndModifySelection:";
+  "\UF72B"  = "moveToEndOfLine:";
+  "$\UF72B" = "moveToEndOfLineAndModifySelection:";
+  "\UF72C"  = "pageUp:";
+  "\UF72D"  = "pageDown:";
+}
