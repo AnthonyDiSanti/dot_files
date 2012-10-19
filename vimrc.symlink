@@ -23,6 +23,7 @@ Bundle 'scrooloose/nerdcommenter'
 "Bundle 'git://git.example.com/example.git'
 
 " Configure indenting
+filetype plugin on
 filetype indent on  " Required for Vundle (in addition to just being a good setting)
 set expandtab
 set shiftwidth=2
@@ -58,6 +59,9 @@ set smartcase
 
 " Configure encryption
 set cm=blowfish
+
+" Configure omnicomplete
+let g:ftplugin_sql_omni_key = '<C-f>'
 
 " Gundo settings
 nnoremap <silent> <Leader>u :GundoToggle<CR>
