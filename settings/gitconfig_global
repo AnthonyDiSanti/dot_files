@@ -1,8 +1,0 @@
-[color]
-	ui = true
-[help]
-        autocorrect = 1
-[core]
-        excludesfile = ~/.gitignore_global
-[alias]
-        show-graph = log --graph --abbrev-commit --pretty=oneline
