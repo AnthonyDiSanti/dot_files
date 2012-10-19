@@ -75,5 +75,5 @@ bind -r C-h resize-pane -L
 bind -r C-l resize-pane -R
 
 # OSX Copy/Paste
-set-option -g default-command 'reattach-to-user-namespace-tmux'
+set-option -g default-command 'reattach-to-user-namespace-tmux -l bash'
 bind y run-shell 'tmux save-buffer - | reattach-to-user-namespace-tmux pbcopy'
