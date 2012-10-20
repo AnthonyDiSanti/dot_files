@@ -3,5 +3,5 @@
 if [[ "$(uname)" = "Darwin" ]]; then
   reattach-to-user-namespace $@
 else
-  exec $@
+  exec "$@"
 fi
