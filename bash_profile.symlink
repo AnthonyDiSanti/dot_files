@@ -1,5 +1,6 @@
 # Enable color output
 export CLICOLOR=1
+export color_prompt=yes
 
 # Set default applications
 export EDITOR=vim
