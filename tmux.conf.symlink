@@ -54,6 +54,7 @@ bind -t vi-copy C-d page-down
 
 # Window Management Bindings
 bind ` select-window -t 0
+bind b last-window
 
 # Pane Creation Bindings
 bind |    split-window -h
