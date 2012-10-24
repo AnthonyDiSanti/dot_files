@@ -2,5 +2,6 @@
 .DS_Store
 Thumbs.db
 
-# Vim Plugins' tags
-/doc/tags
+# Vim
+/doc/tags # Plugins' tags
+.swp # Temporary swap files
