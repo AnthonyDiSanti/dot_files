@@ -76,5 +76,14 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " CtrlP settings
 let g:ctrlp_map = '<Leader>f'
 
+" Fugitive settings
+nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gb :Gblame<CR>
+nnoremap <silent> <leader>gw :Gwrite<CR>
+nnoremap <silent> <leader>ga :Gwrite<CR>
+nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader>gp :Git push<CR>
+
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
