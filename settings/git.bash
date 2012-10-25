@@ -33,7 +33,9 @@ for GIT_COLOR_MODIFIER in ${GIT_COLOR_MODIFIERS[@]}; do
 done
 AWK_FORMAT=$AWK_FORMAT'\n'
 
-AWK_SCRIPT='{ printf "'$AWK_FORMAT'", $1, $2, $3, $4, $5, $6 }'
+#AWK_SCRIPT='{ printf "'$AWK_FORMAT'", $1, $2, $3, $4, $5, $6 }'
+AWK_SCRIPT="{ printf \"$AWK_FORMAT\""
+AWK_SCRIPT=$AWK_SCRIPT', $1, $2, $3, $4, $5, $6 }'
 echo $AWK_SCRIPT
 git config --global alias.colors "!git log -n1 --pretty=format:'$GIT_COLOR_TEST_FORMAT' | awk -F\| '$AWK_SCRIPT'"
 
