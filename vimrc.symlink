@@ -46,9 +46,12 @@ colorscheme solarized
 set backspace=indent,eol,start
 
 " Enable line numbers
-set nu
+set number
 
-" Enable and Configure the wildmenu
+" Configure number incrementation
+set nrformats=hex
+
+" Enable and configure the wildmenu
 set wildmenu
 set wildmode=list:longest,full
 
@@ -61,7 +64,7 @@ set smartcase
 " Configure encryption
 set cm=blowfish
 
-" Configure omnicomplete
+" Omnicomplete settings
 let g:ftplugin_sql_omni_key = '<C-f>'
 
 " Gundo settings
