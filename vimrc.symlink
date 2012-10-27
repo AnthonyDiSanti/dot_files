@@ -14,6 +14,8 @@ Bundle 'scrooloose/nerdtree.git'
 Bundle 'kien/ctrlp.vim.git'
 Bundle 'sjl/gundo.vim.git'
 Bundle 'tpope/vim-fugitive.git'
+Bundle 'kana/vim-textobj-user.git'
+Bundle 'kana/vim-textobj-entire.git'
 Bundle 'tpope/vim-surround.git'
 Bundle 'scrooloose/nerdcommenter'
 
