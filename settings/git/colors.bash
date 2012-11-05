@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+GIT_COLOR_RESET='%C(reset)'
+declare -a GIT_COLORS=('normal' 'black' 'red' 'green' 'yellow' 'blue' 'magenta' 'cyan' 'white')
+declare -a GIT_COLOR_MODIFIERS=('bold' 'dim' 'ul' 'blink' 'reverse')
+GIT_COLOR_TEST_FORMAT=''
+MAX_COLOR_LENGTH=0
+
+for GIT_COLOR in ${GIT_COLORS[@]}; do
+  if [[ ${#GIT_COLOR} > $MAX_COLOR_LENGTH ]]; then
+    MAX_COLOR_LENGTH=${#GIT_COLOR}
+  fi
+
+  GIT_COLOR_TEST_FORMAT="$GIT_COLOR_TEST_FORMAT%C($GIT_COLOR)$GIT_COLOR$GIT_COLOR_RESET"
+  for GIT_COLOR_MODIFIER in ${GIT_COLOR_MODIFIERS[@]}; do
+    GIT_COLOR_TEST_FORMAT="$GIT_COLOR_TEST_FORMAT|%C($GIT_COLOR $GIT_COLOR_MODIFIER)$GIT_COLOR $GIT_COLOR_MODIFIER$GIT_COLOR_RESET"
+  done
+  GIT_COLOR_TEST_FORMAT="$GIT_COLOR_TEST_FORMAT%n"
+done
+
+COLOR_CODE_LENGTH=5
+MODIFIER_CODE_LENGTH=2
+RESET_CODE_LENGTH=3
+COLUMN_PADDING=3
+
+BASE_FIELD_WIDTH=$(($MAX_COLOR_LENGTH + $RESET_CODE_LENGTH))
+NORMAL_AWK_FORMAT="%${BASE_FIELD_WIDTH}s"
+COLORED_AWK_FORMAT="%$(($BASE_FIELD_WIDTH + $COLOR_CODE_LENGTH))s"
+for GIT_COLOR_MODIFIER in ${GIT_COLOR_MODIFIERS[@]}; do
+  BASE_FIELD_WIDTH=$(($COLUMN_PADDING + $MODIFIER_CODE_LENGTH + $MAX_COLOR_LENGTH + ${#GIT_COLOR_MODIFIER} + 1 + $RESET_CODE_LENGTH))
+  NORMAL_AWK_FORMAT="$NORMAL_AWK_FORMAT%$(($BASE_FIELD_WIDTH + 2))s" # Why do we need a fudge factor of 2 here?
+  COLORED_AWK_FORMAT="$COLORED_AWK_FORMAT%$(($BASE_FIELD_WIDTH + $COLOR_CODE_LENGTH))s"
+done
+NORMAL_AWK_FORMAT="$NORMAL_AWK_FORMAT\n"
+COLORED_AWK_FORMAT="$COLORED_AWK_FORMAT\n"
+
+AWK_SCRIPT='{
+              if (match($0, "normal")) {
+                printf "'$NORMAL_AWK_FORMAT'", $1, $2, $3, $4, $5, $6
+              } else {
+                printf "'$COLORED_AWK_FORMAT'", $1, $2, $3, $4, $5, $6
+              }
+            }'
+git config --global alias.colors "!git log -n1 --pretty=format:'$GIT_COLOR_TEST_FORMAT' | awk -F\| '$AWK_SCRIPT'"
