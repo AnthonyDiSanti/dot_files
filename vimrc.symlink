@@ -19,6 +19,7 @@ Bundle 'kana/vim-textobj-entire.git'
 Bundle 'tpope/vim-surround.git'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'godlygeek/tabular'
+Bundle 'Lokaltog/vim-easymotion'
 
 " Vundle bundle definitions - vim-scripts repos
 "Bundle 'Example'
