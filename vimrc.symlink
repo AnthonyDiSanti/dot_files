@@ -13,6 +13,9 @@ Bundle 'tpope/vim-abolish.git'
 Bundle 'scrooloose/nerdtree.git'
 Bundle 'kien/ctrlp.vim.git'
 Bundle 'sjl/gundo.vim.git'
+Bundle 'tpope/vim-fugitive.git'
+Bundle 'kana/vim-textobj-user.git'
+Bundle 'kana/vim-textobj-entire.git'
 Bundle 'tpope/vim-surround.git'
 Bundle 'scrooloose/nerdcommenter'
 
@@ -45,9 +48,12 @@ colorscheme solarized
 set backspace=indent,eol,start
 
 " Enable line numbers
-set nu
+set number
 
-" Enable and Configure the wildmenu
+" Configure number incrementation
+set nrformats=hex
+
+" Enable and configure the wildmenu
 set wildmenu
 set wildmode=list:longest,full
 
@@ -60,7 +66,7 @@ set smartcase
 " Configure encryption
 set cm=blowfish
 
-" Configure omnicomplete
+" Omnicomplete settings
 let g:ftplugin_sql_omni_key = '<C-f>'
 
 " Gundo settings
@@ -74,6 +80,15 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 
 " CtrlP settings
 let g:ctrlp_map = '<Leader>f'
+
+" Fugitive settings
+nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gb :Gblame<CR>
+nnoremap <silent> <leader>gw :Gwrite<CR>
+nnoremap <silent> <leader>ga :Gwrite<CR>
+nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader>gp :Git push<CR>
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
