@@ -18,6 +18,7 @@ Bundle 'kana/vim-textobj-user.git'
 Bundle 'kana/vim-textobj-entire.git'
 Bundle 'tpope/vim-surround.git'
 Bundle 'scrooloose/nerdcommenter'
+Bundle 'godlygeek/tabular'
 
 " Vundle bundle definitions - vim-scripts repos
 "Bundle 'Example'
