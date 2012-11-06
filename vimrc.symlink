@@ -27,8 +27,10 @@ Bundle 'Lokaltog/vim-easymotion'
 " Vundle bundle definitions - non-github repos
 "Bundle 'git://git.example.com/example.git'
 
-" Configure indenting
+" Enable filetype plugins
 filetype plugin on
+
+" Configure indenting
 filetype indent on  " Required for Vundle (in addition to just being a good setting)
 set expandtab
 set shiftwidth=2
@@ -53,9 +55,6 @@ syntax enable
 set background=dark
 colorscheme solarized
 
-" Fix the backspace key
-set backspace=indent,eol,start
-
 " Enable line numbers
 set number
 
@@ -74,6 +73,12 @@ set smartcase
 
 " Configure encryption
 set cm=blowfish
+
+" Configure the backspace key
+set backspace=indent,eol,start
+
+" Fix typos
+abbreviate W w
 
 " Omnicomplete settings
 let g:ftplugin_sql_omni_key = '<C-f>'
