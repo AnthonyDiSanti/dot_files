@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Abbreviation Aliases
+git config --global alias.cm 'commit -m'
 git config --global alias.cam 'commit -am'
 git config --global alias.subdo 'submodule foreach'
 git config --global alias.ff 'merge --ff-only'
