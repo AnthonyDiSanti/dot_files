@@ -66,8 +66,8 @@ function NumberingMethodToggle()   " Adapted from numbers.vim
 	endif
 endfunc
 
-nnoremap <Leader>n :call NumberingMethodToggle()<CR>
-nnoremap <Leader>N :set nonumber<CR>
+nnoremap <silent> <Leader>n :call NumberingMethodToggle()<CR>
+nnoremap <silent> <Leader>N :set nonumber<CR>
 
 " Configure number incrementation
 set nrformats=hex
