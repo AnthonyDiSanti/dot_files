@@ -66,8 +66,11 @@ function NumberingMethodToggle()   " Adapted from numbers.vim
 	endif
 endfunc
 
-nnoremap <silent> <Leader>n :call NumberingMethodToggle()<CR>
-nnoremap <silent> <Leader>N :set nonumber<CR>
+noremap <silent> <Leader>n :<C-u>call NumberingMethodToggle()<CR>
+ounmap <Leader>n
+
+noremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>
+ounmap <Leader>N
 
 " Configure number incrementation
 set nrformats=hex
@@ -92,22 +95,22 @@ set backspace=indent,eol,start
 " Fix typos
 abbreviate W w
 
-" Omnicomplete settings
+" Configure Omnicomplete
 let g:ftplugin_sql_omni_key = '<C-f>'
 
-" Gundo settings
-nnoremap <silent> <Leader>u :GundoToggle<CR>
-let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
-
-" NerdTree settings
+" Configure NerdTree
 nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
-" CtrlP settings
+" Configure CtrlP
 let g:ctrlp_map = '<Leader>f'
 
-" Fugitive settings
+" Configure Gundo
+nnoremap <silent> <Leader>u :GundoToggle<CR>
+let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
+
+" Configure Fugitive
 nnoremap <silent> <leader>gs :Gstatus<CR>
 nnoremap <silent> <leader>gd :Gdiff<CR>
 nnoremap <silent> <leader>gb :Gblame<CR>
@@ -115,6 +118,10 @@ nnoremap <silent> <leader>gw :Gwrite<CR>
 nnoremap <silent> <leader>ga :Gwrite<CR>
 nnoremap <silent> <leader>gc :Gcommit<CR>
 nnoremap <silent> <leader>gp :Git push<CR>
+
+" Configure Tabular
+" TODO: Visual mode mappings (e.g. \t=)
+" TODO: Operator-pending mode mappings (e.g. \t=5j)
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
