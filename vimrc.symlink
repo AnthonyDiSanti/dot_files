@@ -55,8 +55,19 @@ syntax enable
 set background=dark
 colorscheme solarized
 
-" Enable line numbers
+" Configure line numbering
 set number
+
+function NumberToggle()   " Adapted from numbers.vim
+	if (&number == 1)
+		set relativenumber
+	else
+		set number
+	endif
+endfunc
+
+nnoremap <Leader>n :call NumberToggle()<CR>
+nnoremap <Leader>N :set nonumber<CR>
 
 " Configure number incrementation
 set nrformats=hex
