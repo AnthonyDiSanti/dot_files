@@ -59,7 +59,7 @@ colorscheme solarized
 set number
 
 function NumberingMethodToggle()   " Adapted from numbers.vim
-	if (&number == 1)
+	if (&number)
 		set relativenumber
 	else
 		set number
