@@ -70,6 +70,7 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
+nnoremap <Leader>h :nohlsearch<CR>
 
 " Configure encryption
 set cm=blowfish
