@@ -84,7 +84,8 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
-nnoremap <Leader>h :nohlsearch<CR>
+noremap <Leader>h :<C-u>nohlsearch<CR>
+ounmap <Leader>h
 
 " Configure encryption
 set cm=blowfish
@@ -99,7 +100,8 @@ abbreviate W w
 let g:ftplugin_sql_omni_key = '<C-f>'
 
 " Configure NerdTree
-nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
+noremap <silent> <Leader>o :<C-u>NERDTreeToggle<CR>
+ounmap <Leader>o
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
@@ -107,7 +109,8 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 let g:ctrlp_map = '<Leader>f'
 
 " Configure Gundo
-nnoremap <silent> <Leader>u :GundoToggle<CR>
+noremap <silent> <Leader>u :<C-u>GundoToggle<CR>
+ounmap <Leader>u
 let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " Configure Fugitive
