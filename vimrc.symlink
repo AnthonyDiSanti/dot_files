@@ -66,11 +66,11 @@ function NumberingMethodToggle()   " Adapted from numbers.vim
 	endif
 endfunc
 
-noremap <silent> <Leader>n :<C-u>call NumberingMethodToggle()<CR>
-ounmap <Leader>n
+nnoremap <silent> <Leader>n :call NumberingMethodToggle()<CR>
+vnoremap <silent> <Leader>n :<C-u>call NumberingMethodToggle()<CR>gv
 
-noremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>
-ounmap <Leader>N
+nnoremap <silent> <Leader>N :set nonumber \| set norelativenumber<CR>
+vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
 
 " Configure number incrementation
 set nrformats=hex
@@ -84,8 +84,8 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
-noremap <Leader>h :<C-u>nohlsearch<CR>
-ounmap <Leader>h
+nnoremap <Leader>h :<C-u>nohlsearch<CR>
+vnoremap <Leader>h :<C-u>nohlsearch<CR>gv
 
 " Configure encryption
 set cm=blowfish
@@ -100,8 +100,8 @@ abbreviate W w
 let g:ftplugin_sql_omni_key = '<C-f>'
 
 " Configure NerdTree
-noremap <silent> <Leader>o :<C-u>NERDTreeToggle<CR>
-ounmap <Leader>o
+nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
+vnoremap <silent> <Leader>o :<C-u>NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
@@ -109,8 +109,8 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 let g:ctrlp_map = '<Leader>f'
 
 " Configure Gundo
-noremap <silent> <Leader>u :<C-u>GundoToggle<CR>
-ounmap <Leader>u
+nnoremap <silent> <Leader>u :GundoToggle<CR>
+vnoremap <silent> <Leader>u :<C-u>GundoToggle<CR>
 let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " Configure Fugitive
