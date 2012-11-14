@@ -72,6 +72,9 @@ vnoremap <silent> <Leader>n :<C-u>call NumberingMethodToggle()<CR>gv
 nnoremap <silent> <Leader>N :set nonumber \| set norelativenumber<CR>
 vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
 
+" Configure maximum line length highlighting
+set colorcolumn=80
+
 " Configure number incrementation
 set nrformats=hex
 
@@ -93,9 +96,7 @@ set cm=blowfish
 " Configure the backspace key
 set backspace=indent,eol,start
 
-" Fix typos
-abbreviate W w
-
+""""" BEGIN PLUGIN CONFIGURATION """""
 " Configure Omnicomplete
 let g:ftplugin_sql_omni_key = '<C-f>'
 
@@ -125,6 +126,10 @@ nnoremap <silent> <leader>gp :Git push<CR>
 " Configure Tabular
 " TODO: Visual mode mappings (e.g. \t=)
 " TODO: Operator-pending mode mappings (e.g. \t=5j)
+"""" END PLUGIN CONFIGURATION """"
+
+" Fix typos
+abbreviate W w
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
