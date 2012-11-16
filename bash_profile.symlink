@@ -1,5 +1,8 @@
+#!/usr/bin/env bash
+
 # Enable color output
 export CLICOLOR=1
+export color_prompt=yes
 
 # Set default applications
 export EDITOR=vim
@@ -10,31 +13,37 @@ export PAGER=less
 set -o vi
 
 # Finds the dereferenced directory of the current script
-get_SCRIPTDIR () {
+get_script_dir () {
   local SOURCE="${BASH_SOURCE[0]}"
   local DIR="$( dirname "$SOURCE" )"
-  while [ -h "$SOURCE" ]
-  do 
+
+  while [ -h "$SOURCE" ]; do 
     SOURCE="$(readlink "$SOURCE")"
     [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
     DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
   done
-  SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+  local RETVAL="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  if [[ $# = 0 ]]; then
+    SCRIPTDIR=$RETVAL
+  else
+    eval "$1='$RETVAL'"
+  fi
 }
 
-get_SCRIPTDIR
+get_script_dir DOTFILESDIR
 
 # Define functions
-source $SCRIPTDIR/bash/functions.bash
+source $DOTFILESDIR/bash/functions.bash
 
 # Define aliases
-source $SCRIPTDIR/bash/aliases.bash
+source $DOTFILESDIR/bash/aliases.bash
 
 # Git autocomplete
-source $SCRIPTDIR/bash/git-completion.bash
+source $DOTFILESDIR/bash/git-completion.bash
 
 # Add the dot_files bin to PATH
-export PATH=$SCRIPTDIR/bin:$PATH
+export PATH=$DOTFILESDIR/bin:$PATH
 
 # Setup prompt
 Color_Off='\e[0m'       # Text Reset
@@ -50,7 +59,7 @@ White='\e[0;37m'        # White
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
 export GIT_PS1_SHOWUPSTREAM='auto'
-source $SCRIPTDIR/bash/git-prompt.sh
+source $DOTFILESDIR/bash/git-prompt.sh
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
 

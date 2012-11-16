@@ -11,14 +11,24 @@ Bundle 'tpope/vim-haml.git'
 Bundle 'tpope/vim-repeat.git'
 Bundle 'tpope/vim-abolish.git'
 Bundle 'scrooloose/nerdtree.git'
+Bundle 'kien/ctrlp.vim.git'
 Bundle 'sjl/gundo.vim.git'
+Bundle 'tpope/vim-fugitive.git'
+Bundle 'kana/vim-textobj-user.git'
+Bundle 'kana/vim-textobj-entire.git'
 Bundle 'tpope/vim-surround.git'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'godlygeek/tabular'
+Bundle 'Lokaltog/vim-easymotion'
 
 " Vundle bundle definitions - vim-scripts repos
 "Bundle 'Example'
 
 " Vundle bundle definitions - non-github repos
-Bundle 'git://git.wincent.com/command-t.git'
+"Bundle 'git://git.example.com/example.git'
+
+" Enable filetype plugins
+filetype plugin on
 
 " Configure indenting
 filetype indent on  " Required for Vundle (in addition to just being a good setting)
@@ -27,18 +37,48 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 
+" Configure history
+set history=200
+
+" Configure folding
+set foldlevelstart=99 " Expand all folds by default
+set foldmethod=syntax
+
+" Enable the mouse
+set mouse=a
+
+" Link the system clipboard to the unnamed register
+set clipboard=unnamed
+
 " Activate solarized color scheme
 syntax enable
 set background=dark
 colorscheme solarized
 
-" Fix the backspace key
-set backspace=indent,eol,start
+" Configure line numbering
+set number
 
-" Coding environment options
-set nu
+function NumberingMethodToggle()   " Adapted from numbers.vim
+	if (&number)
+		set relativenumber
+	else
+		set number
+	endif
+endfunc
 
-" Enable and Configure the wildmenu
+nnoremap <silent> <Leader>n :call NumberingMethodToggle()<CR>
+vnoremap <silent> <Leader>n :<C-u>call NumberingMethodToggle()<CR>gv
+
+nnoremap <silent> <Leader>N :set nonumber \| set norelativenumber<CR>
+vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
+
+" Configure maximum line length highlighting
+set colorcolumn=80
+
+" Configure number incrementation
+set nrformats=hex
+
+" Enable and configure the wildmenu
 set wildmenu
 set wildmode=list:longest,full
 
@@ -47,24 +87,49 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
+nnoremap <Leader>h :<C-u>nohlsearch<CR>
+vnoremap <Leader>h :<C-u>nohlsearch<CR>gv
 
-" Enable system clipboard
-set clipboard=unnamed
+" Configure encryption
+set cm=blowfish
 
-" Enable the mouse
-set mouse=a
+" Configure the backspace key
+set backspace=indent,eol,start
 
-" Gundo settings
-nnoremap <silent> <Leader>u :GundoToggle<CR>
-let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
+""""" BEGIN PLUGIN CONFIGURATION """""
+" Configure Omnicomplete
+let g:ftplugin_sql_omni_key = '<C-f>'
 
-" NerdTree settings
+" Configure NerdTree
 nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
+vnoremap <silent> <Leader>o :<C-u>NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
-" Command-T settings
-nnoremap <silent> <Leader>f :CommandT<CR>
+" Configure CtrlP
+let g:ctrlp_map = '<Leader>f'
+
+" Configure Gundo
+nnoremap <silent> <Leader>u :GundoToggle<CR>
+vnoremap <silent> <Leader>u :<C-u>GundoToggle<CR>
+let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
+
+" Configure Fugitive
+nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gb :Gblame<CR>
+nnoremap <silent> <leader>gw :Gwrite<CR>
+nnoremap <silent> <leader>ga :Gwrite<CR>
+nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader>gp :Git push<CR>
+
+" Configure Tabular
+" TODO: Visual mode mappings (e.g. \t=)
+" TODO: Operator-pending mode mappings (e.g. \t=5j)
+"""" END PLUGIN CONFIGURATION """"
+
+" Fix typos
+abbreviate W w
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null

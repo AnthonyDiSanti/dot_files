@@ -3,4 +3,4 @@
 
 # Vundle's bundles
 /vim.symlink/bundle/*
-!vim.symlink/bundle/vundle
+!/vim.symlink/bundle/vundle
