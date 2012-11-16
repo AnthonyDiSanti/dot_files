@@ -73,7 +73,9 @@ nnoremap <silent> <Leader>N :set nonumber \| set norelativenumber<CR>
 vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
 
 " Configure maximum line length highlighting
-set colorcolumn=80
+if exists("&colorcolumn")
+  set colorcolumn=80
+endif
 
 " Configure number incrementation
 set nrformats=hex
@@ -91,7 +93,9 @@ nnoremap <Leader>h :<C-u>nohlsearch<CR>
 vnoremap <Leader>h :<C-u>nohlsearch<CR>gv
 
 " Configure encryption
-set cm=blowfish
+if exists("&blowfish")
+  set cm=blowfish
+endif
 
 " Configure the backspace key
 set backspace=indent,eol,start
