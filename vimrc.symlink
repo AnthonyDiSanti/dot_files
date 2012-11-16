@@ -94,7 +94,7 @@ vnoremap <Leader>h :<C-u>nohlsearch<CR>gv
 
 " Configure encryption
 if exists("&blowfish")
-  set cm=blowfish
+  set cryptmethod=blowfish
 endif
 
 " Configure the backspace key
