@@ -1,3 +1,4 @@
+"******* BEGIN PLUGIN INCLUSION *******"
 " Vundle setup
 filetype off
 set rtp+=~/.vim/bundle/vundle/
@@ -29,6 +30,7 @@ Bundle 'Lokaltog/vim-easymotion'
 
 " Enable filetype plugins
 filetype plugin on
+"******** END PLUGIN INCLUSION ********"
 
 " Configure indenting
 filetype indent on  " Required for Vundle (in addition to just being a good setting)
@@ -100,7 +102,7 @@ endif
 " Configure the backspace key
 set backspace=indent,eol,start
 
-""""" BEGIN PLUGIN CONFIGURATION """""
+"******* BEGIN PLUGIN CONFIGURATION *******"
 " Configure Omnicomplete
 let g:ftplugin_sql_omni_key = '<C-f>'
 
@@ -130,7 +132,7 @@ nnoremap <silent> <leader>gp :Git push<CR>
 " Configure Tabular
 " TODO: Visual mode mappings (e.g. \t=)
 " TODO: Operator-pending mode mappings (e.g. \t=5j)
-"""" END PLUGIN CONFIGURATION """"
+"******** END PLUGIN CONFIGURATION ********"
 
 " Fix typos
 abbreviate W w
