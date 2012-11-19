@@ -34,13 +34,9 @@ get_script_dir () {
 get_script_dir DOTFILESDIR
 
 # Define functions
-source $DOTFILESDIR/bash/functions.bash
-
-# Define aliases
-source $DOTFILESDIR/bash/aliases.bash
-
-# Git autocomplete
-source $DOTFILESDIR/bash/git-completion.bash
+for function in $DOTFILESDIR/bash/*; do
+  source $function;
+done
 
 # Add the dot_files bin to PATH
 export PATH=$DOTFILESDIR/bin:$PATH
