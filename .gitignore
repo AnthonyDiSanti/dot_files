@@ -4,6 +4,3 @@
 # Vundle's bundles
 /vim.symlink/bundle/*
 !/vim.symlink/bundle/vundle
-
-# vim swp file
-*.swp
