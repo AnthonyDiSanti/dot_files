@@ -137,6 +137,7 @@ nnoremap <silent> <leader>gp :Git push<CR>
 
 " Fix typos
 abbreviate W w
+abbreviate Q q
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
