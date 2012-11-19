@@ -34,7 +34,9 @@ get_script_dir () {
 get_script_dir DOTFILESDIR
 
 # Define functions
-source $DOTFILESDIR/bash/functions.bash
+for function in $DOTFILESDIR/bash/*; do
+  source $function;
+done
 
 # Define aliases
 source $DOTFILESDIR/bash/aliases.bash
