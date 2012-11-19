@@ -110,6 +110,7 @@ let g:ftplugin_sql_omni_key = '<C-f>'
 nnoremap <silent> <Leader>o :NERDTreeToggle<CR>
 vnoremap <silent> <Leader>o :<C-u>NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1  " Close the NERDTree after a file has been opened
+let NERDTreeChDirMode = 2   " Keep the CWD and NERDTree's root in sync
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is NerdTree
 
 " Configure CtrlP
