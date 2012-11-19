@@ -38,12 +38,6 @@ for function in $DOTFILESDIR/bash/*; do
   source $function;
 done
 
-# Define aliases
-source $DOTFILESDIR/bash/aliases.bash
-
-# Git autocomplete
-source $DOTFILESDIR/bash/git-completion.bash
-
 # Add the dot_files bin to PATH
 export PATH=$DOTFILESDIR/bin:$PATH
 
