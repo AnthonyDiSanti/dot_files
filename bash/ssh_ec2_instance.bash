@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+ssh_ec2_instance () {
 
-ssh_ec2_instance() {
+  # Allow getArgs() to work properly
+  local OPTIND
 
   printUsage() {
     echo " "
@@ -19,25 +20,29 @@ ssh_ec2_instance() {
   # Set default ec2 login user
   ec2_user='ubuntu'
 
-  #  grab the options and their arguments
-  while getopts "i:u:h" option; do
-          case $option in
-                  u)    ec2_user=$OPTARG;;
-                  i)    ec2_instance_id=$OPTARG;;
-                  h)    
-                        printUsage
-                        return 0
-                        ;;
-                  [?])  
-                        printUsage >&2
-                        return 1
-                        ;;
-          esac
-  done
+  getArgs() {
+    #  grab the options and their arguments
+    while getopts "i:u:h" option; do
+            case $option in
+                    u)    ec2_user=$OPTARG;;
+                    i)    ec2_instance_id=$OPTARG;;
+                    h)    
+                          printUsage
+                          return 0
+                          ;;
+                    [?])  
+                          printUsage >&2
+                          return 1
+                          ;;
+            esac
+    done
+  }
+  getArgs "$@"
 
   ec2_instance_url=$(ec2-describe-instances ${ec2_instance_id} | grep INSTANCE | cut -f 4)
+  echo "ec2_instance_url: ${ec2_instance_url}"
 
-  echo "ssh ${ec2_user}@$ec2_instance_url"
-  ssh ${ec2_user}@$ec2_instance_url
+  echo "ssh ${ec2_user}@${ec2_instance_url}"
+  ssh ${ec2_user}@${ec2_instance_url}
 
 }
