@@ -12,7 +12,8 @@ ssh_ec2_instance () {
     echo " -h, this help screen"
   }
 
-  if (( $# < 1 )); then
+  # Test for correct argument no.
+  if (( $# < 2 )); then
     printUsage >&2
     return 0
   fi
