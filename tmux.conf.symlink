@@ -32,21 +32,22 @@
 set -g default-terminal "screen-256color-bce"
 
 # Enable mouse support
-set-window-option -g mode-mouse on
-set-window-option -g mouse-select-pane on
-set-window-option -g mouse-resize-pane on
-set-window-option -g mouse-select-window on
+set -g mode-mouse on
+set -g mouse-select-pane on
+set -g mouse-resize-pane on
+set -g mouse-select-window on
 
 # Customize the status bar
 set -g status-bg '#FDF6E3' # Solarized Base3 (light background)
 set -g status-fg '#657B83' # Solarized Base00 (light primary content)
-set-window-option -g window-status-current-fg '#268BD2' # Solarized Blue
+set -g window-status-current-fg '#268BD2' # Solarized Blue
+set -g status-left-length 20
 
 # Fix annoying resizing from inactive clients
-set-window-option -g aggressive-resize on
+set -g aggressive-resize on
 
 # Customize copy mode to use vim bindings
-set-window-option -g mode-keys vi
+set -g mode-keys vi
 bind -t vi-copy v begin-selection
 bind -t vi-copy y copy-selection
 bind -t vi-copy C-u page-up
@@ -76,5 +77,5 @@ bind -r C-h resize-pane -L
 bind -r C-l resize-pane -R
 
 # OSX Copy/Paste
-set-option -g default-command 'reattach-to-user-namespace-tmux -l "$SHELL"'
+set -g default-command 'reattach-to-user-namespace-tmux -l "$SHELL"'
 bind y run-shell 'tmux save-buffer - | reattach-to-user-namespace-tmux pbcopy'
