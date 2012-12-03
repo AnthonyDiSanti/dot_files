@@ -13,7 +13,7 @@ export PAGER=less
 set -o vi
 
 # Launch tmux on every shell session
-[[ ! $TERM =~ ^screen ]] && exec tmux
+[[ ! $TERM =~ ^screen ]] && tmux
 
 # Finds the dereferenced directory of the current script
 get_script_dir () {
