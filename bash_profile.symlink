@@ -12,6 +12,9 @@ export PAGER=less
 # Set shell hotkeys to vim
 set -o vi
 
+# Launch tmux on every shell session
+[[ ! $TERM =~ ^screen ]] && exec tmux
+
 # Finds the dereferenced directory of the current script
 get_script_dir () {
   local SOURCE="${BASH_SOURCE[0]}"
