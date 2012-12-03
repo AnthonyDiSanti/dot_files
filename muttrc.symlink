@@ -30,18 +30,6 @@ ignore *
 unignore From: Date: User-Agent: X-Mailer To: Cc: Reply-To: Subject:
 my_hdr Reply-To:
 
-mailboxes ! =ubuntu-devel =ubuntu-motu =ubuntu-uploads =fai-linux =fai-linux-devel =django-devel =django-users =wine-devel =opensuse-packaging =pyqt-devel =drupal-devel
-mailboxes =maverick-changes =lucid-changes =jaunty=changes =hardy-changes =dapper-changes
 mailboxes =[Gmail]/Spam
-
-#bind index,pager \CP sidebar-prev
-#bind index,pager \CN sidebar-next
-#bind index,pager \CO sidebar-open
-#macro index,pager B 'toggle sidebar_visible'
-#color sidebar_new yellow default
-#
-#set sidebar_width=30
-
-macro index \ec "T.*\n;WN;^T.*\n" "Cath up"
 
 set sort_aux=last-date-received
