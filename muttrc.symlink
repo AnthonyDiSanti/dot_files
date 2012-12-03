@@ -1,0 +1,47 @@
+set from="evan.stachowiak@chloeandisabel.com"
+set realname="Evan Stachowiak"
+set reverse_name=yes
+set reverse_realname=no
+set imap_user = 'evan.stachowiak@chloeandisabel.com'
+set spoolfile = "imaps://imap.gmail.com:993"
+
+set smtp_url="smtp://evan.stachowiak\@chloeandisabel.com@smtp.gmail.com:587/"
+set folder = "imaps://imap.gmail.com:993"
+
+set record="+[Gmail]/Sent Mail"
+set postponed="+[Gmail]/Drafts"
+
+set header_cache="~/.mutt/cache/headers"
+set message_cachedir="~/.mutt/cache/bodies"
+set certificate_file=~/.mutt/certificates
+
+set move=no
+set delete=yes
+set edit_hdrs
+set include
+set reply_to
+set abort_nosubject=no
+alternates '(username|altusername)([-+].*)?@.*'
+set hdr_format="%4C %Z %{%m/%d} %-15.15F (%4c) %s" # format of the index
+set editor="vim"
+
+hdr_order From: Date: User-Agent: X-Mailer To: Cc: Reply-To: Subject:
+ignore *
+unignore From: Date: User-Agent: X-Mailer To: Cc: Reply-To: Subject:
+my_hdr Reply-To:
+
+mailboxes ! =ubuntu-devel =ubuntu-motu =ubuntu-uploads =fai-linux =fai-linux-devel =django-devel =django-users =wine-devel =opensuse-packaging =pyqt-devel =drupal-devel
+mailboxes =maverick-changes =lucid-changes =jaunty=changes =hardy-changes =dapper-changes
+mailboxes =[Gmail]/Spam
+
+#bind index,pager \CP sidebar-prev
+#bind index,pager \CN sidebar-next
+#bind index,pager \CO sidebar-open
+#macro index,pager B 'toggle sidebar_visible'
+#color sidebar_new yellow default
+#
+#set sidebar_width=30
+
+macro index \ec "T.*\n;WN;^T.*\n" "Cath up"
+
+set sort_aux=last-date-received
