@@ -11,3 +11,6 @@
 [submodule "settings/solarized"]
 	path = settings/solarized
 	url = https://github.com/altercation/solarized.git
+[submodule "lib/mutt-colors-solarized"]
+	path = lib/mutt-colors-solarized
+	url = git://github.com/altercation/mutt-colors-solarized.git
