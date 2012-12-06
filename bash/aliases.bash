@@ -18,6 +18,7 @@ alias ..........='cd ../../../../../../../../..'
 
 # Color Aliases
 alias grep='grep --color=auto'
+alias tmux="TERM=screen-256color-bce tmux"
 
 # Git Aliases
 alias gs='git status'
