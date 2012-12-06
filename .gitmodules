@@ -14,3 +14,6 @@
 [submodule "lib/mutt-colors-solarized"]
 	path = lib/mutt-colors-solarized
 	url = git://github.com/altercation/mutt-colors-solarized.git
+[submodule "bin/candi"]
+	path = bin/candi
+	url = git@github.com:chloeandisabel/candi_tools.git
