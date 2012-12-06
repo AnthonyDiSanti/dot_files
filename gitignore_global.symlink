@@ -11,5 +11,5 @@ Thumbs.db
 
 # Vim #
 #######
-/doc/tags # Plugins' tags
-*.swp # Temporary swap files
+/doc/tags
+*.swp
