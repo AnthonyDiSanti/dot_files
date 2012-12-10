@@ -78,3 +78,5 @@ bind -r C-l resize-pane -R
 # OSX Copy/Paste
 set-option -g default-command 'reattach-to-user-namespace-tmux -l "$SHELL"'
 bind y run-shell 'tmux save-buffer - | reattach-to-user-namespace-tmux pbcopy'
+
+set -g history-limit 100000
