@@ -41,4 +41,4 @@ macro   index   \er             ":source ~/.muttrc\n" "Reload muttrc"
 macro   pager   \er             ":source ~/.muttrc\n" "Reload muttrc"
 
 # Pretty Colors
-source ~/dot_files/lib/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc
+source ~/dot_files/lib/mutt-colors-solarized/mutt-colors-solarized-dark-16.muttrc
