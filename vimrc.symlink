@@ -20,6 +20,7 @@ Bundle 'tpope/vim-surround.git'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'godlygeek/tabular'
 Bundle 'Lokaltog/vim-easymotion'
+Bundle 'mv/mv-vim-puppet'
 
 " Vundle bundle definitions - vim-scripts repos
 "Bundle 'Example'
