@@ -36,6 +36,18 @@ defaults write com.apple.finder EmptyTrashSecurely -bool true
 echo "Add a context menu item for showing the Web Inspector in web views"
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 
+echo "Expand save panel by default"
+defaults write -g NSNavPanelExpandedStateForSaveMode -bool true
+
+echo "Expand print panel by default"
+defaults write -g PMPrintingExpandedStateForPrint -bool true
+
+echo "Show the ~/Library folder"
+chflags nohidden ~/Library
+
+echo "Make QuickLook text selectable"
+defaults write com.apple.finder QLEnableTextSelection -bool true;
+
 #TODO: Ask the user if they want to restart each application (include a "yes to all" option)
 echo "Restart affected applications"
 for app in Safari Finder Dock SystemUIServer; do killall "$app" >/dev/null 2>&1; done
