@@ -102,6 +102,17 @@ endif
 " Configure the backspace key
 set backspace=indent,eol,start
 
+"******* BEGIN STATUSLINE CONFIGURATION *******"
+" Add the current git branch to the default statusline
+set statusline=%<                             " Left-align the initial first part of the statusline
+set statusline+=%n:\ %f                       " Buffer #: Filename
+set statusline+=\ (%{fugitive#head()})        " (git branch)
+set statusline+=\ %h%m%r                      " [Help][Modified?(+|-)][ReadOnly?(RO)]
+set statusline+=%=                            " Right-align the remaining part of the statusline
+set statusline+=%l/%L\ %P                     " Lines in / Total Lines XX%
+"******** END STATUSLINE CONFIGURATION ********"
+
+
 "******* BEGIN PLUGIN CONFIGURATION *******"
 " Configure Omnicomplete
 let g:ftplugin_sql_omni_key = '<C-f>'
@@ -129,6 +140,7 @@ nnoremap <silent> <leader>gw :Gwrite<CR>
 nnoremap <silent> <leader>ga :Gwrite<CR>
 nnoremap <silent> <leader>gc :Gcommit<CR>
 nnoremap <silent> <leader>gp :Git push<CR>
+autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers when they're hidden
 
 " Configure Tabular
 " TODO: Visual mode mappings (e.g. \t=)
