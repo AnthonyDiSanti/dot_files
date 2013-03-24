@@ -13,3 +13,6 @@
 [submodule "bin/candi"]
 	path = bin/candi
 	url = git@github.com:chloeandisabel/candi_tools.git
+[submodule "vim/vim/bundle/vundle"]
+	path = vim/vim/bundle/vundle
+	url = git://github.com/gmarik/vundle.git
