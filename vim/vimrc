@@ -59,7 +59,7 @@ colorscheme solarized
 " Configure line numbering
 set number
 
-function NumberingMethodToggle()   " Adapted from numbers.vim
+function! NumberingMethodToggle()   " Adapted from numbers.vim
 	if (&number)
 		set relativenumber
 	else
@@ -138,3 +138,8 @@ abbreviate W w
 
 " Save a read-only file that wasn't opened with sudo
 cmap w!! w !sudo tee % >/dev/null
+
+" Configure highlighting of extra whitespaces
+highlight ExtraWhitespace ctermbg=red guibg=red
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
