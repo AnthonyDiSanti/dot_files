@@ -115,6 +115,9 @@ set statusline+=\ (%{fugitive#head()})        " (git branch)
 set statusline+=\ %h%m%r                      " [Help][Modified?(+|-)][ReadOnly?(RO)]
 set statusline+=%=                            " Right-align the remaining part of the statusline
 set statusline+=%l/%L\ %P                     " Lines in / Total Lines XX%
+
+" Always display the statusline
+set laststatus=2
 "******** END STATUSLINE CONFIGURATION ********"
 
 
