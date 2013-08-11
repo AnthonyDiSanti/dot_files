@@ -21,6 +21,7 @@ alias grep='grep --color=auto'
 
 # Git Aliases
 alias gs='git status'
+alias gp='git pull'
 
 # Ruby Aliases
 #alias be='bundle exec'
