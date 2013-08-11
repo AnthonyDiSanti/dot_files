@@ -23,7 +23,7 @@ alias grep='grep --color=auto'
 alias gs='git status'
 
 # Ruby Aliases
-alias be='bundle exec'
+#alias be='bundle exec'
 
 # Homebrew Aliases
 alias brewup='brew update && brew upgrade'
