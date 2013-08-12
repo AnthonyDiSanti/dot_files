@@ -4,4 +4,4 @@ Thumbs.db
 
 # Vim
 /doc/tags
-*.swp
+*.sw[p-z]
