@@ -16,6 +16,9 @@ alias ........='cd ../../../../../../..'
 alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 
+# dig Aliases
+alias digs='dig +short'
+
 # Color Aliases
 alias grep='grep --color=auto'
 
