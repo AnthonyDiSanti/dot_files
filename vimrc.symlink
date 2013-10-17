@@ -47,6 +47,9 @@ set tabstop=2
 " Configure history
 set history=200
 
+" Configure scrolling
+set scrolloff=3
+
 " Configure folding
 set foldlevelstart=99 " Expand all folds by default
 set foldmethod=syntax
