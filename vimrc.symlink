@@ -28,7 +28,7 @@ Bundle 'godlygeek/tabular'
 Bundle 'tpope/vim-eunuch'
 
 " Vundle bundle definitions - vim-scripts repos
-"Bundle 'Example'
+Bundle 'matchit.zip'
 
 " Vundle bundle definitions - non-github repos
 "Bundle 'git://git.example.com/example.git'
