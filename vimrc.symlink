@@ -156,7 +156,7 @@ autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers 
 
 " Configure Tabular
 " TODO: Visual mode mappings (e.g. \t=)
-" TODO: Operator-pending mode mappings (e.g. \t=5j)
+" TODO: Normal mode mappings that accept a movement (e.g. \t=5j)
 "******** END PLUGIN CONFIGURATION ********"
 
 " Fix typos
