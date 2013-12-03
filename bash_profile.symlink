@@ -7,7 +7,11 @@ export color_prompt=yes
 # Set default applications
 export EDITOR=vim
 export VISUAL=vim
-export PAGER=less
+if hash vimpager 2>/dev/null; then
+  export PAGER=vimpager
+else
+  export PAGER=less
+fi
 
 # Set shell hotkeys to vim
 set -o vi
