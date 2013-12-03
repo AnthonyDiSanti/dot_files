@@ -159,6 +159,10 @@ autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers 
 " TODO: Normal mode mappings that accept a movement (e.g. \t=5j)
 "******** END PLUGIN CONFIGURATION ********"
 
+"******* BEGIN FILETYPE CONFIGURATION *******"
+nnoremap <Leader>c :w <BAR> !lessc % > %:t:r.css<CR>
+"******** END FILETYPE CONFIGURATION ********"
+
 " Fix typos
 abbreviate W w
 abbreviate Q q
