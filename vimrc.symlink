@@ -9,6 +9,7 @@ Bundle 'gmarik/vundle'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'tpope/vim-git'
 Bundle 'tpope/vim-haml'
+Bundle 'groenewege/vim-less'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'tpope/vim-abolish'
@@ -144,13 +145,13 @@ vnoremap <silent> <Leader>u :<C-u>GundoToggle<CR>
 let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " Configure Fugitive
-nnoremap <silent> <leader>gs :Gstatus<CR>
-nnoremap <silent> <leader>gd :Gdiff<CR>
-nnoremap <silent> <leader>gb :Gblame<CR>
-nnoremap <silent> <leader>gw :Gwrite<CR>
-nnoremap <silent> <leader>ga :Gwrite<CR>
-nnoremap <silent> <leader>gc :Gcommit<CR>
-nnoremap <silent> <leader>gp :Git push<CR>
+nnoremap <silent> <Leader>gs :Gstatus<CR>
+nnoremap <silent> <Leader>gd :Gdiff<CR>
+nnoremap <silent> <Leader>gb :Gblame<CR>
+nnoremap <silent> <Leader>gw :Gwrite<CR>
+nnoremap <silent> <Leader>ga :Gwrite<CR>
+nnoremap <silent> <Leader>gc :Gcommit<CR>
+nnoremap <silent> <Leader>gp :Git push<CR>
 autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers when they're hidden
 
 " Configure Tabular
