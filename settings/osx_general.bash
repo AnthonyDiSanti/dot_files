@@ -46,7 +46,10 @@ echo "Show the ~/Library folder"
 chflags nohidden ~/Library
 
 echo "Make QuickLook text selectable"
-defaults write com.apple.finder QLEnableTextSelection -bool true;
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+echo "Remove the warning before executing downloaded files"
+defaults write com.apple.LaunchServices LSQuarantine -bool false
 
 #TODO: Ask the user if they want to restart each application (include a "yes to all" option)
 echo "Restart affected applications"
