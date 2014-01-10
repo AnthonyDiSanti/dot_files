@@ -9,6 +9,9 @@ defaults write NSGlobalDomain AppleFontSmoothing -int 2
 echo "Make Dock icons of hidden applications translucent"
 defaults write com.apple.dock showhidden -bool true
 
+echo "Show hidden files in Finder"
+defaults write com.apple.Finder AppleShowAllFiles -bool true
+
 echo "Show all filename extensions in Finder"
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
