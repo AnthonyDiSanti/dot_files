@@ -89,6 +89,23 @@ if exists("&colorcolumn")
   highlight ColorColumn ctermfg=Red
 endif
 
+"******* BEGIN LINE WRAPPING CONFIGURATION *******"
+" Don't break in the middle of words
+set linebreak
+
+" Remap keys to operate on display lines
+noremap  <silent> k      gk
+noremap  <silent> <Up>   gk
+noremap  <silent> j      gj
+noremap  <silent> <Down> gj
+noremap  <silent> <Home> g<Home>
+noremap  <silent> <End>  g<End>
+inoremap <silent> <Up>   <C-o>gk
+inoremap <silent> <Down> <C-o>gj
+inoremap <silent> <Home> <C-o>g<Home>
+inoremap <silent> <End>  <C-o>g<End>
+"******** END LINE WRAPPING CONFIGURATION ********"
+
 " Configure number incrementation
 set nrformats=hex
 
