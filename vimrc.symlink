@@ -86,6 +86,7 @@ vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
 " Configure maximum line length highlighting
 if exists("&colorcolumn")
   set colorcolumn=80
+  highlight ColorColumn ctermfg=Red
 endif
 
 " Configure number incrementation
