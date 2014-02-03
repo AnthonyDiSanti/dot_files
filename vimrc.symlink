@@ -179,12 +179,19 @@ let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
 
 " Configure Fugitive
 nnoremap <silent> <Leader>gs :Gstatus<CR>
+vnoremap <silent> <Leader>gs :<C-u>Gstatus<CR>
 nnoremap <silent> <Leader>gd :Gdiff<CR>
+vnoremap <silent> <Leader>gd :<C-u>Gdiff<CR>
 nnoremap <silent> <Leader>gb :Gblame<CR>
+vnoremap <silent> <Leader>gb :<C-u>Gblame<CR>
 nnoremap <silent> <Leader>gw :Gwrite<CR>
+vnoremap <silent> <Leader>gw :<C-u>Gwrite<CR>
 nnoremap <silent> <Leader>ga :Gwrite<CR>
+vnoremap <silent> <Leader>ga :<C-u>Gwrite<CR>
 nnoremap <silent> <Leader>gc :Gcommit<CR>
+vnoremap <silent> <Leader>gc :<C-u>Gcommit<CR>
 nnoremap <silent> <Leader>gp :Git push<CR>
+vnoremap <silent> <Leader>gp :<C-u>Git push<CR>
 autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers when they're hidden
 
 " Configure Tabular
@@ -193,7 +200,9 @@ autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers 
 "******** END PLUGIN CONFIGURATION ********"
 
 "******* BEGIN FILETYPE CONFIGURATION *******"
+"TODO: Make only work for .less files
 nnoremap <Leader>c :w <BAR> !lessc % > %:t:r.css<CR>
+vnoremap <Leader>c :<C-u>w <BAR> !lessc % > %:t:r.css<CR>
 "******** END FILETYPE CONFIGURATION ********"
 
 " Fix typos
