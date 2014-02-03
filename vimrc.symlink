@@ -96,23 +96,31 @@ set linebreak
 " Remap keys to operate on display lines
 nnoremap <silent> k      gk
 vnoremap <silent> k      gk
+onoremap <silent> k      gk
 nnoremap <silent> <Up>   g<Up>
 vnoremap <silent> <Up>   g<Up>
+onoremap <silent> <Up>   g<Up>
 inoremap <silent> <expr> <Up> MapPreserveOmnicomplete("<Up>", "<C-o>gk")
 nnoremap <silent> j      gj
 vnoremap <silent> j      gj
+onoremap <silent> j      gj
 nnoremap <silent> <Down> g<Down>
 vnoremap <silent> <Down> g<Down>
+onoremap <silent> <Down> g<Down>
 inoremap <silent> <expr> <Down> MapPreserveOmnicomplete("<Down>", "<C-o>gj")
 nnoremap <silent> ^      g^
 vnoremap <silent> ^      g^
+onoremap <silent> ^      g^
 nnoremap <silent> <Home> g^
 vnoremap <silent> <Home> g^
+onoremap <silent> <Home> g^
 inoremap <silent> <Home> <C-o>g^
 nnoremap <silent> $      g$
 vnoremap <silent> $      g$
+onoremap <silent> $      g$
 nnoremap <silent> <End>  g<End>
 vnoremap <silent> <End>  g<End>
+onoremap <silent> <End>  g<End>
 inoremap <silent> <End>  <C-o>g<End>
 
 " Maintain original functionality for Omnicomplete
