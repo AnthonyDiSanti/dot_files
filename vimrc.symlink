@@ -94,16 +94,31 @@ endif
 set linebreak
 
 " Remap keys to operate on display lines
-noremap  <silent> k      gk
-noremap  <silent> <Up>   gk
-noremap  <silent> j      gj
-noremap  <silent> <Down> gj
-noremap  <silent> <Home> g<Home>
-noremap  <silent> <End>  g<End>
-inoremap <silent> <Up>   <C-o>gk
-inoremap <silent> <Down> <C-o>gj
-inoremap <silent> <Home> <C-o>g<Home>
+nnoremap <silent> k      gk
+vnoremap <silent> k      gk
+nnoremap <silent> <Up>   g<Up>
+vnoremap <silent> <Up>   g<Up>
+inoremap <silent> <expr> <Up> MapPreserveOmnicomplete("<Up>", "<C-o>gk")
+nnoremap <silent> j      gj
+vnoremap <silent> j      gj
+nnoremap <silent> <Down> g<Down>
+vnoremap <silent> <Down> g<Down>
+inoremap <silent> <expr> <Down> MapPreserveOmnicomplete("<Down>", "<C-o>gj")
+nnoremap <silent> ^      g^
+vnoremap <silent> ^      g^
+nnoremap <silent> <Home> g^
+vnoremap <silent> <Home> g^
+inoremap <silent> <Home> <C-o>g^
+nnoremap <silent> $      g$
+vnoremap <silent> $      g$
+nnoremap <silent> <End>  g<End>
+vnoremap <silent> <End>  g<End>
 inoremap <silent> <End>  <C-o>g<End>
+
+" Maintain original functionality for Omnicomplete
+function! MapPreserveOmnicomplete(key, mapping)
+  return pumvisible() ? a:key : a:mapping
+endfunction
 "******** END LINE WRAPPING CONFIGURATION ********"
 
 " Configure number incrementation
