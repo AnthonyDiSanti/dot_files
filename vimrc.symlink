@@ -100,14 +100,14 @@ onoremap <silent> k      gk
 nnoremap <silent> <Up>   g<Up>
 vnoremap <silent> <Up>   g<Up>
 onoremap <silent> <Up>   g<Up>
-inoremap <silent> <expr> <Up> MapPreserveOmnicomplete("<Up>", "<C-o>gk")
+inoremap <silent> <expr> <Up> ImapPreserveOmnicomplete("<Up>", "<C-o>gk")
 nnoremap <silent> j      gj
 vnoremap <silent> j      gj
 onoremap <silent> j      gj
 nnoremap <silent> <Down> g<Down>
 vnoremap <silent> <Down> g<Down>
 onoremap <silent> <Down> g<Down>
-inoremap <silent> <expr> <Down> MapPreserveOmnicomplete("<Down>", "<C-o>gj")
+inoremap <silent> <expr> <Down> ImapPreserveOmnicomplete("<Down>", "<C-o>gj")
 nnoremap <silent> ^      g^
 vnoremap <silent> ^      g^
 onoremap <silent> ^      g^
@@ -124,7 +124,7 @@ onoremap <silent> <End>  g<End>
 inoremap <silent> <End>  <C-o>g<End>
 
 " Maintain original functionality for Omnicomplete
-function! MapPreserveOmnicomplete(key, mapping)
+function! ImapPreserveOmnicomplete(key, mapping)
   return pumvisible() ? a:key : a:mapping
 endfunction
 "******** END LINE WRAPPING CONFIGURATION ********"
