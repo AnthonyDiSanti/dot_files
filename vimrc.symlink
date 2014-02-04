@@ -69,7 +69,7 @@ colorscheme solarized
 " Configure line numbering
 set number
 
-function NumberingMethodToggle()   " Adapted from numbers.vim
+function! NumberingMethodToggle()   " Adapted from numbers.vim
 	if (&number)
 		set relativenumber
 	else
