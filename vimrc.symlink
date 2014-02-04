@@ -141,7 +141,7 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
-nnoremap <Leader>h :<C-u>nohlsearch<CR>
+nnoremap <Leader>h :nohlsearch<CR>
 vnoremap <Leader>h :<C-u>nohlsearch<CR>gv
 
 " Configure encryption
@@ -151,6 +151,10 @@ endif
 
 " Configure the backspace key
 set backspace=indent,eol,start
+
+" Create hotkeys for deleting trailing whitespace
+nnoremap <Leader>dtw :%s/\v\s+$//<CR><C-o>
+vnoremap <Leader>dtw :s/\v\s+$//<CR>gv
 
 "******* BEGIN STATUSLINE CONFIGURATION *******"
 " Add the current git branch to the default statusline
@@ -210,7 +214,7 @@ autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers 
 "******* BEGIN FILETYPE CONFIGURATION *******"
 "TODO: Make only work for .less files
 nnoremap <Leader>c :w <BAR> !lessc % > %:t:r.css<CR>
-vnoremap <Leader>c :<C-u>w <BAR> !lessc % > %:t:r.css<CR>
+vnoremap <Leader>c :<C-u>w <BAR> !lessc % > %:t:r.css<CR>gv
 "******** END FILETYPE CONFIGURATION ********"
 
 " Fix typos
