@@ -1,7 +1,15 @@
-# Hidden OS Folder Settings
+# OSX Generated Files #
+#######################
 .DS_Store
-Thumbs.db
+.Spotlight-V100
+.Trashes
 
-# Vim
+# Windows Generated Files #
+###########################
+Thumbs.db
+ehthumbs.db
+
+# Vim #
+#######
 /doc/tags
 *.sw[p-z]
