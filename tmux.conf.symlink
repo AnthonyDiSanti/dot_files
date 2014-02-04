@@ -34,6 +34,10 @@ set -g default-terminal "screen-256color-bce"
 # Increase the buffer history
 set -g history-limit 100000
 
+# Start window and pane numbering at 1 (instead of 0)
+set -g base-index 1
+set -g pane-base-index 1
+
 # Enable mouse support
 set -g mode-mouse on
 set -g mouse-select-pane on
@@ -59,7 +63,6 @@ bind -t vi-copy d page-down
 bind -t vi-copy C-d page-down
 
 # Window Management Bindings
-bind ` select-window -t 0
 bind b last-window
 bind C-b last-window
 
