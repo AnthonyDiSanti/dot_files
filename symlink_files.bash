@@ -26,5 +26,5 @@ get_script_dir DOTFILESDIR
 SYMLINKS=$(ls -1d $DOTFILESDIR/*.symlink)
 for SYMLINK in $SYMLINKS; do
   BASENAME=$(basename $SYMLINK .symlink)
-  ln -s $SYMLINK ~/.$BASENAME
+  ln -Ffs $SYMLINK ~/.$BASENAME
 done
