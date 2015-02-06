@@ -11,3 +11,6 @@
 [submodule "settings/solarized"]
 	path = settings/solarized
 	url = https://github.com/altercation/solarized.git
+[submodule "lib/make-chrome-app"]
+	path = lib/make-chrome-app
+	url = https://gist.github.com/8284acbd2517a7c34af6.git
