@@ -54,6 +54,9 @@ defaults write com.apple.finder QLEnableTextSelection -bool true
 echo "Remove the warning before executing downloaded files"
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
+echo "Disable enlarging the cursor by shaking the mouse"
+defaults write ~/Library/Preferences/.GlobalPreferences CGDisableCursorLocationMagnification -bool YES
+
 #TODO: Ask the user if they want to restart each application (include a "yes to all" option)
 echo "Restart affected applications"
 for app in Safari Finder Dock SystemUIServer; do killall "$app" >/dev/null 2>&1; done
