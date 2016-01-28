@@ -2,6 +2,8 @@
 alias ll='ls -lh'
 alias la='ls -a'
 alias lla='ll -a'
+alias lld='lla | grep "^d"'
+alias llf='lla | grep -v "^d"'
 
 # cd Aliases
 alias -- -='cd -'
