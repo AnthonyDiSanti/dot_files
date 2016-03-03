@@ -31,5 +31,8 @@ alias gp='git pull'
 # Ruby Aliases
 #alias be='bundle exec'
 
+# Webpack Aliases
+alias wp='webpack --progress --colors'
+
 # Homebrew Aliases
 alias brewup='brew update && brew upgrade'
