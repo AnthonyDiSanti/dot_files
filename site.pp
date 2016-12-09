@@ -1,4 +1,4 @@
-file { "$homedir/.bash_profile":
+file { "${home_dir}/.bash_profile":
   ensure => 'link',
-  target => "$homedir/code/dot_files/.bash_profile",
+  target => "${dotfiles_dir}/.bash_profile",
 }
