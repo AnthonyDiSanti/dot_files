@@ -61,7 +61,8 @@ White="${Color_Prefix}0;37m${Color_Suffix}"   # White
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
 export GIT_PS1_SHOWUPSTREAM='auto'
-source $DOTFILESDIR/bash/git-prompt.sh
+source $DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh
+source $DOTFILESDIR/lib/git/contrib/completion/git-completion.bash
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
 
