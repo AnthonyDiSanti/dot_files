@@ -17,7 +17,7 @@ fi
 set -o vi
 
 # Finds the dereferenced directory of the current script
-get_script_dir () {
+get_repo_root () {
   local SOURCE="${BASH_SOURCE[0]}"
   local DIR="$( dirname "$SOURCE" )"
 
@@ -27,7 +27,7 @@ get_script_dir () {
     DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
   done
 
-  local RETVAL="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  local RETVAL="$( cd -P "$( dirname "$SOURCE" )"/.. && pwd )"
   if [[ $# = 0 ]]; then
     SCRIPTDIR=$RETVAL
   else
@@ -35,7 +35,7 @@ get_script_dir () {
   fi
 }
 
-get_script_dir DOTFILESDIR
+get_repo_root DOTFILESDIR
 
 # Define functions
 for function in $DOTFILESDIR/bash/*; do
