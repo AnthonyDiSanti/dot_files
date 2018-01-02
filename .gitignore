@@ -1,6 +1,6 @@
 # netrw's history file (vim plugin)
-/.vim/.netrwhist
+/home/.vim/.netrwhist
 
 # Vundle's bundles
-/.vim/bundle/*
-!/.vim/bundle/vundle
+/home/.vim/bundle/*
+!/home/.vim/bundle/vundle

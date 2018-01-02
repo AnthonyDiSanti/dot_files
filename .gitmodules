@@ -5,7 +5,7 @@
 	path = lib/tmux-osx-pasteboard
 	url = https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.git
 [submodule "vim.symlink/bundle/vundle"]
-	path = .vim/bundle/vundle
+	path = home/.vim/bundle/vundle
 	url = https://github.com/gmarik/vundle.git
   ignore = dirty
 [submodule "settings/solarized"]
