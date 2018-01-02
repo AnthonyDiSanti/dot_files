@@ -21,6 +21,6 @@ get_script_dir () {
 
 get_script_dir GITSETTINGSDIR
 
-source $GITSETTINGSDIR/git/settings.bash
-source $GITSETTINGSDIR/git/aliases.bash
-source $GITSETTINGSDIR/git/colors.bash
+source $GITSETTINGSDIR/git/settings.sh
+source $GITSETTINGSDIR/git/aliases.sh
+source $GITSETTINGSDIR/git/colors.sh
