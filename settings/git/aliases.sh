@@ -12,6 +12,9 @@ git config --global alias.staged 'diff --cached'
 git config --global alias.update-submodules "!echo 'Initing...'; git submodule init; echo '\nUpdating...'; git submodule update; echo '\nChecking out master...'; git submodule foreach git checkout master; echo '\nPulling...'; git submodule foreach git pull"
 git config --global alias.wipe "!git clean -xdf; git reset --hard"
 
+# List All Aliases
+git config --global alias.alias "! git config --get-regexp ^alias\. | sed -e s/^alias\.// -e s/\ /\ =\ / | sort"
+
 # UI Aliases
 YELLOW='%C(yellow)'
 RED='%C(red)'
