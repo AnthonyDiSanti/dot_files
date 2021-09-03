@@ -4,6 +4,7 @@
 git config --global alias.cm 'commit -m'
 git config --global alias.cam 'commit -am'
 git config --global alias.cae 'commit -ae'
+git config --global alias.co 'checkout'
 git config --global alias.subdo 'submodule foreach'
 git config --global alias.ff 'merge --ff-only'
 git config --global alias.staged 'diff --cached'

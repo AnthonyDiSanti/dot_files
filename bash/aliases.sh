@@ -26,14 +26,14 @@ alias grep='grep --color=auto'
 
 # Git Aliases
 alias gs='git status'
-alias gp='git pull'
+alias gd='git diff'
 
 # Ruby Aliases
 #alias be='bundle exec'
 
 # Webpack Aliases
-alias wp='webpack --progress --colors'
-alias ww='wp --watch'
+#alias wp='webpack --progress --colors'
+#alias ww='wp --watch'
 
 # Homebrew Aliases
 alias brewup='brew update && brew upgrade'
