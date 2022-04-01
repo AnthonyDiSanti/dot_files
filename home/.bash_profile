@@ -46,17 +46,16 @@ done
 export PATH=$DOTFILESDIR/bin:$PATH
 
 # Setup prompt
-Color_Prefix='\[\e['  # Required prefix for defining colors
-Color_Suffix='\]'     # Required suffix for defining colors
-Color_Off="${Color_Prefix}0m${Color_Suffix}"  # Text Reset
-Black="${Color_Prefix}0;30m${Color_Suffix}"   # Black
-Red="${Color_Prefix}0;31m${Color_Suffix}"     # Red
-Green="${Color_Prefix}0;32m${Color_Suffix}"   # Green
-Yellow="${Color_Prefix}0;33m${Color_Suffix}"  # Yellow
-Blue="${Color_Prefix}0;34m${Color_Suffix}"    # Blue
-Purple="${Color_Prefix}0;35m${Color_Suffix}"  # Purple
-Cyan="${Color_Prefix}0;36m${Color_Suffix}"    # Cyan
-White="${Color_Prefix}0;37m${Color_Suffix}"   # White
+Color_Prefix='\e['             # Required prefix for defining colors
+Color_Off="${Color_Prefix}0m"  # Text Reset
+Black="${Color_Prefix}0;30m"   # Black
+Red="${Color_Prefix}0;31m"     # Red
+Green="${Color_Prefix}0;32m"   # Green
+Yellow="${Color_Prefix}0;33m"  # Yellow
+Blue="${Color_Prefix}0;34m"    # Blue
+Purple="${Color_Prefix}0;35m"  # Purple
+Cyan="${Color_Prefix}0;36m"    # Cyan
+White="${Color_Prefix}0;37m"   # White
 
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
@@ -65,6 +64,7 @@ source $DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh
 source $DOTFILESDIR/lib/git/contrib/completion/git-completion.bash
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1 ' (%s)') $Color_Off\! $ "
+echo -ne '\e[2 q' # Sets the cursor to a filled block
 
 # Include local settings
 if [ -r ~/.bash_local ]; then
