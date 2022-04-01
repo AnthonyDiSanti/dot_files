@@ -69,6 +69,9 @@ set clipboard=unnamed
 " Activate solarized color scheme
 syntax enable
 set background=dark
+if stridx(&term, '256') >= 0
+  let g:solarized_termcolors=256
+endif
 colorscheme solarized
 
 " Configure line numbering
