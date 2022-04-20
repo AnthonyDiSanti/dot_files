@@ -25,8 +25,8 @@ alias digs='dig +short'
 alias grep='grep --color=auto'
 
 # Git Aliases
+alias gd='git diff'
 alias gs='git status'
-alias gp='git pull'
 
 # Ruby Aliases
 #alias be='bundle exec'
