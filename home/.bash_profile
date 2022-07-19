@@ -64,6 +64,7 @@ source $DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh
 source $DOTFILESDIR/lib/git/contrib/completion/git-completion.bash
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1) $Color_Off\! $ "
+#export PS1="$Purple\u$Blue@\h $Green\w$Cyan $Color_Off\! $ "
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   echo -ne '\e[2 q' # Sets the cursor to a filled block
 fi
