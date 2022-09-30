@@ -16,7 +16,7 @@ git config --global alias.update-submodules "!echo 'Initing...'; git submodule i
 git config --global alias.wipe "!git clean -xdf; git reset --hard"
 
 # List All Aliases
-git config --global alias.alias "! git config --get-regexp ^alias\. | sed -e s/^alias\.// -e s/\ /\ =\ / | sort"
+git config --global alias.alias "! git config --get-regexp ^alias\. | sed -e s/^alias\.// -e s/\ /\ =\ /"
 
 # UI Aliases
 YELLOW='%C(yellow)'
