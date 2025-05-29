@@ -34,11 +34,5 @@ done
 NORMAL_AWK_FORMAT="$NORMAL_AWK_FORMAT\n"
 COLORED_AWK_FORMAT="$COLORED_AWK_FORMAT\n"
 
-AWK_SCRIPT='{
-              if (match($0, "normal")) {
-                printf "'$NORMAL_AWK_FORMAT'", $1, $2, $3, $4, $5, $6
-              } else {
-                printf "'$COLORED_AWK_FORMAT'", $1, $2, $3, $4, $5, $6
-              }
-            }'
+AWK_SCRIPT='{ if (match($0, "normal")) { printf "'$NORMAL_AWK_FORMAT'", $1, $2, $3, $4, $5, $6 } else { printf "'$COLORED_AWK_FORMAT'", $1, $2, $3, $4, $5, $6 } }'
 git config --global alias.colors "!git log -n1 --pretty=format:'$GIT_COLOR_TEST_FORMAT' | awk -F\| '$AWK_SCRIPT'"
