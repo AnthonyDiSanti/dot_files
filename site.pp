@@ -33,3 +33,9 @@ file { "${home_dir}/.vimrc":
   target => "${dotfiles_dir}/home/.vimrc",
   backup => true,
 }
+
+file { "${home_dir}/.codex/AGENTS.md":
+  ensure => 'link',
+  target => "${dotfiles_dir}/home/.codex/AGENTS.md",
+  backup => true,
+}
