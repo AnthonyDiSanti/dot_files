@@ -1,23 +1,24 @@
 # /context
 
-This directory is shared working memory for humans + AI agents.
-It is committed to git for continuity across devices and developers.
+Shared working memory for this dotfiles repo (dot_files). It captures state, decisions, and knowledge that prevent repeated setup friction.
 
-## What goes here
-- Handoffs between sessions/agents (living snapshot)
-- Concurrent task tracking
-- Key decisions + rationale (including agent-made decisions)
-- Curated doc insights that prevent repeated escalations
-- A curated reference library of third-party docs (distilled notes, not raw dumps)
+## Scope
+- Dotfile changes and bootstrap behavior
+- macOS defaults and system tweaks
+- Shell/Vim/tmux configuration updates
+- Vendored dependency updates (Solarized, Git prompt/completion, Vim bundles)
 
-## What does NOT go here
+## Exclusions
 - Secrets, API keys, credentials, private tokens
 
-## Logging philosophy
-- `handoff.md` is a living snapshot (current truth).
-- `tasks.md` tracks concurrent workstreams.
-- Git history is the long-term log; keep these files clean and pruned.
+## Context Structure
+- `handoff.md` — current state and next steps after recent changes.
+- `tasks.md` — active/paused/completed workstreams.
+- `decisions.md` — durable decisions with dates and rationale.
+- `knowledge.md` — repo-specific notes and gotchas.
+- `reference/index.md` — index of deeper reference notes (if needed).
 
-## Reference Library
-- `reference/index.md` is the table of contents.
-- `reference/` contains distilled notes and examples for external systems we integrate with.
+## Update cadence
+- Update `handoff.md` after each meaningful change.
+- Keep `tasks.md` current for concurrent work.
+- Log durable decisions in `decisions.md`.

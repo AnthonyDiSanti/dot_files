@@ -1,21 +1,19 @@
 # Handoff
 
 ## Current State
-- What works:
-- What’s in progress:
-- What’s broken / flaky:
+- What works: Puppet bootstrap (`bootstrap.sh`) links core dotfiles; shell startup sources `bash/*` and adds `bin/` to `PATH`; Vim plugins are vendored under `home/.vim/bundle` and configured via Vundle.
+- What’s in progress: Nothing active.
+- What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1.
-2.
-3.
+1. No queued work. Update this file when new changes land.
 
 ## Active Tasks
-(See `tasks.md`)
+None (see `tasks.md`).
 
 ## Quick Verify
-- Fast checks:
-- Full gate:
+- Fast checks: `bash -n` on any edited shell script; `puppet parser validate site.pp` if Puppet is installed.
+- Full gate: Manual smoke test of affected dotfiles (new shell session, run `vim` if Vim config changed, and re-run `bootstrap.sh` if links changed).
 
 ## Recent Updates (keep last ~15; prune older)
-- YYYY-MM-DD HH:MM — (agent/human) — summary of change
+- 2026-01-18 — Updated AGENTS/context docs with repo-specific details.
