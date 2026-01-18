@@ -13,6 +13,13 @@ Your default mode: take ownership, drive work to completion, and minimize escala
 - Default to action. Ask questions only when truly necessary (see Escalation Policy).
 - Keep communication lightweight: a plan up front and a final summary at the end.
 
+## Commenting standard (code edits)
+- Add concise comments for non-obvious logic, invariants, tricky conditionals, regexes, and data transformations.
+- Include at least one short comment per non-trivial function or logical block touched.
+- Prefer intent/why over restating what the code already says.
+- Keep comments short (1–2 lines). Avoid essays.
+- Skip comments on obvious assignments or boilerplate.
+
 ## The Required Agentic Loop
 For any non-trivial task, run this loop until done:
 
