@@ -37,3 +37,6 @@ alias ww='wp --watch'
 
 # Homebrew Aliases
 alias brewup='brew update && brew upgrade'
+
+# Codex Aliases
+alias codex='codex --add-dir ~/.codex'
