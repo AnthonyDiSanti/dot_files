@@ -4,3 +4,6 @@
 # Vundle's bundles
 /home/.vim/bundle/*
 !/home/.vim/bundle/vundle
+
+# Agents
+AGENTS.local.md
