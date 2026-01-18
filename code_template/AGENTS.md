@@ -71,7 +71,8 @@ It is committed to git to support continuity across devices and developers.
 - Enable multi-session continuity and agent handoffs.
 - Keep key decisions and references discoverable.
 
-### Minimal seeded structure (recommended)
+### Context structure
+Keep this index updated as the project evolves.
 - `/context/README.md` — what /context is and how to use it
 - `/context/handoff.md` — current state + next steps (living snapshot)
 - `/context/tasks.md` — active workstreams & status (supports concurrency)
