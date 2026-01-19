@@ -3,18 +3,28 @@
 This repo contains personal dotfiles, system settings scripts, and a few small utilities for macOS-oriented setup.
 Keep changes small, reversible, and consistent with existing patterns. Do not include secrets.
 
-## 0) Local addendum (AGENTS.local.md)
+## 0) Local overrides (AGENTS.local.md)
 If `AGENTS.local.md` exists at the repo root:
-- Read it at the start of work and treat it as personal addendum.
-- It may be a symlink to user-global guidance.
+- Read it at the start of work and treat it as **machine-specific overrides**.
+- It is gitignored and must not be relied on for shared/team workflows.
 
-Precedence rules:
-- Repo facts (commands/paths/stack/constraints): this file (AGENTS.md) wins.
-- Personal workflow + behavioral defaults: AGENTS.local.md may override.
+What belongs in `AGENTS.local.md`:
+- Local environment quirks (broken Node/npm, alternate commands, paths, ports, OS-specific steps)
+- Anything that is true for *this machine* but not necessarily for others
 
-Editing:
-- You MAY edit AGENTS.local.md (silent edits allowed), but keep it behavioral and high-signal.
-- Do NOT move repo-specific commands or stack details into AGENTS.local.md.
+What does NOT belong there:
+- Global behavioral instructions (those live in your global setup)
+- Repo truth (tech stack, architecture, standard commands that should apply to everyone)
+- Large duplicated content from this file
+
+Precedence:
+- This file (`AGENTS.md`) is the source of truth for repo details.
+- `AGENTS.local.md` may override **commands and environment steps** only when necessary on this machine.
+- If local overrides materially change how the project is run/tested, record a short note in `/context/handoff.md`.
+
+Maintenance:
+- Keep `AGENTS.local.md` short and delta-based.
+- If a local override turns out to be broadly applicable, migrate it into `AGENTS.md`.
 
 ## 1) Project overview
 - What this project is: Personal dotfiles and setup scripts for shell, Vim, tmux, Git, and agent configs, primarily on macOS.
