@@ -1,9 +1,10 @@
 # Decisions
 
 Record decisions with enough context that a future agent can understand "why".
+Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 
 ## YYYY-MM-DD — <Decision title>
-- Decider: (agent/human)
+- Decider: Anthony or Codex (model: gpt-5.2-codex)
 - Decision:
 - Rationale:
 - Alternatives considered:

@@ -84,7 +84,13 @@ Verify (targeted first, full at end):
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
 
-## 6) /context — shared working memory (COMMITTED)
+## 6) Git commits (workflow)
+When a coherent unit of work is complete, pause and recommend a git commit with a proposed message. The message format must be:
+1) Title in present tense
+2) Blank line
+3) Bullet list of key changes
+
+## 7) /context — shared working memory (COMMITTED)
 This repo uses `/context` as durable working memory for humans and agents.
 It is committed to git to support continuity across devices and developers.
 
@@ -97,7 +103,7 @@ It is committed to git to support continuity across devices and developers.
 - `/context/README.md` — purpose, scope, and how the context files are used in this repo.
 - `/context/handoff.md` — current state and next steps (living snapshot).
 - `/context/tasks.md` — active/paused/completed workstreams.
-- `/context/decisions.md` — decision log with dates and rationale.
+- `/context/decisions.md` — decision log with dates and rationale. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
 - `/context/knowledge.md` — curated repo insights and “when to consult”.
 - `/context/reference/index.md` — index of deep reference notes (if/when needed).
 
@@ -125,7 +131,7 @@ Linking rule:
 - Prefer updating existing notes over creating many redundant files.
 - Never store secrets.
 
-## 7) Documentation references (maintain)
+## 8) Documentation references (maintain)
 List the project’s key references and when to consult them:
 - `README.md` — Vim plugin install/update steps.
 - `bootstrap.sh` and `site.pp` — before adding/removing dotfiles or changing symlink behavior.
@@ -141,7 +147,7 @@ Capture external docs only when they are:
 - broadly insightful,
 - or likely to prevent recurring mistakes.
 
-## 8) Continuous improvement of instructions (silent edits allowed)
+## 9) Continuous improvement of instructions (silent edits allowed)
 This file should evolve as friction is discovered.
 
 Proactively update AGENTS.md when:
@@ -154,7 +160,7 @@ Guidelines:
 - Avoid vague rules; prefer testable directives.
 - Keep the file compact.
 
-## 9) Workarounds and risk
+## 10) Workarounds and risk
 If you are considering shipping a workaround instead of a root-cause fix:
 - Pause and switch to interactive discussion.
 - Propose the modified plan, justification, pros/cons, risks, and cleanup path.
