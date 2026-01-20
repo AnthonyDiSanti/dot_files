@@ -21,3 +21,9 @@ It is committed to git for continuity across devices and developers.
 ## Reference Library
 - `reference/index.md` is the table of contents.
 - `reference/` contains distilled notes and examples for external systems we integrate with.
+
+## Hygiene
+- Keep entries short and high‑signal.
+- Prefer updating existing notes over creating duplicates.
+- Prune old items regularly.
+- Keep `tasks.md` **Active** limited to in-progress/planned items; move completed items to **Completed** promptly.
