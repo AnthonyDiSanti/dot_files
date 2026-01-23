@@ -13,12 +13,12 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 
 ## Context Structure
 - `handoff.md` — current state and next steps after recent changes.
-- `tasks.md` — active/paused/completed workstreams.
+- `tasks.md` — active/paused/completed workstreams (ULID IDs + short human-readable titles).
 - `decisions.md` — durable decisions with dates and rationale.
 - `knowledge.md` — repo-specific notes and gotchas.
 - `reference/index.md` — index of deeper reference notes (if needed).
 
 ## Update cadence
 - Update `handoff.md` after each meaningful change.
-- Keep `tasks.md` current for concurrent work.
+- Keep `tasks.md` current for concurrent work and preserve ULID task IDs.
 - Log durable decisions in `decisions.md`.

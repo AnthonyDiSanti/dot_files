@@ -29,3 +29,10 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Rationale: User preference for consistent, high-quality commit message recommendations.
 - Alternatives considered: Keep commit guidance implicit; rejected to make the behavior explicit and repeatable.
 - Consequences / follow-ups: Apply this recommendation flow after coherent units of work.
+
+## 2026-01-20 — Use ULIDs for task IDs in `tasks.md`
+- Decider: Anthony
+- Decision: Task entries use ULID identifiers paired with short human-readable titles.
+- Rationale: Reduce ID collisions in agent-managed task lists while keeping entries scannable.
+- Alternatives considered: Sequential IDs; rejected due to merge conflict risk in multi-agent edits.
+- Consequences / follow-ups: Update task templates and existing task entries to the ULID format.

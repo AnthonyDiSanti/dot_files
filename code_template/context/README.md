@@ -13,14 +13,12 @@ It is committed to git for continuity across devices and developers.
 ## What does NOT go here
 - Secrets, API keys, credentials, private tokens
 
-## Logging philosophy
-- `handoff.md` is a living snapshot (current truth).
-- `tasks.md` tracks concurrent workstreams.
-- Git history is the long-term log; keep these files clean and pruned.
-
-## Reference Library
-- `reference/index.md` is the table of contents.
-- `reference/` contains distilled notes and examples for external systems we integrate with.
+## Working set
+- `handoff.md` — current state + next steps
+- `tasks.md` — active/paused/completed workstreams (ULID IDs + short human-readable titles)
+- `decisions.md` — decision log with rationale
+- `knowledge.md` — short, high-signal notes
+- `reference/` — distilled third‑party notes (indexed in `reference/index.md`)
 
 ## Hygiene
 - Keep entries short and high‑signal.
