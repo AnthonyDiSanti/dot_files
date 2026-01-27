@@ -1,25 +1,30 @@
-approval_policy = "never"
-sandbox_mode = "workspace-write"
-
-model = "gpt-5.2-codex"
-model_reasoning_effort = "xhigh"
-
+approval_policy = 'never'
+model = 'gpt-5.2-codex'
+model_reasoning_effort = 'xhigh'
+sandbox_mode = 'workspace-write'
 show_raw_agent_reasoning = true
 
-[sandbox_workspace_write]
-network_access = true
-
 [features]
-web_search_request = true
 shell_snapshot = true
 shell_tool = true
 undo = true
+web_search_request = true
 
-[projects."/Users/anthony/code/decrypto-discord"]
-trust_level = "trusted"
+[mcp_servers]
+[mcp_servers.MCP_DOCKER]
+command = 'docker'
+args = ['mcp', 'gateway', 'run']
 
-[projects."/Users/anthony/code/personal-assistant"]
-trust_level = "trusted"
-
+[notice]
 [notice.model_migrations]
-"gpt-5.1-codex-max" = "gpt-5.2-codex"
+'gpt-5.1-codex-max' = 'gpt-5.2-codex'
+
+[projects]
+[projects.'/Users/anthony/code/decrypto-discord']
+trust_level = 'trusted'
+
+[projects.'/Users/anthony/code/personal-assistant']
+trust_level = 'trusted'
+
+[sandbox_workspace_write]
+network_access = true
