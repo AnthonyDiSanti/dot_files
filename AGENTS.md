@@ -107,6 +107,7 @@ It is committed to git to support continuity across devices and developers.
 - `/context/knowledge.md` — curated repo insights and “when to consult”.
 - `/context/reference/index.md` — index of deep reference notes (if/when needed).
 - `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments).
+- `/context/scratch/` — transient, session-scoped artifacts; namespace by task ID and clean up aggressively.
 
 ### Reference Library (third-party docs, curated)
 Maintain a deeper reference library at:

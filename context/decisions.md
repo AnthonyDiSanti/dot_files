@@ -43,3 +43,10 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Rationale: Provide a structured place for collaboration separate from production code and context summaries.
 - Alternatives considered: Use `/context/knowledge.md` only; rejected because drafts/prototypes can overwhelm curated notes.
 - Consequences / follow-ups: Ensure AGENTS/context docs reference the folder and keep it organized.
+
+## 2026-01-20 — Add `/context/scratch` for transient session artifacts
+- Decider: Anthony
+- Decision: Create `/context/scratch` for short-lived debugging artifacts, namespaced by task ID and cleaned up aggressively.
+- Rationale: Preserve temporary work without polluting durable knowledge or source code.
+- Alternatives considered: Use `/tmp` only; rejected because it hides useful session context that may need short-term retention.
+- Consequences / follow-ups: Document the scratch workflow in AGENTS and `/context` README.

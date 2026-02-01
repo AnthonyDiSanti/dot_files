@@ -89,6 +89,7 @@ Keep this index updated as the project evolves.
 - `/context/decisions.md` — decision log (include decision-maker)
 - `/context/knowledge.md` — curated insights + “when to consult”
 - `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments)
+- `/context/scratch/` — transient, session-scoped artifacts; namespace by task ID and clean up aggressively
 
 ### Reference Library (third-party docs, curated)
 Maintain a deeper reference library at:

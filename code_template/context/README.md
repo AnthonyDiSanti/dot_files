@@ -10,6 +10,7 @@ It is committed to git for continuity across devices and developers.
 - Curated doc insights that prevent repeated escalations
 - A curated reference library of third-party docs (distilled notes, not raw dumps)
 - Shared docs and drafts between user and agent that are intentionally separate from repo code (`user_shared/`)
+- Transient session artifacts for debugging or exploration that should be cleaned up (`scratch/`)
 
 ## What does NOT go here
 - Secrets, API keys, credentials, private tokens
@@ -21,6 +22,7 @@ It is committed to git for continuity across devices and developers.
 - `knowledge.md` — short, high-signal notes
 - `reference/` — distilled third‑party notes (indexed in `reference/index.md`)
 - `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code)
+- `scratch/` — session-scoped scratch space (namespace by task ID; clean up aggressively)
 
 ## Hygiene
 - Keep entries short and high‑signal.

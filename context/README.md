@@ -7,6 +7,7 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 - macOS defaults and system tweaks
 - Shell/Vim/tmux configuration updates
 - Vendored dependency updates (Solarized, Git prompt/completion, Vim bundles)
+- Transient session artifacts and collaborative drafts (under `/context/scratch` and `/context/user_shared`)
 
 ## Exclusions
 - Secrets, API keys, credentials, private tokens
@@ -18,6 +19,7 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 - `knowledge.md` — repo-specific notes and gotchas.
 - `reference/index.md` — index of deeper reference notes (if needed).
 - `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code).
+- `scratch/` — session-scoped scratch space (namespace by task ID; clean up aggressively).
 
 ## Update cadence
 - Update `handoff.md` after each meaningful change.

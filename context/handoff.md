@@ -19,3 +19,4 @@ None (see `tasks.md`).
 - 2026-01-18 — Updated AGENTS/context docs with repo-specific details.
 - 2026-01-20 — Switched `tasks.md` to ULID-based IDs and updated templates/README guidance.
 - 2026-01-20 — Added `/context/user_shared` to support collaborative drafts and pre-repo code.
+- 2026-01-20 — Added `/context/scratch` for transient session artifacts.
