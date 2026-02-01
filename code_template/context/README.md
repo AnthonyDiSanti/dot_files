@@ -19,7 +19,7 @@ It is committed to git for continuity across devices and developers.
 - `handoff.md` — current state + next steps
 - `tasks.md` — active/paused/completed workstreams (ULID IDs + short human-readable titles)
 - `decisions.md` — decision log with rationale
-- `knowledge.md` — short, high-signal notes
+- `knowledge/` — short, high-signal notes (index at `knowledge/index.md`)
 - `reference/` — distilled third‑party notes (indexed in `reference/index.md`)
 - `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code)
 - `scratch/` — session-scoped scratch space (namespace by task ID; clean up aggressively)

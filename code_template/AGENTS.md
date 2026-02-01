@@ -87,7 +87,7 @@ Keep this index updated as the project evolves.
 - `/context/handoff.md` — current state + next steps (living snapshot)
 - `/context/tasks.md` — active workstreams & status (supports concurrency)
 - `/context/decisions.md` — decision log (include decision-maker)
-- `/context/knowledge.md` — curated insights + “when to consult”
+- `/context/knowledge/` — curated insights + “when to consult” (see `knowledge/index.md`)
 - `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments)
 - `/context/scratch/` — transient, session-scoped artifacts; namespace by task ID and clean up aggressively
 
@@ -110,7 +110,7 @@ Rules for reference items:
 
 Linking rule:
 - Every reference item must be linked from `/context/reference/index.md`.
-- `knowledge.md` should point to the deeper reference item when appropriate.
+- `knowledge/index.md` (or a topic file) should point to the deeper reference item when appropriate.
 
 ### /context hygiene rules
 - Store summaries and insights, not giant dumps.
@@ -120,8 +120,8 @@ Linking rule:
 ## 7) Documentation references (FILL IN + MAINTAIN)
 List the project’s key references and *when* to consult them:
 - `...` — consult before ...
-- `/context/knowledge.md` — consult when ...
-- `/context/reference/index.md` — consult when integrating or debugging external vendors/APIs
+- `/context/knowledge/index.md` — quick repo-specific notes and links to deeper topics.
+- `/context/reference/index.md` — consult when integrating or debugging external vendors/APIs.
 
 Capture external docs only when they are:
 - repeatedly referenced,

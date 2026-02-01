@@ -104,7 +104,7 @@ It is committed to git to support continuity across devices and developers.
 - `/context/handoff.md` — current state and next steps (living snapshot).
 - `/context/tasks.md` — active/paused/completed workstreams.
 - `/context/decisions.md` — decision log with dates and rationale. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
-- `/context/knowledge.md` — curated repo insights and “when to consult”.
+- `/context/knowledge/` — curated repo insights and “when to consult” (index at `knowledge/index.md`).
 - `/context/reference/index.md` — index of deep reference notes (if/when needed).
 - `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments).
 - `/context/scratch/` — transient, session-scoped artifacts; namespace by task ID and clean up aggressively.
@@ -126,7 +126,7 @@ Rules for reference items:
 
 Linking rule:
 - Every reference item must be linked from `/context/reference/index.md`.
-- `knowledge.md` should point to the deeper reference item when appropriate.
+- `knowledge/index.md` (or a topic file) should point to the deeper reference item when appropriate.
 
 ### /context hygiene rules
 - Store summaries and insights, not giant dumps.
@@ -141,7 +141,7 @@ List the project’s key references and when to consult them:
 - `settings/osx_*.sh` — before changing macOS defaults.
 - `settings/git.sh` and `settings/git/*.sh` — before altering Git global config.
 - `settings/solarized/README.md` — before touching the Solarized theme assets.
-- `/context/knowledge.md` — quick repo-specific notes.
+- `/context/knowledge/index.md` — quick repo-specific notes and links to deeper topics.
 - `/context/reference/index.md` — consult before integrating or debugging external vendors/APIs.
 
 Capture external docs only when they are:

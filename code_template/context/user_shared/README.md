@@ -7,4 +7,4 @@ Use it for drafts, specs, research notes, and working documents — including ea
 - Prefer Markdown with clear, descriptive filenames (use subfolders for larger drafts or code prototypes).
 - Keep documents concise and easy to scan.
 - Do not store secrets or credentials.
-- Use `/context/knowledge.md` for distilled repo insights and `/context/reference/` for third-party docs.
+- Use `/context/knowledge/` for distilled repo insights and `/context/reference/` for third-party docs.

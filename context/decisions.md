@@ -41,7 +41,7 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Decider: Anthony
 - Decision: Create `/context/user_shared` with guidance for shared docs and early code not yet ready for the repo.
 - Rationale: Provide a structured place for collaboration separate from production code and context summaries.
-- Alternatives considered: Use `/context/knowledge.md` only; rejected because drafts/prototypes can overwhelm curated notes.
+- Alternatives considered: Use `/context/knowledge/` only; rejected because drafts/prototypes can overwhelm curated notes.
 - Consequences / follow-ups: Ensure AGENTS/context docs reference the folder and keep it organized.
 
 ## 2026-01-20 — Add `/context/scratch` for transient session artifacts
@@ -50,3 +50,10 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Rationale: Preserve temporary work without polluting durable knowledge or source code.
 - Alternatives considered: Use `/tmp` only; rejected because it hides useful session context that may need short-term retention.
 - Consequences / follow-ups: Document the scratch workflow in AGENTS and `/context` README.
+
+## 2026-01-20 — Migrate knowledge to `/context/knowledge/` with index
+- Decider: Anthony
+- Decision: Replace `context/knowledge.md` with a `context/knowledge/` directory and an `index.md` that links to topic files.
+- Rationale: Keep the knowledge base scalable without bloating a single file or the context window.
+- Alternatives considered: Keep a single `knowledge.md` and rely on `/context/reference/`; rejected due to size and discoverability concerns.
+- Consequences / follow-ups: Update references from `knowledge.md` to `knowledge/index.md` and keep topic files concise.

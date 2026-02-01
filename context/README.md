@@ -16,7 +16,7 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 - `handoff.md` — current state and next steps after recent changes.
 - `tasks.md` — active/paused/completed workstreams (ULID IDs + short human-readable titles).
 - `decisions.md` — durable decisions with dates and rationale.
-- `knowledge.md` — repo-specific notes and gotchas.
+- `knowledge/` — repo-specific notes and gotchas (index at `knowledge/index.md`).
 - `reference/index.md` — index of deeper reference notes (if needed).
 - `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code).
 - `scratch/` — session-scoped scratch space (namespace by task ID; clean up aggressively).
