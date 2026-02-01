@@ -36,3 +36,10 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Rationale: Reduce ID collisions in agent-managed task lists while keeping entries scannable.
 - Alternatives considered: Sequential IDs; rejected due to merge conflict risk in multi-agent edits.
 - Consequences / follow-ups: Update task templates and existing task entries to the ULID format.
+
+## 2026-01-20 — Add `/context/user_shared` for collaborative drafts and pre-repo code
+- Decider: Anthony
+- Decision: Create `/context/user_shared` with guidance for shared docs and early code not yet ready for the repo.
+- Rationale: Provide a structured place for collaboration separate from production code and context summaries.
+- Alternatives considered: Use `/context/knowledge.md` only; rejected because drafts/prototypes can overwhelm curated notes.
+- Consequences / follow-ups: Ensure AGENTS/context docs reference the folder and keep it organized.

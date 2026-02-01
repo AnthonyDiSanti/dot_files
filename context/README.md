@@ -17,6 +17,7 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 - `decisions.md` — durable decisions with dates and rationale.
 - `knowledge.md` — repo-specific notes and gotchas.
 - `reference/index.md` — index of deeper reference notes (if needed).
+- `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code).
 
 ## Update cadence
 - Update `handoff.md` after each meaningful change.

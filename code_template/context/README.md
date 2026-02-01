@@ -9,6 +9,7 @@ It is committed to git for continuity across devices and developers.
 - Key decisions + rationale (including agent-made decisions)
 - Curated doc insights that prevent repeated escalations
 - A curated reference library of third-party docs (distilled notes, not raw dumps)
+- Shared docs and drafts between user and agent that are intentionally separate from repo code (`user_shared/`)
 
 ## What does NOT go here
 - Secrets, API keys, credentials, private tokens
@@ -19,6 +20,7 @@ It is committed to git for continuity across devices and developers.
 - `decisions.md` — decision log with rationale
 - `knowledge.md` — short, high-signal notes
 - `reference/` — distilled third‑party notes (indexed in `reference/index.md`)
+- `user_shared/` — collaborative docs and draft artifacts between user and agent (can include pre-repo code)
 
 ## Hygiene
 - Keep entries short and high‑signal.

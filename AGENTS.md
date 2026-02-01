@@ -106,6 +106,7 @@ It is committed to git to support continuity across devices and developers.
 - `/context/decisions.md` — decision log with dates and rationale. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
 - `/context/knowledge.md` — curated repo insights and “when to consult”.
 - `/context/reference/index.md` — index of deep reference notes (if/when needed).
+- `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments).
 
 ### Reference Library (third-party docs, curated)
 Maintain a deeper reference library at:

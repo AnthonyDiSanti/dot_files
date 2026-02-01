@@ -88,6 +88,7 @@ Keep this index updated as the project evolves.
 - `/context/tasks.md` — active workstreams & status (supports concurrency)
 - `/context/decisions.md` — decision log (include decision-maker)
 - `/context/knowledge.md` — curated insights + “when to consult”
+- `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments)
 
 ### Reference Library (third-party docs, curated)
 Maintain a deeper reference library at:
