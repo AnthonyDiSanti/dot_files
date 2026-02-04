@@ -4,6 +4,7 @@ model_reasoning_effort = 'xhigh'
 sandbox_mode = 'workspace-write'
 show_raw_agent_reasoning = true
 web_search = "live"
+personality = "pragmatic"
 
 [features]
 shell_snapshot = true
