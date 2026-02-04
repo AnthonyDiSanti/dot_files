@@ -74,6 +74,9 @@ When escalating:
 - It’s OK to restructure modules, rename, and delete dead code if it improves the system.
 - Maintain behavioral correctness: verification + tests must prove safety.
 
+## No tech debt rule
+- Avoid long-lived compatibility shims; if a temporary artifact is required, record the removal and remove it in the next deploy.
+
 ## “No hacks” policy (principled pragmatism)
 Use judgment, with these anchors:
 

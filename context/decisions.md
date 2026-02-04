@@ -57,3 +57,10 @@ Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` fo
 - Rationale: Keep the knowledge base scalable without bloating a single file or the context window.
 - Alternatives considered: Keep a single `knowledge.md` and rely on `/context/reference/`; rejected due to size and discoverability concerns.
 - Consequences / follow-ups: Update references from `knowledge.md` to `knowledge/index.md` and keep topic files concise.
+
+## 2026-02-04 — Add no-tech-debt rule to global AGENTS
+- Decider: Anthony
+- Decision: Added a global rule to avoid long-lived compatibility shims; if temporary artifacts are required, record removal and remove them in the next deploy.
+- Rationale: Keep changes clean and prevent temporary workarounds from becoming permanent debt.
+- Alternatives considered: Keep guidance implicit; rejected to make the expectation explicit.
+- Consequences / follow-ups: None.
