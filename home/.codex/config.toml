@@ -1,5 +1,5 @@
 approval_policy = 'never'
-model = 'gpt-5.2-codex'
+model = 'gpt-5.3-codex'
 model_reasoning_effort = 'xhigh'
 sandbox_mode = 'workspace-write'
 show_raw_agent_reasoning = true
@@ -18,7 +18,8 @@ args = ['mcp', 'gateway', 'run']
 
 [notice]
 [notice.model_migrations]
-'gpt-5.1-codex-max' = 'gpt-5.2-codex'
+'gpt-5.1-codex-max' = 'gpt-5.3-codex'
+'gpt-5.3-codex' = 'gpt-5.3-codex'
 
 [projects]
 [projects.'/Users/anthony/code/decrypto-discord']
