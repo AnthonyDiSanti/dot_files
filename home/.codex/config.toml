@@ -10,6 +10,8 @@ personality = "pragmatic"
 shell_snapshot = true
 shell_tool = true
 undo = true
+multi_agent = true
+js_repl = true
 
 [mcp_servers]
 [mcp_servers.MCP_DOCKER]
@@ -28,6 +30,12 @@ trust_level = 'trusted'
 
 [projects.'/Users/anthony/code/personal-assistant']
 trust_level = 'trusted'
+
+[projects."/Users/anthony/code/ops"]
+trust_level = "trusted"
+
+[projects."/Users/anthony/code/openclaw"]
+trust_level = "trusted"
 
 [sandbox_workspace_write]
 network_access = true
