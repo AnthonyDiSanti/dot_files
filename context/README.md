@@ -1,6 +1,7 @@
 # /context
 
-Shared working memory for this dotfiles repo (dot_files). It captures state, decisions, and knowledge that prevent repeated setup friction.
+Agent-facing working memory for this repo. Committed to git for continuity.
+`context/user_shared/` is the collaborative exception for user+agent drafts and shared artifacts.
 
 ## Scope
 - Dotfile changes and bootstrap behavior
@@ -25,3 +26,4 @@ Shared working memory for this dotfiles repo (dot_files). It captures state, dec
 - Update `handoff.md` after each meaningful change.
 - Keep `tasks.md` current for concurrent work and preserve ULID task IDs.
 - Log durable decisions in `decisions.md`.
+- If a note becomes stable repo guidance, promote it into `docs/` and replace the `/context` content with a short summary plus link.

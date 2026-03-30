@@ -11,6 +11,13 @@ Create a file under `/context/reference/` and add an index entry here with:
 - When to consult
 - What it helps with
 
+Keep the split clean:
+- `/context/reference/` is for vendor and third-party system knowledge
+- `docs/` is for stable repo truth
+- `/context/knowledge/` is for compact repo-specific notes
+
+If a reference note changes repo behavior or procedure, update the canonical `docs/<domain>/` file too and let the reference note stay vendor-focused.
+
 ## Entries
 - (add entries below)
 

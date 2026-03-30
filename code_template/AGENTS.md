@@ -73,7 +73,7 @@ Verify (targeted first, full at end):
 - Refactor stance (optional; default: liberal refactors welcome):
 
 ## 6) /context — shared working memory (COMMITTED)
-This repo uses `/context` as durable working memory for humans and agents.
+This repo uses `/context` as durable, agent-facing working memory.
 It is committed to git to support continuity across devices and developers.
 
 ### Goals
@@ -116,6 +116,7 @@ Linking rule:
 - Store summaries and insights, not giant dumps.
 - Prefer updating existing notes over creating many redundant files.
 - Never store secrets.
+- Keep `/context` subordinate to `docs/`: stable repo truth lives in `docs/`, while `/context` stores live state, agent breadcrumbs, and distilled vendor knowledge.
 
 ## 7) Documentation references (FILL IN + MAINTAIN)
 List the project’s key references and *when* to consult them:
@@ -127,6 +128,10 @@ Capture external docs only when they are:
 - repeatedly referenced,
 - broadly insightful,
 - or likely to prevent recurring mistakes.
+
+Documentation maintenance rule:
+- When a change materially affects stable repo behavior or code navigation, update the relevant `docs/<domain>/` topic file and its landing page in the same change. Update `/context` only for live state, decisions, or compact breadcrumbs back to the canonical docs.
+- Preserve the boundary: `/context` may point back to canonical docs, but shared docs should not depend on `/context` as a primary entrypoint.
 
 ## 8) Continuous improvement of instructions (silent edits allowed)
 This file should evolve as friction is discovered.

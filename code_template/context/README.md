@@ -1,7 +1,7 @@
 # /context
 
-This directory is shared working memory for humans + AI agents.
-It is committed to git for continuity across devices and developers.
+Agent-facing working memory for this repo. Committed to git for continuity.
+`context/user_shared/` is the collaborative exception for user+agent drafts and shared artifacts.
 
 ## What goes here
 - Handoffs between sessions/agents (living snapshot)
@@ -11,6 +11,9 @@ It is committed to git for continuity across devices and developers.
 - A curated reference library of third-party docs (distilled notes, not raw dumps)
 - Shared docs and drafts between user and agent that are intentionally separate from repo code (`user_shared/`)
 - Transient session artifacts for debugging or exploration that should be cleaned up (`scratch/`)
+
+Stable repo documentation does **not** belong here by default.
+Put durable architecture, implementation, and operational guidance under `docs/`, then use `/context` to point back to it with short live breadcrumbs when needed.
 
 ## What does NOT go here
 - Secrets, API keys, credentials, private tokens
@@ -29,3 +32,4 @@ It is committed to git for continuity across devices and developers.
 - Prefer updating existing notes over creating duplicates.
 - Prune old items regularly.
 - Keep `tasks.md` **Active** limited to in-progress/planned items; move completed items to **Completed** promptly.
+- If a note becomes stable repo guidance, promote it into `docs/` and replace the `/context` content with a short summary plus link.

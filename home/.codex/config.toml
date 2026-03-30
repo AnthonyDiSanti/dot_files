@@ -37,5 +37,11 @@ trust_level = "trusted"
 [projects."/Users/anthony/code/openclaw"]
 trust_level = "trusted"
 
+[projects."/Users/anthony/code/openclaw-config"]
+trust_level = "trusted"
+
 [sandbox_workspace_write]
 network_access = true
+
+[plugins."github@openai-curated"]
+enabled = true
