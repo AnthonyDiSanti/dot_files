@@ -1,4 +1,4 @@
-approval_policy = 'never'
+approval_policy = 'on-request'
 model = 'gpt-5.4'
 model_reasoning_effort = 'xhigh'
 sandbox_mode = 'workspace-write'
@@ -38,6 +38,9 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/anthony/code/openclaw-config"]
+trust_level = "trusted"
+
+[projects."/Users/anthony/code/asana-plugin-surgery"]
 trust_level = "trusted"
 
 [sandbox_workspace_write]
