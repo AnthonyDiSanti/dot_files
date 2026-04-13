@@ -43,6 +43,9 @@ trust_level = "trusted"
 [projects."/Users/anthony/code/asana-plugin-surgery"]
 trust_level = "trusted"
 
+[projects."/Users/anthony/code/dot_files"]
+trust_level = "trusted"
+
 [sandbox_workspace_write]
 network_access = true
 

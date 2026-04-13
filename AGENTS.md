@@ -97,42 +97,21 @@ It is committed to git to support continuity across devices and developers.
 ### Goals
 - Prevent repeated escalations by recording knowledge once.
 - Enable multi-session continuity and agent handoffs.
-- Keep key decisions and references discoverable.
+- Keep key decisions and knowledge discoverable.
 
 ### Context Structure
 - `/context/README.md` — purpose, scope, and how the context files are used in this repo.
 - `/context/handoff.md` — current state and next steps (living snapshot).
 - `/context/tasks.md` — active/paused/completed workstreams.
-- `/context/decisions.md` — decision log with dates and rationale. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
-- `/context/knowledge/` — curated repo insights and “when to consult” (index at `knowledge/index.md`).
-- `/context/reference/index.md` — index of deep reference notes (if/when needed).
-- `/context/user_shared/` — shared docs and drafts for user + agent collaboration (including pre-repo code or experiments).
-- `/context/scratch/` — transient, session-scoped artifacts; namespace by task ID and clean up aggressively.
-
-### Reference Library (third-party docs, curated)
-Maintain a deeper reference library at:
-- `/context/reference/` — curated, digestible third-party reference notes.
-
-Use `/context/reference` when:
-- a vendor/API/system has complex edge cases worth preserving,
-- you keep returning to the same third-party docs,
-- or a subtle constraint is likely to cause repeated failures.
-
-Rules for reference items:
-- Prefer distilled notes + examples over raw dumps.
-- Include: Source, Retrieved date, Why it matters, When to consult, Key gotchas, Minimal examples.
-- Avoid storing large verbatim copies of third-party docs unless licensing explicitly permits it.
-- Keep it small and useful: update/merge entries instead of creating endless files.
-
-Linking rule:
-- Every reference item must be linked from `/context/reference/index.md`.
-- `knowledge/index.md` (or a topic file) should point to the deeper reference item when appropriate.
+- `/context/decisions.md` — decision log with dates and rationale, newest first. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
+- `/context/knowledge/` — curated repo, vendor, and workflow insights with “when to consult” guidance (index at `knowledge/index.md`).
+- `/context/scratch/` — git-tracked staging area for collaborative drafts, experiments, pre-repo code, and other content that does not yet have a stable home in the repo; namespace by task ID or work thread and clean it up after promotion.
 
 ### /context hygiene rules
 - Store summaries and insights, not giant dumps.
 - Prefer updating existing notes over creating many redundant files.
 - Never store secrets.
-- Keep `/context` subordinate to `docs/`: stable repo truth lives in `docs/`, while `/context` stores live state, agent breadcrumbs, and distilled vendor knowledge.
+- Keep `/context` concise and retrieval-oriented: live state belongs in `handoff.md`, `tasks.md`, and `decisions.md`, while reusable knowledge belongs in `knowledge/`.
 
 ## 8) Documentation references (maintain)
 List the project’s key references and when to consult them:
@@ -142,8 +121,7 @@ List the project’s key references and when to consult them:
 - `settings/osx_*.sh` — before changing macOS defaults.
 - `settings/git.sh` and `settings/git/*.sh` — before altering Git global config.
 - `settings/solarized/README.md` — before touching the Solarized theme assets.
-- `/context/knowledge/index.md` — quick repo-specific notes and links to deeper topics.
-- `/context/reference/index.md` — consult before integrating or debugging external vendors/APIs.
+- `/context/knowledge/index.md` — quick repo, vendor, and workflow notes plus links to deeper topics.
 
 Capture external docs only when they are:
 - repeatedly referenced,
@@ -151,8 +129,8 @@ Capture external docs only when they are:
 - or likely to prevent recurring mistakes.
 
 Documentation maintenance rule:
-- When a change materially affects stable repo behavior or code navigation, update the relevant `docs/<domain>/` topic file and its landing page in the same change. Update `/context` only for live state, decisions, or compact breadcrumbs back to the canonical docs.
-- Preserve the boundary: `/context` may point back to canonical docs, but shared docs should not depend on `/context` as a primary entrypoint.
+- When a change materially affects stable repo behavior, navigation, debugging, or an external system the repo depends on, update the nearest durable doc in the same change. In this repo that usually means `README.md`, a README in the touched subtree, or a topic under `/context/knowledge/` when the note is primarily agent-facing.
+- Preserve the boundary: `/context/handoff.md`, `/context/tasks.md`, and `/context/decisions.md` are live state, while `/context/knowledge/` holds reusable knowledge.
 
 ## 9) Continuous improvement of instructions (silent edits allowed)
 This file should evolve as friction is discovered.

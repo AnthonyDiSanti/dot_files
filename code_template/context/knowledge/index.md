@@ -1,15 +1,17 @@
-# Knowledge Base
+# /context/knowledge
 
-Curated, high-signal notes for this repo. Keep this index short and use topic files for deeper or longer entries.
+Supplemental, agent-oriented knowledge that is useful across sessions but is not appropriate as canonical repo documentation.
+
+Use this directory for things like:
+- third-party API learnings that help agents work effectively but do not define stable repo truth
+- sandbox, tooling, or environment-management notes
+- repeatable agent workflows for common maintenance, debugging, or rollout tasks
+- compact operational heuristics that help future agents but do not belong in `/docs/`
 
 ## How to use
-- Add a topic file when a note grows beyond ~20 lines or needs structure.
-- Keep each topic focused and link to it from this index.
-- Put third-party documentation in `/context/reference/` and link from the relevant topic.
-- Keep `knowledge/` for compact repo-specific notes. If the content becomes stable architecture, implementation, or operational guidance, move it into `docs/<domain>/` and leave a short breadcrumb here instead of duplicating it.
-
-## Notes
-- Keep short, cross-cutting notes here; promote them to a topic file once they grow.
+- Keep `index.md` as the landing page and add topic files when entries grow.
+- Prefer concise, retrieval-friendly notes with links to the most relevant repo docs or code paths.
+- If a note becomes stable repo truth, move it into `/docs/` and leave only a short breadcrumb here.
 
 ## Topics
-Add topics as they emerge; each line should include a link and a one-line summary.
+Add topic files as needed; each line should include a link and a one-line summary.

@@ -109,15 +109,30 @@ Rules:
 - Deduplicate; avoid bloat.
 - When you edit instructions, leave a short breadcrumb in the project’s /context (handoff or decisions): what changed and why.
 
+## Notebook discipline
+Treat the project’s committed working-memory system as part of the product.
+
+Rules:
+- If the repo has a notebook/context system (for example `/context/handoff.md`, `/context/tasks.md`, `/context/decisions.md`, `/context/knowledge/`), keep it current after every substantial turn. Do not wait for the user to ask.
+- Record status in the status-oriented files (`handoff`, `tasks`) and durable learnings/rationale in the knowledge-oriented files (`decisions`, `knowledge`).
+- Keep notebook updates compact, retrieval-oriented, and specific to what changed, what was learned, and what should happen next.
+
 ## Documentation capture & reference usage
 When you consult external/internal docs and find something repeatedly useful or broadly insightful:
 - Create/extend a short “knowledge note” (project /context preferred).
 - Record: source, why it matters, when to consult, key gotchas.
 
-**Reference trigger (important):**
-- If `/context/reference/index.md` exists, consult it **before** integrating or debugging third-party vendors, APIs, SDKs, infrastructure systems, or protocols.
-- Prefer reusing or extending existing reference notes over creating new ones.
-- Add a new reference entry only when it would reduce future escalations or repeated lookups.
+**Knowledge trigger (important):**
+- If `/context/knowledge/index.md` exists, consult it **before** integrating or debugging third-party vendors, APIs, SDKs, infrastructure systems, or protocols.
+- If the repo also has `/context/reference/index.md`, consult that too when the repo uses a separate vendor-reference layer.
+- Prefer reusing or extending existing knowledge/reference notes over creating new ones.
+- Add a new note only when it would reduce future escalations or repeated lookups.
+
+## Commit message proposals
+- In a git worktree, inspect the full current uncommitted state at the end of every turn and provide a proposed commit message for all uncommitted changes, including staged changes.
+- Use the repo’s preferred commit-message format when one exists.
+- If no repo-specific format exists, default to: title, blank line, bullet list.
+- If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.
 
 ## Communication cadence
 - Default: one plan up front, one final summary.
