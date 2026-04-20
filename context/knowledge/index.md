@@ -12,7 +12,9 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 - Keep short, cross-cutting notes here; promote them to a topic file once they grow.
 
 ## Topics
-- [Bootstrap & symlinks (Puppet)](bootstrap.md) — how dotfiles are linked into `$HOME`.
+- [Bootstrap & symlinks (chezmoi)](bootstrap.md) — how dotfiles are linked into `$HOME`.
+- [chezmoi source state](chezmoi.md) — source naming, `.chezmoiroot`, symlink mode, and script guidance.
+- [Codex approval rules](codex-rules.md) — rule-file locations, generated vs curated rules, and testing commands.
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
 - [Vim plugins (Vundle + vendored bundles)](vim.md) — plugin sources and synchronization.
 - [macOS defaults scripts](macos-defaults.md) — system UI defaults via `defaults`.

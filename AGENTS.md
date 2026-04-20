@@ -28,23 +28,24 @@ Maintenance:
 
 ## 1) Project overview
 - What this project is: Personal dotfiles and setup scripts for shell, Vim, tmux, Git, and agent configs, primarily on macOS.
-- Key user-facing behavior: `./bootstrap.sh` symlinks dotfiles into `$HOME` via Puppet; `home/.bash_profile` sources `bash/*` and adds `bin/` to `PATH`; `settings/*.sh` apply macOS defaults and Git config; `bin/make-chrome-app` generates a Chrome app wrapper.
+- Key user-facing behavior: `./bootstrap.sh` symlinks dotfiles into `$HOME` via chezmoi; `home/dot_bash_profile` sources `bash/*` and adds `bin/` to `PATH`; `settings/*.sh` apply macOS defaults and Git config; `bin/make-chrome-app` generates a Chrome app wrapper.
 - Non-goals / out of scope: Not a general-purpose app/library; not cross-platform; no CI/test harness; avoid ad-hoc edits inside vendored directories.
-- Definition of done: Dotfiles updated in the correct location, `site.pp` updated when links change, scripts run without errors on macOS, and `/context` is kept current.
+- Definition of done: Dotfiles updated in chezmoi source-state form under `home/`, bootstrap/scripts run without errors on macOS, and `/context` is kept current.
 
 ## 2) Tech stack & constraints
-- Languages + versions: Shell (bash/sh, system), Puppet DSL (`site.pp`), Vimscript (`home/.vimrc`), TOML (`home/.codex/config.toml`), plist/dict (`settings/OSXKeyBindings.dict`). Vendored C/etc lives under `lib/git/` (do not edit).
+- Languages + versions: Shell (bash/sh, system), Vimscript (`home/dot_vimrc`), TOML (`home/private_dot_codex/config.toml`), plist/dict (`settings/OSXKeyBindings.dict`). Vendored C/etc lives under `lib/git/` (do not edit).
 - Frameworks: None.
 - Package manager: None in-repo (system installs via Homebrew/RubyGems are assumed externally).
 - Storage/database: None.
-- Deployment target: Local macOS workstation (with a small WSL/Linux check in `home/.bash_profile`).
+- Deployment target: Local macOS workstation (with a small WSL/Linux check in `home/dot_bash_profile`).
 - Constraints (perf/security/compliance/no-new-deps/etc.): Prefer macOS-compatible commands (`defaults`, `sips`, `tiff2icns`); avoid touching vendored directories; keep scripts compatible with their shebang (`bash` vs `sh`); no secrets in repo.
 
 ## 3) Repo map
 - Key directories:
   - `home/` — dotfiles (shell, Vim, tmux, Codex/Claude config) to be linked into `$HOME`.
-  - `bash/` — shell functions sourced by `home/.bash_profile`.
+  - `bash/` — shell functions sourced by `home/dot_bash_profile`.
   - `bin/` — executable utilities added to `PATH`.
+  - `script/` — repo-local verification and maintenance scripts, not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings, Solarized theme assets.
   - `lib/` — vendored dependencies (`lib/git` for prompt/completion; `lib/make-chrome-app`).
   - `context/` — shared working memory for humans and agents.
@@ -52,17 +53,17 @@ Maintenance:
 - Where to add new:
   - Shell functions: `bash/` (auto-sourced by `.bash_profile`).
   - CLI utilities: `bin/` (ensure executable bit).
-  - Dotfiles: `home/` and update `site.pp` for new links.
+  - Dotfiles: `home/` using chezmoi source-state names (`dot_`, `symlink_`, templates, etc.).
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
-  - Vim plugins: update the Vundle list in `home/.vimrc` and vendor under `home/.vim/bundle/` to match current practice.
+  - Vim plugins: update the Vundle list in `home/dot_vimrc` and vendor under `home/.vim/bundle/` to match current practice.
 - “Do not touch” paths (if any):
   - `lib/git/`, `settings/solarized/`, `home/.vim/bundle/` are vendored; update only via upstream/versioned refreshes.
 
 ## 4) Commands
 Setup:
-- Install deps: Puppet (required for `bootstrap.sh`), Vim + Vundle (for `home/.vimrc`), `tiff2icns` if using `make-chrome-app`.
-- Env setup: `./bootstrap.sh` (creates symlinks via Puppet).
+- Install deps: chezmoi (required for `bootstrap.sh`), Vim + Vundle (for `home/dot_vimrc`), `tiff2icns` if using `make-chrome-app`.
+- Env setup: `./bootstrap.sh` (creates symlinks via chezmoi).
 
 Run:
 - Apply macOS defaults: `settings/osx_all.sh` (or `settings/osx_general.sh` and `settings/safari.sh` individually).
@@ -70,9 +71,9 @@ Run:
 - Create a Chrome app wrapper: `bin/make-chrome-app` (macOS only).
 
 Verify (targeted first, full at end):
-- Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh` for modified shell scripts; `puppet parser validate site.pp` if Puppet is installed.
+- Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh` for modified shell scripts; `chezmoi --source "$PWD" diff` for dotfile target-state review.
 - Run a single test: Manual smoke check of the changed script or config (e.g., open a new shell and ensure `.bash_profile` loads cleanly).
-- Full suite (final gate): No automated suite; rely on manual validation of affected areas.
+- Full suite (final gate): `script/verify`.
 - Build (final gate if applicable): Not applicable.
 
 ## 5) Engineering standards
@@ -80,7 +81,7 @@ Verify (targeted first, full at end):
 - Lint rules: None enforced; optional `shellcheck` or `bash -n` for shell edits.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; reuse `bash/exit_if_error.sh` where useful.
-- Testing expectations: Manual smoke tests of touched scripts; confirm symlinks with `ls -l` after `bootstrap.sh`.
+- Testing expectations: Run `script/verify` for bootstrap/dotfile changes; it checks shell syntax, chezmoi source-state mapping, temporary-home apply behavior, live-home convergence, and shell startup.
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
 
@@ -116,8 +117,8 @@ It is committed to git to support continuity across devices and developers.
 ## 8) Documentation references (maintain)
 List the project’s key references and when to consult them:
 - `README.md` — Vim plugin install/update steps.
-- `bootstrap.sh` and `site.pp` — before adding/removing dotfiles or changing symlink behavior.
-- `home/.bash_profile` — before changing shell startup, PATH, or sourced functions.
+- `bootstrap.sh`, `.chezmoiroot`, and `home/.chezmoi.toml.tmpl` — before changing bootstrap or symlink behavior.
+- `home/dot_bash_profile` — before changing shell startup, PATH, or sourced functions.
 - `settings/osx_*.sh` — before changing macOS defaults.
 - `settings/git.sh` and `settings/git/*.sh` — before altering Git global config.
 - `settings/solarized/README.md` — before touching the Solarized theme assets.
