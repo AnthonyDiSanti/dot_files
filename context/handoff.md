@@ -2,14 +2,13 @@
 
 ## Current State
 - What works: chezmoi bootstrap (`bootstrap.sh`) links dotfiles from `home/`; shell startup sources `bash/*` and adds `bin/` to `PATH`; Vim plugins are vendored under `home/.vim/bundle` and configured via Vundle.
-- What’s in progress: No active implementation work. The next planned repo change is the Codex rule-file split.
+- What’s in progress: No active implementation work. Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Split Codex approval rules into a curated managed global rules file and unmanaged Codex-generated `default.rules`.
-2. Plan the separate Vim migration away from Vundle and revisit non-portable color configuration.
-3. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
-4. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+1. Plan the separate Vim migration away from Vundle and revisit non-portable color configuration.
+2. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
+3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
 
 ## Active Tasks
 None (see `tasks.md`).
@@ -19,6 +18,8 @@ None (see `tasks.md`).
 - Full gate: `script/verify`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-04-20 — Replaced the seeded Codex rule list with broad managed `git` and `npm` allow rules, applied the live `~/.codex/rules/global.rules` symlink, and cleared the local `default.rules`.
+- 2026-04-20 — Seeded managed `home/private_dot_codex/rules/global.rules` from the current local Codex `default.rules` so portable approvals can be curated back out of the generated file.
 - 2026-04-20 — Clarified in repo and template `AGENTS.md` that `/context` is a helpful snapshot, but live repo evidence should win when they conflict.
 - 2026-04-20 — Recorded future workstreams for Codex rule-file split, repo documentation, and bash-to-zsh migration.
 - 2026-04-20 — Confirmed Codex scans `.rules` files under `~/.codex/rules/`; keep generated `default.rules` unmanaged and plan a curated managed `global.rules`.

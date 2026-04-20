@@ -3,6 +3,13 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-20 — Use broad managed Codex allow rules for git and npm
+- Decider: Anthony
+- Decision: Keep the managed `~/.codex/rules/global.rules` baseline intentionally broad with `prefix_rule(pattern=["git"], decision="allow")` and `prefix_rule(pattern=["npm"], decision="allow")`, while leaving the local generated `default.rules` empty until new machine-local approvals are learned.
+- Rationale: Git and npm are comfortable global allow surfaces for this workflow, and the broad prefixes are simpler to maintain than curating many tool-specific subcommands.
+- Alternatives considered: Keep the seeded list of specific command approvals; rejected because it was noisier and offered no practical benefit once broad `git` and `npm` access were deemed acceptable.
+- Consequences / follow-ups: Restart Codex after the rule-file change and add any future non-portable approvals back to the local `default.rules` only if they should stay machine-specific.
+
 ## 2026-04-20 — Prefer live repo state over stale `/context` snapshots
 - Decider: Anthony
 - Decision: When `/context` conflicts with live repo evidence such as `git status`, current files, recent commits, or the working tree, agents should trust the live state and reconcile `/context` before answering status or next-step questions.

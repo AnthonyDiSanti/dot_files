@@ -99,6 +99,8 @@ check_managed_targets() {
 .codex
 .codex/AGENTS.md
 .codex/config.toml
+.codex/rules
+.codex/rules/global.rules
 .gitignore_global
 .tmux.conf
 .vim
@@ -128,6 +130,7 @@ check_temp_apply() {
   assert_symlink "$tmp_home/.claude/CLAUDE.md" "$repo_root/home/private_dot_claude/CLAUDE.md"
   assert_symlink "$tmp_home/.codex/AGENTS.md" "$repo_root/home/private_dot_codex/AGENTS.md"
   assert_symlink "$tmp_home/.codex/config.toml" "$repo_root/home/private_dot_codex/config.toml"
+  assert_symlink "$tmp_home/.codex/rules/global.rules" "$repo_root/home/private_dot_codex/rules/global.rules"
   assert_symlink "$tmp_home/.gitignore_global" "$repo_root/home/dot_gitignore_global"
   assert_symlink "$tmp_home/.tmux.conf" "$repo_root/home/dot_tmux.conf"
   assert_symlink "$tmp_home/.vim" "$repo_root/home/.vim"
