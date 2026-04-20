@@ -13,6 +13,11 @@ undo = true
 multi_agent = true
 js_repl = true
 
+[profiles.system]
+model = "gpt-5.4"
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+
 [mcp_servers]
 [mcp_servers.MCP_DOCKER]
 command = 'docker'
@@ -44,6 +49,9 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/anthony/code/dot_files"]
+trust_level = "trusted"
+
+[projects."/Users/anthony/Documents/CXM"]
 trust_level = "trusted"
 
 [sandbox_workspace_write]
