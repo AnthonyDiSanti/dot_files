@@ -6,9 +6,15 @@ Task IDs are ULIDs; keep titles short and human-readable.
 - None
 
 ## Paused / Blocked
-- None
+- id: 01KPNZ3YB3YV5H4SW4NDFDRRE7 — title: Split Codex rules into curated global file — owner: Anthony/Codex — status: planned — last update: 2026-04-20
+- id: 01KPNZ3YB7K74CJXMSM8HD9VQR — title: Write repo documentation pass — owner: Anthony/Codex — status: planned — last update: 2026-04-20
+- id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: planned — last update: 2026-04-20
+- id: 01KPNC22ZGDW3M9SGG6GNTYNSW — title: Migrate Vim away from Vundle — owner: Anthony/Codex — status: planned — last update: 2026-04-20
+- id: 01KPNC22ZK4F5TBEQJ3QYXQXMK — title: Review non-portable Vim colors — owner: Anthony/Codex — status: planned — last update: 2026-04-20
 
 ## Completed (recent; keep last ~10)
+- id: 01KPNCXYF9JGX5D6DPZE2FDHB7 — title: Add lightweight bootstrap verification — owner: Codex (model: gpt-5.4) — status: done — last update: 2026-04-20
+- id: 01KPMQQMJB1875SVN6FMD2RVMG — title: Implement chezmoi bootstrap migration — owner: Codex (model: gpt-5.4) — status: done — last update: 2026-04-20
 - id: 01KP3BK8CKJMEZMC402YYVPRVJ — title: Strengthen global notebook and commit rules — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13
 - id: 01KP3BBZ7QM352FJBYPXHES4D8 — title: Lighten code_template docs scaffold — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13
 - id: 01KP3B51BKMYS0GBYT6Z7921BX — title: Fold repo reference notes into knowledge — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13

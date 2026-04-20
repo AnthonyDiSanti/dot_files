@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+tmp_paths=()
+
+cleanup() {
+  local path
+
+  if (( ${#tmp_paths[@]} == 0 )); then
+    return 0
+  fi
+
+  for path in "${tmp_paths[@]}"; do
+    rm -rf "$path"
+  done
+}
+
+trap cleanup EXIT
+
+log() {
+  printf '==> %s\n' "$1"
+}
+
+fail() {
+  echo "verify: $*" >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || fail "$1 is required"
+}
+
+make_temp_file() {
+  local path
+  path="$(mktemp)"
+  tmp_paths+=("$path")
+  printf '%s\n' "$path"
+}
+
+make_temp_dir() {
+  local path
+  path="$(mktemp -d)"
+  tmp_paths+=("$path")
+  printf '%s\n' "$path"
+}
+
+mode_of() {
+  stat -f '%Lp' "$1" 2>/dev/null || stat -c '%a' "$1"
+}
+
+assert_mode() {
+  local path="$1"
+  local expected="$2"
+  local actual
+
+  actual="$(mode_of "$path")"
+  [[ "$actual" == "$expected" ]] || fail "$path mode is $actual, expected $expected"
+}
+
+assert_symlink() {
+  local path="$1"
+  local expected="$2"
+  local actual
+
+  [[ -L "$path" ]] || fail "$path is not a symlink"
+  actual="$(readlink "$path")"
+  [[ "$actual" == "$expected" ]] || fail "$path points to $actual, expected $expected"
+}
+
+check_shell_syntax() {
+  local script_path
+
+  log "checking shell syntax"
+  bash -n "$repo_root/bootstrap.sh"
+  bash -n "$repo_root/home/dot_bash_profile"
+  bash -n "$repo_root/home/dot_zshrc"
+
+  # Keep owned helpers and settings scripts syntactically valid, excluding vendored trees.
+  for script_path in "$repo_root"/bash/*.sh "$repo_root"/settings/*.sh "$repo_root"/settings/git/*.sh; do
+    [[ -e "$script_path" ]] || continue
+    bash -n "$script_path"
+  done
+}
+
+check_managed_targets() {
+  local expected
+  local actual
+
+  log "checking chezmoi managed target list"
+  expected="$(make_temp_file)"
+  actual="$(make_temp_file)"
+
+  cat >"$expected" <<'EOF'
+.bash_profile
+.claude
+.claude/CLAUDE.md
+.codex
+.codex/AGENTS.md
+.codex/config.toml
+.gitignore_global
+.tmux.conf
+.vim
+.vimpagerrc
+.vimrc
+.zshrc
+EOF
+
+  chezmoi --source "$repo_root" managed --path-style=relative | sort >"$actual"
+  diff -u "$expected" "$actual"
+}
+
+check_temp_apply() {
+  local tmp_home
+
+  log "checking bootstrap in a temporary home"
+  tmp_home="$(make_temp_dir)"
+  HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" "$repo_root/bootstrap.sh" --verbose >/dev/null
+
+  grep -Fx 'mode = "symlink"' "$tmp_home/.config/chezmoi/chezmoi.toml" >/dev/null
+  assert_mode "$tmp_home/.claude" 700
+  assert_mode "$tmp_home/.codex" 700
+  assert_mode "$tmp_home/.config/chezmoi/chezmoi.toml" 600
+
+  assert_symlink "$tmp_home/.bash_profile" "$repo_root/home/dot_bash_profile"
+  assert_symlink "$tmp_home/.zshrc" "$repo_root/home/dot_zshrc"
+  assert_symlink "$tmp_home/.claude/CLAUDE.md" "$repo_root/home/private_dot_claude/CLAUDE.md"
+  assert_symlink "$tmp_home/.codex/AGENTS.md" "$repo_root/home/private_dot_codex/AGENTS.md"
+  assert_symlink "$tmp_home/.codex/config.toml" "$repo_root/home/private_dot_codex/config.toml"
+  assert_symlink "$tmp_home/.gitignore_global" "$repo_root/home/dot_gitignore_global"
+  assert_symlink "$tmp_home/.tmux.conf" "$repo_root/home/dot_tmux.conf"
+  assert_symlink "$tmp_home/.vim" "$repo_root/home/.vim"
+  assert_symlink "$tmp_home/.vimpagerrc" "$repo_root/home/dot_vimpagerrc"
+  assert_symlink "$tmp_home/.vimrc" "$repo_root/home/dot_vimrc"
+}
+
+check_live_home_converged() {
+  local diff_output
+
+  log "checking live home convergence"
+  diff_output="$(make_temp_file)"
+  "$repo_root/bootstrap.sh" --dry-run --verbose >"$diff_output"
+
+  if [[ -s "$diff_output" ]]; then
+    cat "$diff_output"
+    fail "live home differs from chezmoi target state; run ./bootstrap.sh"
+  fi
+}
+
+check_shell_startup() {
+  log "checking shell startup smoke tests"
+  EXPECTED_REPO_ROOT="$repo_root" bash -lc '
+    source ~/.bash_profile >/dev/null
+    [[ "${DOTFILESDIR:-}" == "$EXPECTED_REPO_ROOT" ]]
+    command -v make-chrome-app >/dev/null
+  '
+
+  if command -v zsh >/dev/null 2>&1; then
+    zsh -ic 'source ~/.zshrc >/dev/null; alias codex >/dev/null; whence -w codex-git >/dev/null'
+  fi
+}
+
+main() {
+  require_command bash
+  require_command chezmoi
+  require_command diff
+  require_command find
+  require_command git
+  require_command readlink
+
+  cd "$repo_root"
+
+  check_shell_syntax
+  check_managed_targets
+  check_temp_apply
+  check_live_home_converged
+  check_shell_startup
+
+  log "checking chezmoi doctor"
+  chezmoi --source "$repo_root" doctor --no-network >/dev/null
+
+  log "all checks passed"
+}
+
+main "$@"
