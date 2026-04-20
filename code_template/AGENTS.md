@@ -68,6 +68,7 @@ Rules:
 - If a note becomes stable repo truth, move it into `/docs/` and leave only a short breadcrumb in `/context/`.
 - Use `/context/knowledge/` for high-value agent notes that are reusable across sessions but do not belong in canonical repo docs.
 - Namespace `/context/scratch/` by task ID or work thread and clean it up once the content is promoted or no longer needed.
+- Treat `/context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/context` before answering status or “what’s next?” questions.
 
 ## 4) Documentation Maintenance
 Documentation is part of the product for agent workflows.

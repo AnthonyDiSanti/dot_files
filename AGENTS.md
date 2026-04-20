@@ -113,6 +113,7 @@ It is committed to git to support continuity across devices and developers.
 - Prefer updating existing notes over creating many redundant files.
 - Never store secrets.
 - Keep `/context` concise and retrieval-oriented: live state belongs in `handoff.md`, `tasks.md`, and `decisions.md`, while reusable knowledge belongs in `knowledge/`.
+- Treat `/context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/context` before answering status or “what’s next?” questions.
 
 ## 8) Documentation references (maintain)
 List the project’s key references and when to consult them:

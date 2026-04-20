@@ -3,6 +3,13 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-20 — Prefer live repo state over stale `/context` snapshots
+- Decider: Anthony
+- Decision: When `/context` conflicts with live repo evidence such as `git status`, current files, recent commits, or the working tree, agents should trust the live state and reconcile `/context` before answering status or next-step questions.
+- Rationale: `/context` is durable working memory, but it can naturally lag behind the actual repository state and should not override direct evidence.
+- Alternatives considered: Treat `/context` as authoritative until manually updated; rejected because it can leave agents one step behind after commits or other state changes.
+- Consequences / follow-ups: Mirror the guidance in both the live repo and `code_template` `AGENTS.md` files so future repos inherit the same precedence rule.
+
 ## 2026-04-20 — Keep generated Codex rules separate from curated rules
 - Decider: Anthony
 - Decision: Do not git-manage `~/.codex/rules/default.rules`; instead, plan to add a curated managed rules file such as `home/private_dot_codex/rules/global.rules`.
