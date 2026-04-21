@@ -1,39 +1,31 @@
 "******* BEGIN PLUGIN INCLUSION *******"
-" Vundle setup
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+" vim-plug: https://github.com/junegunn/vim-plug (~/.vim/autoload/plug.vim)
+call plug#begin('~/.vim/plugged')
 
-" Vundle bundle definitions - github repos
-Bundle 'gmarik/vundle'
-Bundle 'altercation/vim-colors-solarized'
-Bundle 'tpope/vim-git'
-Bundle 'tpope/vim-repeat'
-Bundle 'tpope/vim-unimpaired'
-Bundle 'tpope/vim-abolish'
-Bundle 'scrooloose/nerdtree'
-Bundle 'kien/ctrlp.vim'
-Bundle 'sjl/gundo.vim'
-Bundle 'tpope/vim-obsession'
-Bundle 'tpope/vim-fugitive'
-Bundle 'kana/vim-textobj-user'
-Bundle 'kana/vim-textobj-entire'
-Bundle 'tpope/vim-speeddating'
-Bundle 'tpope/vim-surround'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'godlygeek/tabular'
-Bundle 'tpope/vim-eunuch'
+Plug 'altercation/vim-colors-solarized'
+Plug 'tpope/vim-git'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-abolish'
+Plug 'preservim/nerdtree'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'simnalamburt/vim-mundo'
+Plug 'tpope/vim-obsession'
+Plug 'tpope/vim-fugitive'
+Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-entire'
+Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-surround'
+Plug 'easymotion/vim-easymotion'
+Plug 'preservim/nerdcommenter'
+Plug 'godlygeek/tabular'
+Plug 'tpope/vim-eunuch'
 
-" Vundle bundle definitions - non-github repos
-"Bundle 'git://git.example.com/example.git'
-
-" Enable filetype plugins
-filetype plugin on
+call plug#end()
 "******** END PLUGIN INCLUSION ********"
 
 " Configure indenting
-filetype indent on  " Required for Vundle (in addition to just being a good setting)
+filetype indent on
 set expandtab
 set shiftwidth=2
 set softtabstop=2
@@ -61,7 +53,7 @@ set background=dark
 if stridx(&term, '256') >= 0
   let g:solarized_termcolors=256
 endif
-colorscheme solarized
+silent! colorscheme solarized " ok before first :PlugInstall (plugin missing)
 
 " Configure line numbering
 set number
@@ -183,10 +175,10 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " Configure CtrlP
 let g:ctrlp_map = '<Leader>f'
 
-" Configure Gundo
-nnoremap <silent> <Leader>u :GundoToggle<CR>
-vnoremap <silent> <Leader>u :<C-u>GundoToggle<CR>
-let g:gundo_close_on_revert = 1 " Close the gundo windo after reverting
+" Configure Mundo (requires Vim built with +python3)
+nnoremap <silent> <Leader>u :MundoToggle<CR>
+vnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
+let g:mundo_close_on_revert = 1 " Close the mundo window after reverting
 
 " Configure Fugitive
 nnoremap <silent> <Leader>gs :Gstatus<CR>

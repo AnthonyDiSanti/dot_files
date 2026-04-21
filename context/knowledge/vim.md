@@ -1,8 +1,7 @@
-# Vim plugins (migrating to native packages)
+# Vim plugins (vim-plug)
 
-- Source: `home/dot_vimrc`, `home/.vim/pack/` (target); legacy `home/.vim/bundle/` until removed.
-- Why it matters: plugin layout and config must stay consistent for vanilla Vim over SSH.
-- When to consult: adding/removing plugins, changing mappings, or bootstrap docs.
-- Key points: Prefer Vim 8+ **packages** (`:help packages`)—`pack/*/start` for auto-loaded plugins, `pack/*/opt` + `packadd` when lazy-load is worth it. No Vundle.
-- Planned / decided plugin line (see `context/decisions.md`): **ctrlpvim/ctrlp.vim**, **easymotion/vim-easymotion**, **simnalamburt/vim-mundo**, **preservim/nerdtree**, **preservim/nerdcommenter**; carry forward core tpope + solarized + textobj + tabular, etc.; drop language-specific plugins and **vim-capslock**.
-- Gotchas: After removing a plugin, remove its maps, `g:` config, autocommands, and statusline calls—grep for plugin names and leader maps tied to them.
+- Source: `home/dot_vimrc`, `lib/vim-plug/` (submodule) → `~/.vim/autoload/plug.vim` symlink, installs under `~/.vim/plugged/` (gitignored).
+- Why it matters: [vim-plug](https://github.com/junegunn/vim-plug) manages clones; submodule ships the single `plug.vim` loader without curl on bootstrap.
+- When to consult: adding/removing plugins, bootstrap on a new machine, or debugging loads.
+- Key points: After `git clone --recurse-submodules` and `./bootstrap.sh`, run `:PlugInstall` in Vim. **Mundo** needs Vim built with `+python3`. Update plugins with `:PlugUpdate`; update the vim-plug loader via `git submodule update --remote lib/vim-plug` (or `:PlugUpgrade`, then commit submodule changes).
+- Gotchas: Remove maps/`g:` for plugins you delete. After moving to vim-plug, delete legacy `~/.vim/bundle/` (ignored clones) once `~/.vim/plugged/` is populated.

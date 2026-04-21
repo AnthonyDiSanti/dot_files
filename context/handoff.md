@@ -1,13 +1,13 @@
 # Handoff
 
 ## Current State
-- What works: chezmoi bootstrap (`bootstrap.sh`) links dotfiles from `home/`; shell startup sources `bash/*` and adds `bin/` to `PATH`; Vim plugins are still in the legacy Vundle layout under `home/.vim/bundle` until the native-package migration lands (see `context/decisions.md`).
+- What works: chezmoi bootstrap (`bootstrap.sh`) links dotfiles from `home/`; shell startup sources `bash/*` and adds `bin/` to `PATH`; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`).
 - Editor direction: **Vanilla Vim** is the target for dotfiles (Vim 8+ compatible plugins, no Neovim requirement) so SSH sessions can stay simple: get dotfiles on the machine, bootstrap, use `vim`. **Neovim** is explicitly a possible next step—see `context/decisions.md`—not part of the current plugin migration.
 - What’s in progress: No active implementation work. Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Implement Vim migration: **native packages** (no Vundle), upgraded repos (ctrlpvim, easymotion, vim-mundo, preservim NERD*), drop language-specific plugins and capslock, and **audit `dot_vimrc`** so nothing references removed plugins (statusline, maps, autocommands); revisit non-portable color configuration; optionally evaluate Neovim later as a separate decision.
+1. Revisit non-portable Solarized / terminal color configuration; optionally evaluate Neovim later as a separate decision.
 2. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
 3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
 
@@ -19,7 +19,8 @@ None (see `tasks.md`).
 - Full gate: `script/verify`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
-- 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps. Vundle block and remaining bundles unchanged pending native-packages migration.
+- 2026-04-21 — **Vim / vim-plug (commit-ready):** Replaced Vundle with `lib/vim-plug` submodule + `home/.vim/autoload/plug.vim` → `plug.vim` symlink; `plug#begin('~/.vim/plugged')` and upgraded `Plug` remotes (ctrlpvim, easymotion, mundo, preservim NERD*); Gundo → `:MundoToggle` / `g:mundo_*`; `silent! colorscheme solarized` until first install; gitignore `~/.vim/plugged/`; removed Vundle submodule and deleted legacy ignored `home/.vim/bundle/` tree in-repo after plugins live under `plugged/`. Docs: README bootstrap + optional `rm -rf ~/.vim/bundle`; AGENTS/knowledge/context decisions updated. **Verify:** `script/verify` passes.
+- 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps.
 - 2026-04-20 — Decided to abandon Vundle for Vim native packages, drop language plugins and capslock, upgrade CtrlP/EasyMotion/Mundo/NERD* as planned, prefer ctrlpvim over fzf.vim for in-editor UX; require cleaning config references to removed plugins.
 - 2026-04-20 — Committed to vanilla Vim for dotfile portability over SSH; recorded Neovim as a future step in `decisions.md` and tasks.
 - 2026-04-20 — Replaced the seeded Codex rule list with broad managed `git` and `npm` allow rules, applied the live `~/.codex/rules/global.rules` symlink, and cleared the local `default.rules`.
