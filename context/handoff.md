@@ -7,7 +7,7 @@
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Revisit non-portable Solarized / terminal color configuration; optionally evaluate Neovim later as a separate decision.
+1. Revisit any remaining Solarized edge cases (truecolor / `termguicolors`, other terminals); optionally evaluate Neovim later as a separate decision.
 2. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
 3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
 
@@ -19,6 +19,7 @@ None (see `tasks.md`).
 - Full gate: `script/verify`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-04-21 — **Vim colors:** Set `g:solarized_termcolors=256` when `t_Co >= 256` instead of only when `&term` contains `"256"`, so Ghostty and similar terminals get the correct Solarized 256-color palette.
 - 2026-04-21 — **Vim / vim-plug (commit-ready):** Replaced Vundle with `lib/vim-plug` submodule + `home/.vim/autoload/plug.vim` → `plug.vim` symlink; `plug#begin('~/.vim/plugged')` and upgraded `Plug` remotes (ctrlpvim, easymotion, mundo, preservim NERD*); Gundo → `:MundoToggle` / `g:mundo_*`; `silent! colorscheme solarized` until first install; gitignore `~/.vim/plugged/`; removed Vundle submodule and deleted legacy ignored `home/.vim/bundle/` tree in-repo after plugins live under `plugged/`. Docs: README bootstrap + optional `rm -rf ~/.vim/bundle`; AGENTS/knowledge/context decisions updated. **Verify:** `script/verify` passes.
 - 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps.
 - 2026-04-20 — Decided to abandon Vundle for Vim native packages, drop language plugins and capslock, upgrade CtrlP/EasyMotion/Mundo/NERD* as planned, prefer ctrlpvim over fzf.vim for in-editor UX; require cleaning config references to removed plugins.

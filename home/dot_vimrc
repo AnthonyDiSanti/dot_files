@@ -50,8 +50,9 @@ set clipboard=unnamed
 " Activate solarized color scheme
 syntax enable
 set background=dark
-if stridx(&term, '256') >= 0
-  let g:solarized_termcolors=256
+" Solarized: use the 256-color palette when the terminal reports 256 colors.
+if &t_Co >= 256
+  let g:solarized_termcolors = 256
 endif
 silent! colorscheme solarized " ok before first :PlugInstall (plugin missing)
 
