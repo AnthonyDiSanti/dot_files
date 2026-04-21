@@ -9,7 +9,7 @@ Task IDs are ULIDs; keep titles short and human-readable.
 - id: 01KPNZ3YB7K74CJXMSM8HD9VQR — title: Write repo documentation pass — owner: Anthony/Codex — status: planned — last update: 2026-04-20
 - id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: planned — last update: 2026-04-20
 - id: 01KPNZ4YNEOVIMEVALSTEP2026 — title: Evaluate Neovim after Vim migration stabilizes — owner: Anthony — status: planned — last update: 2026-04-20 — note: Optional; vanilla Vim remains the portable SSH baseline.
-- id: 01KPNC22ZGDW3M9SGG6GNTYNSW — title: Migrate Vim from Vundle to native packages + plugin refresh — owner: Anthony/Codex — status: planned — last update: 2026-04-20 — note: Abandon Vundle; ctrlpvim, easymotion, vim-mundo, preservim NERD*; drop language plugins + capslock; scrub dot_vimrc references to removed plugins.
+- id: 01KPNC22ZGDW3M9SGG6GNTYNSW — title: Migrate Vim from Vundle to vim-plug + plugin refresh — owner: Anthony/Codex — status: done — last update: 2026-04-21 — note: vim-plug + lib submodule; upgraded repos; drop language plugins + capslock done earlier.
 - id: 01KPNC22ZK4F5TBEQJ3QYXQXMK — title: Review non-portable Vim colors — owner: Anthony/Codex — status: planned — last update: 2026-04-20
 
 ## Completed (recent; keep last ~10)

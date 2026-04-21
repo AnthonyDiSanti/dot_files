@@ -56,13 +56,13 @@ Maintenance:
   - Dotfiles: `home/` using chezmoi source-state names (`dot_`, `symlink_`, templates, etc.).
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
-  - Vim plugins: use Vim 8+ **native packages** under `home/.vim/pack/` (see `:help packages`); keep `home/dot_vimrc` free of stale references when plugins are removed.
+  - Vim plugins: [vim-plug](https://github.com/junegunn/vim-plug); loader symlinked from `lib/vim-plug` to `home/.vim/autoload/plug.vim`; `:PlugInstall` populates `~/.vim/plugged/` (ignored). Keep `home/dot_vimrc` free of stale references when plugins are removed.
 - “Do not touch” paths (if any):
-  - `lib/git/`, `settings/solarized/`, and Vim plugin trees under `home/.vim/` are vendored or submoduled; update only via cohesive upstream/versioned refreshes (legacy `bundle/` is being replaced by `pack/`).
+  - `lib/git/`, `lib/vim-plug/`, `settings/solarized/`, and plugin installs under `home/.vim/plugged/` (ignored) follow normal submodule / `:PlugUpdate` workflows.
 
 ## 4) Commands
 Setup:
-- Install deps: chezmoi (required for `bootstrap.sh`), Vim 8+ (native packages for plugins in `home/dot_vimrc`), `tiff2icns` if using `make-chrome-app`.
+- Install deps: chezmoi (required for `bootstrap.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`), `tiff2icns` if using `make-chrome-app`.
 - Env setup: `./bootstrap.sh` (creates symlinks via chezmoi).
 
 Run:

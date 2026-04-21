@@ -24,15 +24,30 @@ template. The chezmoi source root is `home/`, configured by `.chezmoiroot`, and
 
 Vim
 ===
+Plugins are managed with [vim-plug](https://github.com/junegunn/vim-plug). The
+loader lives at `lib/vim-plug` (submodule) and is symlinked from
+`home/.vim/autoload/plug.vim`; clones install under `~/.vim/plugged/` (gitignored).
+
 ### Initial Plugin Setup ###
-1. Open vim
-2. Run :BundleInstall
+1. Clone this repo with submodules: `git clone --recurse-submodules …` (or run
+   `git submodule update --init` after clone).
+2. Run `./bootstrap.sh` so `~/.vim` points at this checkout.
+3. Open Vim and run `:PlugInstall`
+4. If you previously used Vundle, remove the stale ignored tree: `rm -rf ~/.vim/bundle`
 
 ### Updating Plugins ###
-1. Open vim
-2. Run :BundleInstall!
+1. Open Vim
+2. Run `:PlugUpdate`
+
+### Upgrading the vim-plug script itself ###
+The loader is the **`lib/vim-plug` git submodule** (not only a downloaded file), so prefer updating it from the repo:
+
+1. `git submodule update --remote lib/vim-plug`
+2. Commit the submodule pointer if it changed
+
+Alternatively, from Vim, **`:PlugUpgrade`** updates `plug.vim` (including when it is the target of `~/.vim/autoload/plug.vim`’s symlink). If you use that, check `git status` in `lib/vim-plug` and commit when you want the new version recorded.
 
 ### Adding New Plugins ###
-1. Add the new plugin to vimrc using the Vundle syntax
-2. Open vim
-3. Run :BundleInstall
+1. Add a `Plug 'owner/repo'` line in `home/dot_vimrc` inside the `plug#begin` /
+   `plug#end` block.
+2. Run `:PlugInstall`

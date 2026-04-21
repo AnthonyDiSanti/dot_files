@@ -3,17 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-21 — Use vim-plug with tracked submodule loader
+- Decider: Anthony
+- Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `home/.vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/dot_vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`home/.vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
+- Rationale: Bare `pack/` + manual or submodule-per-plugin was heavier than wanted; vim-plug stays maintained, keeps SSH story to “submodules + bootstrap + `:PlugInstall`,” and avoids curling `plug.vim` on each machine when the submodule is present.
+- Alternatives considered: Only native packages; minpac—see prior discussion; deferred in favor of vim-plug ergonomics.
+- Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `script/verify` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `script/verify` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
+
 ## 2026-04-20 — Abandon Vundle for Vim native packages; trim and upgrade plugins
 - Decider: Anthony
 - Decision:
-  - **Drop Vundle** entirely (no migration to VundleVim). Use Vim’s **native package** layout (`:help packages`) under `~/.vim/pack/.../start/` (or `opt/` where lazy-load matters), with plugins supplied via this repo (e.g. git submodules or vendored trees) and/or a small bootstrap step—no third-party plugin manager unless experience proves otherwise.
+  - **Drop Vundle** entirely (no migration to VundleVim). **Update 2026-04-21:** adopt **vim-plug** for layout instead of bare native `pack/` (see newer decision).
   - **Remove** all language-specific bundles: Haml, LESS, CoffeeScript (+ coffee-check), Clojure (fireplace + vim-clojure-static), and **vim-capslock**. Drop **matchit.zip** if stock Vim’s matching is sufficient after testing.
-  - **Carry forward** (non-exhaustive): Solarized, vim-git, tpope plugins except capslock, textobj user/entire, fugitive, tabular, etc., subject to wiring under `pack/`.
+  - **Carry forward** (non-exhaustive): Solarized, vim-git, tpope plugins except capslock, textobj user/entire, fugitive, tabular, etc., declared in `plug#begin`/`plug#end`.
   - **Upgrades**: fuzzy finder → **ctrlpvim/ctrlp.vim** (not fzf.vim for now—fuller in-editor UX, no fzf binary); motion → **easymotion/vim-easymotion**; undo tree → **simnalamburt/vim-mundo**; file tree + comments → **preservim/nerdtree** and **preservim/nerdcommenter** (same plugins, current home org—not a different product).
   - **Config hygiene**: After removing plugins, delete or rewrite every `.vimrc` mapping, `autocmd`, `g:` variable, and statusline segment that referenced a removed plugin (including Less compile maps if LESS plugin goes).
 - Rationale: Native packages avoid another manager abstraction; ctrlpvim matches CtrlP muscle memory and stays pure VimScript for SSH; fzf remains a great CLI tool but vim integration is intentionally thin; preservim forks are the maintained NERD* line; vim-mundo is the maintained Gundo descendant (last upstream activity newer than sjl/gundo.vim).
 - Alternatives considered: **fzf.vim**—defer; **vim-plug**—optional later if native layout feels too manual; **dirvish/oil**—different UX than NERDTree; keep NERDTree via preservim.
-- Consequences / follow-ups: Replace `home/dot_vimrc` Vundle block with `packadd` / default `runtimepath`; remove `home/.vim/bundle/` Vundle-era trees when new layout lands; update `README.md` install steps and run `script/verify`.
+- Consequences / follow-ups: **Done 2026-04-21** via vim-plug (`context` decisions entry); remove legacy `bundle/` dirs locally if present.
 
 ## 2026-04-20 — Prefer vanilla Vim for portable dotfiles; defer Neovim
 - Decider: Anthony
@@ -48,7 +55,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decision: Replace the Puppet bootstrap with chezmoi, keep `home/` as the source-state root via `.chezmoiroot`, and use `mode = "symlink"` so managed `$HOME` files point back into the git checkout.
 - Rationale: The repo should keep dotfiles as live tracked files so drift is visible in git instead of hidden in copied snapshots.
 - Alternatives considered: Use copied-file chezmoi mode; rejected because it would allow `$HOME` files to diverge from the source checkout unless changes are explicitly re-added.
-- Consequences / follow-ups: Keep selective macOS settings as explicit scripts unless a setting is deliberately moved to a platform-gated `run_once_`/`run_onchange_` script; migrate Vim away from Vundle separately and revisit non-portable color configuration.
+- Consequences / follow-ups: Keep selective macOS settings as explicit scripts unless a setting is deliberately moved to a platform-gated `run_once_`/`run_onchange_` script; Vim plugin management is **vim-plug** (2026-04-21); still revisit non-portable color configuration when ready.
 
 ## 2026-04-13 — Strengthen global notebook and commit-message rules
 - Decider: Anthony
