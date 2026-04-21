@@ -37,7 +37,7 @@ Maintenance:
 - Frameworks: None.
 - Package manager: None in-repo (system installs via Homebrew/RubyGems are assumed externally).
 - Storage/database: None.
-- Deployment target: Local macOS workstation (with a small WSL/Linux check in `home/dot_bash_profile`).
+- Deployment target: Local macOS workstation (with a small WSL/Linux check in `home/dot_bash_profile`). Vim configuration targets **vanilla Vim** (8+) so dotfiles stay usable over SSH on typical servers; Neovim is optional future work—see `/context/decisions.md`.
 - Constraints (perf/security/compliance/no-new-deps/etc.): Prefer macOS-compatible commands (`defaults`, `sips`, `tiff2icns`); avoid touching vendored directories; keep scripts compatible with their shebang (`bash` vs `sh`); no secrets in repo.
 
 ## 3) Repo map
@@ -56,13 +56,13 @@ Maintenance:
   - Dotfiles: `home/` using chezmoi source-state names (`dot_`, `symlink_`, templates, etc.).
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
-  - Vim plugins: update the Vundle list in `home/dot_vimrc` and vendor under `home/.vim/bundle/` to match current practice.
+  - Vim plugins: use Vim 8+ **native packages** under `home/.vim/pack/` (see `:help packages`); keep `home/dot_vimrc` free of stale references when plugins are removed.
 - “Do not touch” paths (if any):
-  - `lib/git/`, `settings/solarized/`, `home/.vim/bundle/` are vendored; update only via upstream/versioned refreshes.
+  - `lib/git/`, `settings/solarized/`, and Vim plugin trees under `home/.vim/` are vendored or submoduled; update only via cohesive upstream/versioned refreshes (legacy `bundle/` is being replaced by `pack/`).
 
 ## 4) Commands
 Setup:
-- Install deps: chezmoi (required for `bootstrap.sh`), Vim + Vundle (for `home/dot_vimrc`), `tiff2icns` if using `make-chrome-app`.
+- Install deps: chezmoi (required for `bootstrap.sh`), Vim 8+ (native packages for plugins in `home/dot_vimrc`), `tiff2icns` if using `make-chrome-app`.
 - Env setup: `./bootstrap.sh` (creates symlinks via chezmoi).
 
 Run:
