@@ -16,10 +16,12 @@ fi
 # Set shell hotkeys to vim
 set -o vi
 
-# Finds the dereferenced directory of the current script
+# Sets $1 to the repo root: parent of home/ containing this file (symlink-safe).
+# Uses printf -v instead of eval to assign by variable name (bash 3.2+).
 get_repo_root () {
   local SOURCE="${BASH_SOURCE[0]}"
-  local DIR="$( dirname "$SOURCE" )"
+  local DIR
+  DIR="$( dirname "$SOURCE" )"
 
   while [ -h "$SOURCE" ]; do 
     SOURCE="$(readlink "$SOURCE")"
@@ -28,22 +30,29 @@ get_repo_root () {
   done
 
   local RETVAL="$( cd -P "$( dirname "$SOURCE" )"/.. && pwd )"
-  if [[ $# = 0 ]]; then
-    SCRIPTDIR=$RETVAL
-  else
-    eval "$1='$RETVAL'"
-  fi
+  printf -v "$1" '%s' "$RETVAL"
 }
 
 get_repo_root DOTFILESDIR
 
-# Define functions
-for function in $DOTFILESDIR/bash/*; do
-  source $function;
+# Source shell snippets from bash/*.sh (quoted paths, nullglob-safe, regular files only).
+if shopt -q nullglob; then
+  _df_had_nullglob=1
+else
+  _df_had_nullglob=0
+fi
+shopt -s nullglob
+for path in "$DOTFILESDIR"/bash/*.sh; do
+  [[ -f "$path" && -r "$path" ]] || continue
+  source "$path"
 done
+if [[ $_df_had_nullglob -eq 0 ]]; then
+  shopt -u nullglob
+fi
+unset -v _df_had_nullglob
 
 # Add the dot_files bin to PATH
-export PATH=$DOTFILESDIR/bin:$PATH
+export PATH="$DOTFILESDIR/bin:$PATH"
 
 # Setup prompt
 Color_Prefix='\e['             # Required prefix for defining colors
@@ -60,8 +69,8 @@ White="${Color_Prefix}0;37m"   # White
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
 export GIT_PS1_SHOWUPSTREAM='auto'
-source $DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh
-source $DOTFILESDIR/lib/git/contrib/completion/git-completion.bash
+source "$DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh"
+source "$DOTFILESDIR/lib/git/contrib/completion/git-completion.bash"
 
 export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1) $Color_Off\! $ "
 #export PS1="$Purple\u$Blue@\h $Green\w$Cyan $Color_Off\! $ "

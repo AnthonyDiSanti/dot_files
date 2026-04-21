@@ -28,7 +28,7 @@ Maintenance:
 
 ## 1) Project overview
 - What this project is: Personal dotfiles and setup scripts for shell, Vim, tmux, Git, and agent configs, primarily on macOS.
-- Key user-facing behavior: `./bootstrap.sh` symlinks dotfiles into `$HOME` via chezmoi; `home/dot_bash_profile` sources `bash/*` and adds `bin/` to `PATH`; `settings/*.sh` apply macOS defaults and Git config; `bin/make-chrome-app` generates a Chrome app wrapper.
+- Key user-facing behavior: `./bootstrap.sh` symlinks dotfiles into `$HOME` via chezmoi; `home/dot_bash_profile` sources `bash/*.sh` and adds `bin/` to `PATH`; `settings/*.sh` apply macOS defaults and Git config; `bin/make-chrome-app` generates a Chrome app wrapper.
 - Non-goals / out of scope: Not a general-purpose app/library; not cross-platform; no CI/test harness; avoid ad-hoc edits inside vendored directories.
 - Definition of done: Dotfiles updated in chezmoi source-state form under `home/`, bootstrap/scripts run without errors on macOS, and `/context` is kept current.
 
