@@ -13,14 +13,14 @@ get_script_dir () {
 
   local RETVAL="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   if [[ $# = 0 ]]; then
-    SCRIPTDIR=$RETVAL
+    printf -v SCRIPTDIR '%s' "$RETVAL"
   else
-    eval "$1='$RETVAL'"
+    printf -v "$1" '%s' "$RETVAL"
   fi
 }
 
 get_script_dir GITSETTINGSDIR
 
-source $GITSETTINGSDIR/git/settings.sh
-source $GITSETTINGSDIR/git/aliases.sh
-source $GITSETTINGSDIR/git/colors.sh
+source "$GITSETTINGSDIR/git/settings.sh"
+source "$GITSETTINGSDIR/git/aliases.sh"
+source "$GITSETTINGSDIR/git/colors.sh"
