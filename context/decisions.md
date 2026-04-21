@@ -3,6 +3,25 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-20 — Abandon Vundle for Vim native packages; trim and upgrade plugins
+- Decider: Anthony
+- Decision:
+  - **Drop Vundle** entirely (no migration to VundleVim). Use Vim’s **native package** layout (`:help packages`) under `~/.vim/pack/.../start/` (or `opt/` where lazy-load matters), with plugins supplied via this repo (e.g. git submodules or vendored trees) and/or a small bootstrap step—no third-party plugin manager unless experience proves otherwise.
+  - **Remove** all language-specific bundles: Haml, LESS, CoffeeScript (+ coffee-check), Clojure (fireplace + vim-clojure-static), and **vim-capslock**. Drop **matchit.zip** if stock Vim’s matching is sufficient after testing.
+  - **Carry forward** (non-exhaustive): Solarized, vim-git, tpope plugins except capslock, textobj user/entire, fugitive, tabular, etc., subject to wiring under `pack/`.
+  - **Upgrades**: fuzzy finder → **ctrlpvim/ctrlp.vim** (not fzf.vim for now—fuller in-editor UX, no fzf binary); motion → **easymotion/vim-easymotion**; undo tree → **simnalamburt/vim-mundo**; file tree + comments → **preservim/nerdtree** and **preservim/nerdcommenter** (same plugins, current home org—not a different product).
+  - **Config hygiene**: After removing plugins, delete or rewrite every `.vimrc` mapping, `autocmd`, `g:` variable, and statusline segment that referenced a removed plugin (including Less compile maps if LESS plugin goes).
+- Rationale: Native packages avoid another manager abstraction; ctrlpvim matches CtrlP muscle memory and stays pure VimScript for SSH; fzf remains a great CLI tool but vim integration is intentionally thin; preservim forks are the maintained NERD* line; vim-mundo is the maintained Gundo descendant (last upstream activity newer than sjl/gundo.vim).
+- Alternatives considered: **fzf.vim**—defer; **vim-plug**—optional later if native layout feels too manual; **dirvish/oil**—different UX than NERDTree; keep NERDTree via preservim.
+- Consequences / follow-ups: Replace `home/dot_vimrc` Vundle block with `packadd` / default `runtimepath`; remove `home/.vim/bundle/` Vundle-era trees when new layout lands; update `README.md` install steps and run `script/verify`.
+
+## 2026-04-20 — Prefer vanilla Vim for portable dotfiles; defer Neovim
+- Decider: Anthony
+- Decision: Treat **Vim** (not Neovim) as the supported editor in this repo for now, so a minimal setup over SSH—clone or unpack dotfiles, run bootstrap, open `vim`—works without extra runtime dependencies. Consider **Neovim** as a deliberate next step later, not part of the current migration.
+- Rationale: Remote servers often have Vim or can install it easily; Neovim adds another version matrix and plugin/runtime expectations. Aligning the Vundle replacement and plugin refresh with stock Vim keeps the “ssh in and be productive” story simple.
+- Alternatives considered: Standardize on Neovim now for better LSP and plugin ecosystem; deferred until local/SSH workflows are stable on Vim.
+- Consequences / follow-ups: Plugin manager and plugin choices should stay compatible with Vim 8+ where possible; document any optional Neovim path in `/context` when revisited.
+
 ## 2026-04-20 — Use broad managed Codex allow rules for git and npm
 - Decider: Anthony
 - Decision: Keep the managed `~/.codex/rules/global.rules` baseline intentionally broad with `prefix_rule(pattern=["git"], decision="allow")` and `prefix_rule(pattern=["npm"], decision="allow")`, while leaving the local generated `default.rules` empty until new machine-local approvals are learned.

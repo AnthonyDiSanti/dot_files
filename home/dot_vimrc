@@ -8,13 +8,6 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'tpope/vim-git'
-Bundle 'tpope/vim-haml'
-Bundle 'groenewege/vim-less'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'clvv/a.vim'
-Bundle 'othree/coffee-check.vim'
-Bundle 'tpope/vim-fireplace'
-Bundle 'guns/vim-clojure-static'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'tpope/vim-abolish'
@@ -26,15 +19,11 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'kana/vim-textobj-user'
 Bundle 'kana/vim-textobj-entire'
 Bundle 'tpope/vim-speeddating'
-Bundle 'tpope/vim-capslock'
 Bundle 'tpope/vim-surround'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'godlygeek/tabular'
 Bundle 'tpope/vim-eunuch'
-
-" Vundle bundle definitions - vim-scripts repos
-Bundle 'matchit.zip'
 
 " Vundle bundle definitions - non-github repos
 "Bundle 'git://git.example.com/example.git'
@@ -220,12 +209,6 @@ autocmd BufReadPost fugitive://* set bufhidden=delete " Delete fugitive buffers 
 " TODO: Visual mode mappings (e.g. \t=)
 " TODO: Normal mode mappings that accept a movement (e.g. \t=5j)
 "******** END PLUGIN CONFIGURATION ********"
-
-"******* BEGIN FILETYPE CONFIGURATION *******"
-"TODO: Make only work for .less files
-nnoremap <Leader>c :w <BAR> !lessc % > %:t:r.css<CR>
-vnoremap <Leader>c :<C-u>w <BAR> !lessc % > %:t:r.css<CR>gv
-"******** END FILETYPE CONFIGURATION ********"
 
 " Fix typos
 abbreviate W w
