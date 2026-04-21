@@ -2,15 +2,21 @@
 
 Task IDs are ULIDs; keep titles short and human-readable.
 
+## Roadmap ordering (tail)
+Planned **last two** items before considering the dotfiles “mature” for this phase:
+1. **Second-to-last:** Re-evaluate all **git submodules** and everything under **`bin/`** (still needed, versions, security, PATH ergonomics, docs).
+2. **Final:** **Neovim** evaluation — see task `01KPNZ4YNEOVIMEVALSTEP2026` (optional; vanilla Vim stays the portable SSH baseline unless you deliberately switch).
+
 ## Active
 - None
 
 ## Paused / Blocked
+- id: 01KPR9WB7K84CJXMSM8HD9VQRX — title: Re-evaluate git submodules and bin/ contents — owner: Anthony/Codex — status: planned — last update: 2026-04-21 — note: Roadmap **second-to-last** — audit `lib/*`, `.gitmodules`, and each `bin/*` script for currency and fit.
 - id: 01KPNZ3YB7K74CJXMSM8HD9VQR — title: Write repo documentation pass — owner: Anthony/Codex — status: planned — last update: 2026-04-20
 - id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: planned — last update: 2026-04-20
-- id: 01KPNZ4YNEOVIMEVALSTEP2026 — title: Evaluate Neovim after Vim migration stabilizes — owner: Anthony — status: planned — last update: 2026-04-20 — note: Optional; vanilla Vim remains the portable SSH baseline.
+- id: 01KPNZ4YNEOVIMEVALSTEP2026 — title: Evaluate Neovim after Vim migration stabilizes — owner: Anthony — status: planned — last update: 2026-04-21 — note: Roadmap **final** item after submodule/bin review; optional; vanilla Vim remains the portable SSH baseline.
 - id: 01KPNC22ZGDW3M9SGG6GNTYNSW — title: Migrate Vim from Vundle to vim-plug + plugin refresh — owner: Anthony/Codex — status: done — last update: 2026-04-21 — note: vim-plug + lib submodule; upgraded repos; drop language plugins + capslock done earlier.
-- id: 01KPNC22ZK4F5TBEQJ3QYXQXMK — title: Review non-portable Vim colors — owner: Anthony/Codex — status: planned — last update: 2026-04-20
+- id: 01KPNC22ZK4F5TBEQJ3QYXQXMK — title: Review non-portable Vim colors — owner: Anthony/Codex — status: done — last update: 2026-04-21 — note: Solarized 8 + termguicolors; tmux RGB passthrough; SSH fallback documented in knowledge/vim.md
 
 ## Completed (recent; keep last ~10)
 - id: 01KPNZ3YB3YV5H4SW4NDFDRRE7 — title: Split Codex rules into curated global file — owner: Anthony/Codex — status: done — last update: 2026-04-20

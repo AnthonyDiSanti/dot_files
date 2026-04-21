@@ -46,7 +46,7 @@ Maintenance:
   - `bash/` — shell functions sourced by `home/dot_bash_profile`.
   - `bin/` — executable utilities added to `PATH`.
   - `script/` — repo-local verification and maintenance scripts, not added to `PATH`.
-  - `settings/` — macOS defaults scripts, Git config scripts, keybindings, Solarized theme assets.
+  - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
   - `lib/` — vendored dependencies (`lib/git` for prompt/completion; `lib/make-chrome-app`).
   - `context/` — shared working memory for humans and agents.
   - `code_template/` — template skeleton for new repos (AGENTS/context, etc.).
@@ -58,7 +58,7 @@ Maintenance:
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
   - Vim plugins: [vim-plug](https://github.com/junegunn/vim-plug); loader symlinked from `lib/vim-plug` to `home/.vim/autoload/plug.vim`; `:PlugInstall` populates `~/.vim/plugged/` (ignored). Keep `home/dot_vimrc` free of stale references when plugins are removed.
 - “Do not touch” paths (if any):
-  - `lib/git/`, `lib/vim-plug/`, `settings/solarized/`, and plugin installs under `home/.vim/plugged/` (ignored) follow normal submodule / `:PlugUpdate` workflows.
+  - `lib/git/`, `lib/vim-plug/`, and plugin installs under `home/.vim/plugged/` (ignored) follow normal submodule / `:PlugUpdate` workflows.
 
 ## 4) Commands
 Setup:
@@ -122,7 +122,7 @@ List the project’s key references and when to consult them:
 - `home/dot_bash_profile` — before changing shell startup, PATH, or sourced functions.
 - `settings/osx_*.sh` — before changing macOS defaults.
 - `settings/git.sh` and `settings/git/*.sh` — before altering Git global config.
-- `settings/solarized/README.md` — before touching the Solarized theme assets.
+- `settings/README.md` — scope of `settings/`; Solarized reference links (upstream not vendored).
 - `/context/knowledge/index.md` — quick repo, vendor, and workflow notes plus links to deeper topics.
 
 Capture external docs only when they are:

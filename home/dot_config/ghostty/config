@@ -1,0 +1,41 @@
+# Solarized Dark — ANSI mapping matches altercation/solarized Xresources
+# (https://github.com/altercation/solarized/blob/master/xresources/solarized).
+# Vim in this repo uses lifepillar/vim-solarized8; truecolor there aligns with these hex values.
+
+# Compositing in the display-native space: Display P3 on macOS, sRGB on typical Linux.
+# (See Ghostty `alpha-blending`.) If you see colored fringes on some fg/bg pairs, try
+# `linear-corrected` instead — same perceptual intent with a different blend model.
+alpha-blending = native
+
+background = #002b36
+foreground = #839496
+
+cursor-color = #93a1a1
+cursor-text = #002b36
+
+selection-background = #073642
+selection-foreground = #93a1a1
+
+# Derive the 6×6×6 cube and grayscale ramp (indices 16–255) from the base-16 Solarized
+# palette so 256-color TUIs stay on-theme instead of mixing in the legacy xterm cube.
+palette-generate = true
+
+palette = 0=#073642
+palette = 1=#dc322f
+palette = 2=#859900
+palette = 3=#b58900
+palette = 4=#268bd2
+palette = 5=#d33682
+palette = 6=#2aa198
+palette = 7=#eee8d5
+palette = 8=#002b36
+palette = 9=#cb4b16
+palette = 10=#586e75
+palette = 11=#657b83
+palette = 12=#839496
+palette = 13=#6c71c4
+palette = 14=#93a1a1
+palette = 15=#fdf6e3
+
+# Blend the macOS title bar with base03 instead of a separate system chrome color.
+macos-titlebar-style = transparent

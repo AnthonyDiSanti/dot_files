@@ -101,6 +101,9 @@ check_managed_targets() {
 .codex/config.toml
 .codex/rules
 .codex/rules/global.rules
+.config
+.config/ghostty
+.config/ghostty/config
 .gitignore_global
 .tmux.conf
 .vim
@@ -136,6 +139,7 @@ check_temp_apply() {
   assert_symlink "$tmp_home/.vim" "$repo_root/home/.vim"
   assert_symlink "$tmp_home/.vimpagerrc" "$repo_root/home/dot_vimpagerrc"
   assert_symlink "$tmp_home/.vimrc" "$repo_root/home/dot_vimrc"
+  assert_symlink "$tmp_home/.config/ghostty/config" "$repo_root/home/dot_config/ghostty/config"
 }
 
 check_live_home_converged() {

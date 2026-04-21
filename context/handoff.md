@@ -7,9 +7,10 @@
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Revisit any remaining Solarized edge cases (truecolor / `termguicolors`, other terminals); optionally evaluate Neovim later as a separate decision.
-2. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
-3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+1. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
+2. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+3. **Second-to-last (planned):** Re-evaluate all **git submodules** and **`bin/`** contents — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`.
+4. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
 
 ## Active Tasks
 None (see `tasks.md`).
@@ -19,8 +20,8 @@ None (see `tasks.md`).
 - Full gate: `script/verify`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
-- 2026-04-21 — **Vim colors:** Set `g:solarized_termcolors=256` when `t_Co >= 256` instead of only when `&term` contains `"256"`, so Ghostty and similar terminals get the correct Solarized 256-color palette.
-- 2026-04-21 — **Vim / vim-plug (commit-ready):** Replaced Vundle with `lib/vim-plug` submodule + `home/.vim/autoload/plug.vim` → `plug.vim` symlink; `plug#begin('~/.vim/plugged')` and upgraded `Plug` remotes (ctrlpvim, easymotion, mundo, preservim NERD*); Gundo → `:MundoToggle` / `g:mundo_*`; `silent! colorscheme solarized` until first install; gitignore `~/.vim/plugged/`; removed Vundle submodule and deleted legacy ignored `home/.vim/bundle/` tree in-repo after plugins live under `plugged/`. Docs: README bootstrap + optional `rm -rf ~/.vim/bundle`; AGENTS/knowledge/context decisions updated. **Verify:** `script/verify` passes.
+- 2026-04-21 — **Roadmap tail:** Planned **second-to-last** workstream — re-evaluate all **git submodules** and **`bin/`**; **Neovim** consideration is the **final** planned item (`context/tasks.md`).
+- 2026-04-21 — **Vim + Solarized + Ghostty (single color stack):** **vim-plug** (`lib/vim-plug` submodule, `plug#begin('~/.vim/plugged')`, upgraded ctrlpvim / easymotion / mundo / preservim NERD*, Gundo → Mundo). **Vim colors:** **lifepillar/vim-solarized8** (`colorscheme solarized8`, `termguicolors`, `t_8f`/`t_8b`); removed unused **`settings/solarized`** submodule; **tmux** `terminal-features ',*:RGB'` for true-color passthrough. **Ghostty:** `home/dot_config/ghostty/config` → `~/.config/ghostty/config` — Solarized Dark (Xresources hex), `alpha-blending = native`, `palette-generate = true`, `macos-titlebar-style = transparent`. **`script/verify`** extended for `.config/ghostty/*`; `settings/README.md`, `context/knowledge/solarized.md`, README/AGENTS/context updated. `script/verify` passes.
 - 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps.
 - 2026-04-20 — Decided to abandon Vundle for Vim native packages, drop language plugins and capslock, upgrade CtrlP/EasyMotion/Mundo/NERD* as planned, prefer ctrlpvim over fzf.vim for in-editor UX; require cleaning config references to removed plugins.
 - 2026-04-20 — Committed to vanilla Vim for dotfile portability over SSH; recorded Neovim as a future step in `decisions.md` and tasks.
