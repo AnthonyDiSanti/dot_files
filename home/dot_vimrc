@@ -2,7 +2,7 @@
 " vim-plug: https://github.com/junegunn/vim-plug (~/.vim/autoload/plug.vim)
 call plug#begin('~/.vim/plugged')
 
-Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'
 Plug 'tpope/vim-git'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
@@ -47,14 +47,16 @@ set mouse=a
 " Link the system clipboard to the unnamed register
 set clipboard=unnamed
 
-" Activate solarized color scheme
+" Solarized 8 — true color when supported; falls back to 256/16 in the scheme.
 syntax enable
 set background=dark
-" Solarized: use the 256-color palette when the terminal reports 256 colors.
-if &t_Co >= 256
-  let g:solarized_termcolors = 256
+if has('termguicolors')
+  set termguicolors
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
-silent! colorscheme solarized " ok before first :PlugInstall (plugin missing)
+silent! colorscheme solarized8 " ok before first :PlugInstall (plugin missing)
+" If colors look wrong over SSH, try: set notermguicolors | colorscheme solarized8
 
 " Configure line numbering
 set number
@@ -76,7 +78,6 @@ vnoremap <silent> <Leader>N :<C-u>set nonumber \| set norelativenumber<CR>gv
 " Configure maximum line length highlighting
 if exists("&colorcolumn")
   set colorcolumn=80
-  highlight ColorColumn ctermfg=Red
 endif
 
 "******* BEGIN LINE WRAPPING CONFIGURATION *******"

@@ -28,6 +28,8 @@ Plugins are managed with [vim-plug](https://github.com/junegunn/vim-plug). The
 loader lives at `lib/vim-plug` (submodule) and is symlinked from
 `home/.vim/autoload/plug.vim`; clones install under `~/.vim/plugged/` (gitignored).
 
+The UI colorscheme is **[Solarized 8](https://github.com/lifepillar/vim-solarized8)** (`colorscheme solarized8`), which supports **true color** via `termguicolors` and falls back to 256-color mode when that is off. `dot_vimrc` sets the `t_8f` / `t_8b` sequences from `:help xterm-true-color`. **tmux** enables RGB passthrough with `terminal-features` in `dot_tmux.conf`; reload tmux after pulling. If true color is wrong over SSH, run `set notermguicolors` and `:colorscheme solarized8` (256-color fallback).
+
 ### Initial Plugin Setup ###
 1. Clone this repo with submodules: `git clone --recurse-submodules …` (or run
    `git submodule update --init` after clone).
@@ -38,6 +40,9 @@ loader lives at `lib/vim-plug` (submodule) and is symlinked from
 ### Updating Plugins ###
 1. Open Vim
 2. Run `:PlugUpdate`
+
+### Removing old plugin directories ###
+If you remove a `Plug` line from `home/dot_vimrc`, run **`:PlugClean`** in Vim to delete the matching tree under `~/.vim/plugged/` (for example after replacing **vim-colors-solarized** with **vim-solarized8**).
 
 ### Upgrading the vim-plug script itself ###
 The loader is the **`lib/vim-plug` git submodule** (not only a downloaded file), so prefer updating it from the repo:

@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-21 — Manage Ghostty Solarized Dark in chezmoi (modern color pipeline)
+- Decider: Anthony
+- Decision: Ship **`home/dot_config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`script/verify`** with managed paths and a temp-home symlink assertion for Ghostty.
+- Rationale: No need to restore the **altercation/solarized** submodule for terminal chrome; Ghostty’s own options cover wide-gamut blending and a cohesive 256-color ramp. Document **`linear-corrected`** in-config as an optional tweak if fringe artifacts appear.
+- Consequences / follow-ups: Reload Ghostty after apply (**Cmd+Shift+,**). Linux gets **`native`** as sRGB per Ghostty (still explicit and consistent).
+
+## 2026-04-21 — Remove unused `settings/solarized` submodule
+- Decider: Anthony
+- Decision: Delete the **`settings/solarized`** git submodule (full **altercation/solarized** checkout). Replace with documentation: **`settings/README.md`** and **`context/knowledge/solarized.md`** pointing to upstream for Terminal/iTerm/Ghostty/Xresources needs. **Vim** remains **`lifepillar/vim-solarized8`** via vim-plug; **tmux** styling stays in **`home/dot_tmux.conf`**.
+- Rationale: Nothing in bootstrap or scripts referenced the submodule (~19MB, 600+ files). It duplicated the old Vim bundle under `vim-colors-solarized/` and confused “vendored Solarized” vs the active vim-plug theme. Clone upstream on demand when configuring non-Vim apps.
+- Consequences / follow-ups: `git clone --recurse-submodules` no longer pulls Solarized; **AGENTS.md** and `context/` updated.
+
+## 2026-04-21 — Use Solarized 8 for true-color terminal Vim
+- Decider: Anthony
+- Decision: Replace **altercation/vim-colors-solarized** with **lifepillar/vim-solarized8**; load **`colorscheme solarized8`**. Enable **`termguicolors`** when `has('termguicolors')`, and set **`t_8f` / `t_8b`** per `:help xterm-true-color`. Remove the old **`g:solarized_termcolors`** hack and the **`ColorColumn`** `ctermfg=Red` override (the scheme styles `ColorColumn`). In **tmux**, set **`terminal-features ',*:RGB'`** so nested Vim receives true color.
+- Rationale: Original Solarized does not define `guifg`/`guibg` for terminal Vim, so **`termguicolors`** cannot apply canonical hex colors; Solarized 8 is maintained for true-color and 256/16 fallbacks.
+- Consequences / follow-ups: Run **`:PlugInstall`** to swap plugins; **reload tmux** after pulling `dot_tmux.conf`. On hosts where true color fails, **`set notermguicolors`** then **`:colorscheme solarized8`** (documented in README and `context/knowledge/vim.md`).
+
 ## 2026-04-21 — Use vim-plug with tracked submodule loader
 - Decider: Anthony
 - Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `home/.vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/dot_vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`home/.vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
