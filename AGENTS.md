@@ -45,7 +45,7 @@ Maintenance:
   - `home/` — dotfiles (shell, Vim, tmux, Codex/Claude config) to be linked into `$HOME`.
   - `bash/` — shell functions sourced by `home/dot_bash_profile`.
   - `bin/` — executable utilities added to `PATH`.
-  - `script/` — repo-local verification and maintenance scripts, not added to `PATH`.
+  - `scripts/` — repo-local checks (`scripts/verify.sh`) and small tools (e.g. `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
   - `lib/` — vendored dependencies (`lib/git` for prompt/completion; `lib/make-chrome-app`).
   - `context/` — shared working memory for humans and agents.
@@ -73,7 +73,7 @@ Run:
 Verify (targeted first, full at end):
 - Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh` for modified shell scripts; `chezmoi --source "$PWD" diff` for dotfile target-state review.
 - Run a single test: Manual smoke check of the changed script or config (e.g., open a new shell and ensure `.bash_profile` loads cleanly).
-- Full suite (final gate): `script/verify`.
+- Full suite (final gate): `scripts/verify.sh`.
 - Build (final gate if applicable): Not applicable.
 
 ## 5) Engineering standards
@@ -81,7 +81,7 @@ Verify (targeted first, full at end):
 - Lint rules: None enforced; optional `shellcheck` or `bash -n` for shell edits.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; reuse `bash/exit_if_error.sh` where useful.
-- Testing expectations: Run `script/verify` for bootstrap/dotfile changes; it checks shell syntax, chezmoi source-state mapping, temporary-home apply behavior, live-home convergence, and shell startup.
+- Testing expectations: Run `scripts/verify.sh` for bootstrap/dotfile changes; it checks shell syntax, chezmoi source-state mapping, temporary-home apply behavior, live-home convergence, and shell startup.
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
 

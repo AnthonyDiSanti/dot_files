@@ -5,7 +5,7 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-21 — Manage Ghostty Solarized Dark in chezmoi (modern color pipeline)
 - Decider: Anthony
-- Decision: Ship **`home/dot_config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`script/verify`** with managed paths and a temp-home symlink assertion for Ghostty.
+- Decision: Ship **`home/dot_config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`scripts/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.
 - Rationale: No need to restore the **altercation/solarized** submodule for terminal chrome; Ghostty’s own options cover wide-gamut blending and a cohesive 256-color ramp. Document **`linear-corrected`** in-config as an optional tweak if fringe artifacts appear.
 - Consequences / follow-ups: Reload Ghostty after apply (**Cmd+Shift+,**). Linux gets **`native`** as sRGB per Ghostty (still explicit and consistent).
 
@@ -26,7 +26,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `home/.vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/dot_vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`home/.vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
 - Rationale: Bare `pack/` + manual or submodule-per-plugin was heavier than wanted; vim-plug stays maintained, keeps SSH story to “submodules + bootstrap + `:PlugInstall`,” and avoids curling `plug.vim` on each machine when the submodule is present.
 - Alternatives considered: Only native packages; minpac—see prior discussion; deferred in favor of vim-plug ergonomics.
-- Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `script/verify` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `script/verify` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
+- Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `scripts/verify.sh` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `scripts/verify.sh` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
 
 ## 2026-04-20 — Abandon Vundle for Vim native packages; trim and upgrade plugins
 - Decider: Anthony
