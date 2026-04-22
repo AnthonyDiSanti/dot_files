@@ -54,17 +54,26 @@ unset -v _df_had_nullglob
 # Add the dot_files bin to PATH
 export PATH="$DOTFILESDIR/bin:$PATH"
 
-# Setup prompt
-Color_Prefix='\e['             # Required prefix for defining colors
-Color_Off="${Color_Prefix}0m"  # Text Reset
-Black="${Color_Prefix}0;30m"   # Black
-Red="${Color_Prefix}0;31m"     # Red
-Green="${Color_Prefix}0;32m"   # Green
-Yellow="${Color_Prefix}0;33m"  # Yellow
-Blue="${Color_Prefix}0;34m"    # Blue
-Purple="${Color_Prefix}0;35m"  # Purple
-Cyan="${Color_Prefix}0;36m"    # Cyan
-White="${Color_Prefix}0;37m"   # White
+# Setup prompt: ANSI SGR (raw) and paired PS_* wrappers (\[ \] for readline width on Bash PS1–PS4).
+COLOR_PREFIX='\e['
+BLACK="${COLOR_PREFIX}0;30m"
+PS_BLACK="\\[${BLACK}\\]"
+RED="${COLOR_PREFIX}0;31m"
+PS_RED="\\[${RED}\\]"
+GREEN="${COLOR_PREFIX}0;32m"
+PS_GREEN="\\[${GREEN}\\]"
+YELLOW="${COLOR_PREFIX}0;33m"
+PS_YELLOW="\\[${YELLOW}\\]"
+BLUE="${COLOR_PREFIX}0;34m"
+PS_BLUE="\\[${BLUE}\\]"
+PURPLE="${COLOR_PREFIX}0;35m"
+PS_PURPLE="\\[${PURPLE}\\]"
+CYAN="${COLOR_PREFIX}0;36m"
+PS_CYAN="\\[${CYAN}\\]"
+WHITE="${COLOR_PREFIX}0;37m"
+PS_WHITE="\\[${WHITE}\\]"
+COLOR_OFF="${COLOR_PREFIX}0m"
+PS_OFF="\\[${COLOR_OFF}\\]"
 
 export GIT_PS1_SHOWDIRTYSTATE='auto'
 export GIT_PS1_SHOWUNTRACKEDFILES='auto'
@@ -72,8 +81,8 @@ export GIT_PS1_SHOWUPSTREAM='auto'
 source "$DOTFILESDIR/lib/git/contrib/completion/git-prompt.sh"
 source "$DOTFILESDIR/lib/git/contrib/completion/git-completion.bash"
 
-export PS1="$Purple\u$Blue@\h $Green\w$Cyan\$(__git_ps1) $Color_Off\! $ "
-#export PS1="$Purple\u$Blue@\h $Green\w$Cyan $Color_Off\! $ "
+export PS1="${PS_PURPLE}\u${PS_BLUE}@\h ${PS_GREEN}\w${PS_CYAN}\$(__git_ps1) ${PS_OFF}\! \$ "
+#export PS1="${PS_PURPLE}\u${PS_BLUE}@\h ${PS_GREEN}\w${PS_CYAN} ${PS_OFF}\! \$ "
 
 # Filled block cursor on WSL only (avoids grep noise on macOS where /proc/version is absent).
 if [[ -r /proc/version ]] && grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null; then
