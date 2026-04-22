@@ -20,7 +20,7 @@ template. The chezmoi source root is `home/`, configured by `.chezmoiroot`, and
 2. Run `./bootstrap.sh --dry-run --verbose`
 
 ### Verifying ###
-1. Run `script/verify`
+1. Run `scripts/verify.sh`
 
 Vim
 ===

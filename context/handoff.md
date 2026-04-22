@@ -17,11 +17,11 @@ None (see `tasks.md`).
 
 ## Quick Verify
 - Fast checks: `bash -n` on edited shell scripts; `chezmoi --source "$PWD" diff` or temporary-destination apply for dotfile target-state review.
-- Full gate: `script/verify`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
+- Full gate: `scripts/verify.sh`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
 - 2026-04-21 — **Roadmap tail:** Planned **second-to-last** workstream — re-evaluate all **git submodules** and **`bin/`**; **Neovim** consideration is the **final** planned item (`context/tasks.md`).
-- 2026-04-21 — **Vim + Solarized + Ghostty (single color stack):** **vim-plug** (`lib/vim-plug` submodule, `plug#begin('~/.vim/plugged')`, upgraded ctrlpvim / easymotion / mundo / preservim NERD*, Gundo → Mundo). **Vim colors:** **lifepillar/vim-solarized8** (`colorscheme solarized8`, `termguicolors`, `t_8f`/`t_8b`); removed unused **`settings/solarized`** submodule; **tmux** `terminal-features ',*:RGB'` for true-color passthrough. **Ghostty:** `home/dot_config/ghostty/config` → `~/.config/ghostty/config` — Solarized Dark (Xresources hex), `alpha-blending = native`, `palette-generate = true`, `macos-titlebar-style = transparent`. **`script/verify`** extended for `.config/ghostty/*`; `settings/README.md`, `context/knowledge/solarized.md`, README/AGENTS/context updated. `script/verify` passes.
+- 2026-04-21 — **Vim + Solarized + Ghostty (single color stack):** **vim-plug** (`lib/vim-plug` submodule, `plug#begin('~/.vim/plugged')`, upgraded ctrlpvim / easymotion / mundo / preservim NERD*, Gundo → Mundo). **Vim colors:** **lifepillar/vim-solarized8** (`colorscheme solarized8`, `termguicolors`, `t_8f`/`t_8b`); removed unused **`settings/solarized`** submodule; **tmux** `terminal-features ',*:RGB'` for true-color passthrough. **Ghostty:** `home/dot_config/ghostty/config` → `~/.config/ghostty/config` — Solarized Dark (Xresources hex), `alpha-blending = native`, `palette-generate = true`, `macos-titlebar-style = transparent`. **`scripts/verify.sh`** extended for `.config/ghostty/*`; `settings/README.md`, `context/knowledge/solarized.md`, README/AGENTS/context updated. `scripts/verify.sh` passes.
 - 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps.
 - 2026-04-20 — Decided to abandon Vundle for Vim native packages, drop language plugins and capslock, upgrade CtrlP/EasyMotion/Mundo/NERD* as planned, prefer ctrlpvim over fzf.vim for in-editor UX; require cleaning config references to removed plugins.
 - 2026-04-20 — Committed to vanilla Vim for dotfile portability over SSH; recorded Neovim as a future step in `decisions.md` and tasks.
@@ -31,7 +31,7 @@ None (see `tasks.md`).
 - 2026-04-20 — Recorded future workstreams for Codex rule-file split, repo documentation, and bash-to-zsh migration.
 - 2026-04-20 — Confirmed Codex scans `.rules` files under `~/.codex/rules/`; keep generated `default.rules` unmanaged and plan a curated managed `global.rules`.
 - 2026-04-20 — Replaced Puppet bootstrap with chezmoi symlink-mode source state, ran bootstrap on the live home directory, and tracked the follow-up Vim migration.
-- 2026-04-20 — Added `script/verify` as a lightweight full gate for shell syntax, chezmoi source mapping, temporary apply, live convergence, and shell startup.
+- 2026-04-20 — Added `scripts/verify.sh` as a lightweight full gate for shell syntax, chezmoi source mapping, temporary apply, live convergence, and shell startup.
 - 2026-04-20 — Replaced Homebrew-only chezmoi install guidance in bootstrap/README with generic OS-aware wording.
 - 2026-04-20 — Switched the managed Codex directory to `private_dot_codex` so `~/.codex` stays `700`.
 - 2026-04-13 — Strengthened the global AGENTS guidance to require proactive notebook updates and a proposed commit message for the full uncommitted diff after every turn.

@@ -77,7 +77,12 @@ check_shell_syntax() {
   bash -n "$repo_root/home/dot_bash_profile"
   bash -n "$repo_root/home/dot_zshrc"
 
-  # Keep owned helpers and settings scripts syntactically valid, excluding vendored trees.
+  # Parse-only: never executes the file, so `verify.sh` in this list does not re-enter the script.
+  for script_path in "$repo_root"/scripts/*.sh; do
+    [[ -e "$script_path" ]] || continue
+    bash -n "$script_path"
+  done
+
   for script_path in "$repo_root"/bash/*.sh "$repo_root"/settings/*.sh "$repo_root"/settings/git/*.sh; do
     [[ -e "$script_path" ]] || continue
     bash -n "$script_path"
