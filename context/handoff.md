@@ -1,26 +1,30 @@
 # Handoff
 
 ## Current State
-- What works: chezmoi bootstrap (`bootstrap.sh`) installs dotfiles from `home/`; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `~/.config/{shell,bash,zsh}/`; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`).
+- What works: chezmoi bootstrap (`bootstrap.sh`) installs dotfiles from `home/`; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `~/.config/{shell,bash,zsh}/`; zsh now has native prompt/completion wiring (`compinit`, managed `_git`, and `prompt.zsh`) that mirrors the bash prompt shape without reusing bash prompt internals; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`).
 - Editor direction: **Vanilla Vim** is the target for dotfiles (Vim 8+ compatible plugins, no Neovim requirement) so SSH sessions can stay simple: get dotfiles on the machine, bootstrap, use `vim`. **Neovim** is explicitly a possible next step—see `context/decisions.md`—not part of the current plugin migration.
-- What’s in progress: Shell startup now has the new POSIX baseline plus bash/zsh wrappers; the remaining shell work is the zsh prompt/completion port on top of that shared layout. The shell-language split is now intentional rather than transitional: `bootstrap.sh` is POSIX `sh`, `scripts/verify.sh` remains bash as a repo-local dev tool, and zsh is the interactive target. Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
+- What’s in progress: Shell startup now has the new POSIX baseline plus bash/zsh wrappers, and the first real zsh prompt/completion slice has landed. The shell-language split is now intentional rather than transitional: `bootstrap.sh` is POSIX `sh`, `scripts/verify.sh` remains bash as a repo-local dev tool, and zsh is the interactive target. Remaining shell work is now zsh-first tuning/extensions rather than basic bootstrapping, with the shared boundary clarified as “portable policy/helpers in `shell/`, shell-native prompt/completion internals in `bash/` and `zsh/`.” Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Finish the zsh prompt and completion port on top of the new shared shell baseline, while keeping bash stable.
-2. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
-3. **Third-to-last (planned):** Re-evaluate all **git submodules** and managed CLI utilities (`~/.local/bin`) — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`.
-4. **Second-to-last (planned):** Review the **tmux** configuration after that submodule/CLI audit and before any Neovim decision — see `context/tasks.md` task `01KPVT9N992M71VGJVBXDATR7B`.
-5. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
+1. Tune and extend the zsh interactive experience now that native prompt/completion parity is in place, while keeping bash stable.
+2. Do an **XDG integration pass** across shell/runtime files and managed utilities after the current zsh-focused work — see `context/tasks.md` task `01KPWZ6ZQPJHEE3YM1BYVPG679`.
+3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+4. **Third-to-last (planned):** Re-evaluate all **git submodules** and managed CLI utilities (`~/.local/bin`) — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`.
+5. **Second-to-last (planned):** Review the **tmux** configuration after that submodule/CLI audit and before any Neovim decision — see `context/tasks.md` task `01KPVT9N992M71VGJVBXDATR7B`.
+6. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
 
 ## Active Tasks
-None (see `tasks.md`).
+- `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; the next slice is zsh-specific tuning/extensions on top of the new native prompt/completion layer.
 
 ## Quick Verify
 - Fast checks: `bash -n` on edited shell scripts; `chezmoi --source "$PWD" diff` or temporary-destination apply for dotfile target-state review.
 - Full gate: `scripts/verify.sh`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-04-23 — **Shell-sharing boundary clarified:** keep portable policy/helpers in `home/dot_config/shell/`, but keep interactive prompt/completion/hook internals native to bash vs zsh rather than inventing a shared compatibility layer.
+- 2026-04-23 — **Queued an XDG integration pass:** added a planned task to audit config/cache/state/data placement across shell runtime and managed utilities, and moved it into the near-term ordered next steps right after the current zsh-focused shell work.
+- 2026-04-22 — **Zsh prompt/completion port started for real:** added `home/dot_config/zsh/prompt.zsh`, wired `compinit` plus the managed `_git` completion file in `rc.zsh`, mirrored the bash prompt shape in zsh-native prompt escapes/hooks, and updated `scripts/verify.sh` to assert the new zsh prompt/completion layer. Also fixed a shell-init gotcha by keeping load-guard sentinels shell-local instead of exported, so nested shells do not skip their own startup.
 - 2026-04-22 — **Shell language roles clarified:** treat POSIX `sh` as the portability layer for deployment/shared runtime baselines, keep `scripts/verify.sh` in bash for predictable repo-local command orchestration, and reserve zsh effort for interactive prompt/completion UX. This is now a deliberate policy, not just a legacy artifact.
 - 2026-04-22 — **Bootstrap no longer depends on a chezmoi config template:** removed `home/.chezmoi.toml.tmpl`, made `bootstrap.sh` pass `--config /dev/null --config-format toml --mode symlink` directly, pinned its persistent state under `~/.local/state`, and updated `scripts/verify.sh` plus docs so bootstrap is self-contained and no longer warns about stale config-template state.
 - 2026-04-22 — **Shell baseline refactor:** Replaced the repo-root `DOTFILESDIR` startup path with a POSIX baseline (`.profile` / `.shrc`), shell-specific wrappers for bash/zsh, shared config under `~/.config/shell/`, shell-specific config under `~/.config/{bash,zsh}/`, and CLI utilities under `~/.local/bin/`. The deployed shell stack is symlink-backed again, including symlink templates for vendored git helpers, so `git pull` and submodule updates flow through without re-running bootstrap; temp-home bash/zsh startup smoke passes with the new layout.

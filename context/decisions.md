@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-23 — Keep interactive shell internals native to bash vs zsh
+- Decider: Anthony
+- Decision: Share portable shell policy and helpers through `home/dot_config/shell/`, but keep prompt/completion/hook internals native to each interactive shell. Concretely, continue to share PATH/editor/pager defaults, aliases, and portable helper functions across shells, while keeping `PROMPT_COMMAND`/`__git_ps1` logic in bash and `precmd`/`compinit`/native prompt escapes in zsh.
+- Rationale: The useful overlap between bash and zsh is at the policy/helper level, not at the prompt/completion mechanism level. Forcing a shared abstraction over shell-specific hooks and prompt semantics would add indirection without buying much reuse, and would make the zsh setup feel more like “bash compatibility mode” than a first-class zsh configuration.
+- Consequences / follow-ups: Treat the current shared `shell/` layer as the portability boundary. Prefer zsh-native solutions for future interactive work rather than trying to route new features through shared bash/zsh helper shims. Bash can remain stable/legacy unless a change clearly benefits both shells.
+
 ## 2026-04-22 — Split shell language roles by use case
 - Decider: Anthony
 - Decision: Use POSIX `sh` for deployment-critical bootstrap paths, `bash` for repo-local dev automation, and `zsh` as the interactive shell that receives ongoing UX investment. Concretely, keep `bootstrap.sh` POSIX `sh`, keep `scripts/verify.sh` in bash, and continue the prompt/completion migration work in zsh.
