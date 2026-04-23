@@ -1,0 +1,9 @@
+export ENV="$HOME/.shrc"
+
+if [ -r "$HOME/.config/shell/profile.sh" ]; then
+  . "$HOME/.config/shell/profile.sh"
+fi
+
+if [ -r "$HOME/.profile_local" ]; then
+  . "$HOME/.profile_local"
+fi

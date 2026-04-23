@@ -1,11 +1,11 @@
-# ls Aliases
+# ls aliases
 alias ll='ls -lh'
 alias la='ls -a'
 alias lla='ll -a'
 alias lld='lla | grep "^d"'
 alias llf='lla | grep -v "^d"'
 
-# cd Aliases
+# cd aliases
 alias -- -='cd -'
 alias cd..='cd ..'
 alias ..='cd ..'
@@ -18,25 +18,23 @@ alias ........='cd ../../../../../../..'
 alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 
-# dig Aliases
+# dig aliases
 alias digs='dig +short'
 
-# Color Aliases
+# color aliases
 alias grep='grep --color=auto'
 
-# Git Aliases
+# git aliases
 alias gd='git diff'
 alias gs='git status'
 
-# Ruby Aliases
-#alias be='bundle exec'
-
-# Webpack Aliases
+# webpack aliases
 alias wp='webpack --progress --colors'
 alias ww='wp --watch'
 
-# Homebrew Aliases
+# homebrew aliases
 alias brewup='brew update && brew upgrade'
 
-# Codex Aliases
+# codex aliases
 alias codex='codex --add-dir ~/.codex'
+alias codex-git='dotfiles_codex_git'

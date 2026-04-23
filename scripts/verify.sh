@@ -73,9 +73,22 @@ check_shell_syntax() {
   local script_path
 
   log "checking shell syntax"
-  bash -n "$repo_root/bootstrap.sh"
+  sh -n "$repo_root/bootstrap.sh"
+  sh -n "$repo_root/home/dot_profile"
+  sh -n "$repo_root/home/dot_shrc"
   bash -n "$repo_root/home/dot_bash_profile"
-  bash -n "$repo_root/home/dot_zshrc"
+  bash -n "$repo_root/home/dot_bashrc"
+  sh -n "$repo_root/home/dot_config/shell/profile.sh"
+  sh -n "$repo_root/home/dot_config/shell/rc.sh"
+  sh -n "$repo_root/home/dot_config/shell/aliases.sh"
+  sh -n "$repo_root/home/dot_config/shell/functions.sh"
+  bash -n "$repo_root/home/dot_config/bash/rc.bash"
+  bash -n "$repo_root/home/dot_config/bash/prompt.bash"
+  sh -n "$repo_root/home/dot_local/bin/make-chrome-app"
+
+  zsh -n "$repo_root/home/dot_zprofile"
+  zsh -n "$repo_root/home/dot_zshrc"
+  zsh -n "$repo_root/home/dot_config/zsh/rc.zsh"
 
   # Parse-only: never executes the file, so `verify.sh` in this list does not re-enter the script.
   for script_path in "$repo_root"/scripts/*.sh; do
@@ -83,7 +96,7 @@ check_shell_syntax() {
     bash -n "$script_path"
   done
 
-  for script_path in "$repo_root"/bash/*.sh "$repo_root"/settings/*.sh "$repo_root"/settings/git/*.sh; do
+  for script_path in "$repo_root"/settings/*.sh "$repo_root"/settings/git/*.sh; do
     [[ -e "$script_path" ]] || continue
     bash -n "$script_path"
   done
@@ -99,6 +112,7 @@ check_managed_targets() {
 
   cat >"$expected" <<'EOF'
 .bash_profile
+.bashrc
 .claude
 .claude/CLAUDE.md
 .codex
@@ -107,13 +121,32 @@ check_managed_targets() {
 .codex/rules
 .codex/rules/global.rules
 .config
+.config/bash
+.config/bash/git-completion.bash
+.config/bash/git-prompt.sh
+.config/bash/prompt.bash
+.config/bash/rc.bash
 .config/ghostty
 .config/ghostty/config
+.config/shell
+.config/shell/aliases.sh
+.config/shell/functions.sh
+.config/shell/profile.sh
+.config/shell/rc.sh
+.config/zsh
+.config/zsh/_git
+.config/zsh/rc.zsh
 .gitignore_global
+.local
+.local/bin
+.local/bin/make-chrome-app
+.profile
+.shrc
 .tmux.conf
 .vim
 .vimpagerrc
 .vimrc
+.zprofile
 .zshrc
 EOF
 
@@ -128,13 +161,26 @@ check_temp_apply() {
   tmp_home="$(make_temp_dir)"
   HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" "$repo_root/bootstrap.sh" --verbose >/dev/null
 
-  grep -Fx 'mode = "symlink"' "$tmp_home/.config/chezmoi/chezmoi.toml" >/dev/null
   assert_mode "$tmp_home/.claude" 700
   assert_mode "$tmp_home/.codex" 700
-  assert_mode "$tmp_home/.config/chezmoi/chezmoi.toml" 600
 
+  assert_symlink "$tmp_home/.profile" "$repo_root/home/dot_profile"
+  assert_symlink "$tmp_home/.shrc" "$repo_root/home/dot_shrc"
   assert_symlink "$tmp_home/.bash_profile" "$repo_root/home/dot_bash_profile"
+  assert_symlink "$tmp_home/.bashrc" "$repo_root/home/dot_bashrc"
+  assert_symlink "$tmp_home/.zprofile" "$repo_root/home/dot_zprofile"
   assert_symlink "$tmp_home/.zshrc" "$repo_root/home/dot_zshrc"
+  assert_symlink "$tmp_home/.config/shell/profile.sh" "$repo_root/home/dot_config/shell/profile.sh"
+  assert_symlink "$tmp_home/.config/shell/rc.sh" "$repo_root/home/dot_config/shell/rc.sh"
+  assert_symlink "$tmp_home/.config/shell/aliases.sh" "$repo_root/home/dot_config/shell/aliases.sh"
+  assert_symlink "$tmp_home/.config/shell/functions.sh" "$repo_root/home/dot_config/shell/functions.sh"
+  assert_symlink "$tmp_home/.config/bash/rc.bash" "$repo_root/home/dot_config/bash/rc.bash"
+  assert_symlink "$tmp_home/.config/bash/prompt.bash" "$repo_root/home/dot_config/bash/prompt.bash"
+  assert_symlink "$tmp_home/.config/bash/git-prompt.sh" "$repo_root/lib/git/contrib/completion/git-prompt.sh"
+  assert_symlink "$tmp_home/.config/bash/git-completion.bash" "$repo_root/lib/git/contrib/completion/git-completion.bash"
+  assert_symlink "$tmp_home/.config/zsh/rc.zsh" "$repo_root/home/dot_config/zsh/rc.zsh"
+  assert_symlink "$tmp_home/.config/zsh/_git" "$repo_root/lib/git/contrib/completion/git-completion.zsh"
+  assert_symlink "$tmp_home/.local/bin/make-chrome-app" "$repo_root/home/dot_local/bin/make-chrome-app"
   assert_symlink "$tmp_home/.claude/CLAUDE.md" "$repo_root/home/private_dot_claude/CLAUDE.md"
   assert_symlink "$tmp_home/.codex/AGENTS.md" "$repo_root/home/private_dot_codex/AGENTS.md"
   assert_symlink "$tmp_home/.codex/config.toml" "$repo_root/home/private_dot_codex/config.toml"
@@ -162,15 +208,13 @@ check_live_home_converged() {
 
 check_shell_startup() {
   log "checking shell startup smoke tests"
-  EXPECTED_REPO_ROOT="$repo_root" bash -lc '
-    source ~/.bash_profile >/dev/null
-    [[ "${DOTFILESDIR:-}" == "$EXPECTED_REPO_ROOT" ]]
+  bash -lic '
+    [[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]
+    [[ "${DOTFILES_BASH_RC_LOADED:-0}" == 1 ]]
     command -v make-chrome-app >/dev/null
   '
 
-  if command -v zsh >/dev/null 2>&1; then
-    zsh -ic 'source ~/.zshrc >/dev/null; alias codex >/dev/null; whence -w codex-git >/dev/null'
-  fi
+  ZDOTDIR="$HOME" zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; command -v make-chrome-app >/dev/null'
 }
 
 main() {
@@ -180,6 +224,7 @@ main() {
   require_command find
   require_command git
   require_command readlink
+  require_command zsh
 
   cd "$repo_root"
 
