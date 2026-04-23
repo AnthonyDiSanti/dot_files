@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-22 — Split shell language roles by use case
+- Decider: Anthony
+- Decision: Use POSIX `sh` for deployment-critical bootstrap paths, `bash` for repo-local dev automation, and `zsh` as the interactive shell that receives ongoing UX investment. Concretely, keep `bootstrap.sh` POSIX `sh`, keep `scripts/verify.sh` in bash, and continue the prompt/completion migration work in zsh.
+- Rationale: The three use cases have different priorities. Deployment should optimize for portability, dev automation should optimize for boring/predictable command orchestration, and interactive shell config should optimize for completion, prompt, and daily ergonomics. Treating zsh as a universal scripting upgrade would not buy much for `verify.sh`, which is mostly assertions and subprocess calls.
+- Consequences / follow-ups: Shared runtime shell files under `home/dot_config/shell/` should stay POSIX-compatible unless there is a strong reason otherwise. New repo-local automation can default to bash unless portability pressure suggests `sh` or complexity suggests a higher-level language. Continue the next shell work in zsh without feeling pressure to port `verify.sh`.
+
+## 2026-04-22 — Preserve live-update semantics for deployed dotfiles
+- Decider: Anthony
+- Decision: Treat bootstrap as initial deployment/hydration, not as the normal update path. `git pull` on the repo should live-update deployed config unless the deployment shape itself changes (new targets, removed targets, target type changes, etc.).
+- Rationale: This repo is intended to behave like a classic symlink-managed dotfiles checkout: the repo remains the obvious source of truth, and routine config updates should flow through by virtue of the filesystem links rather than requiring a separate apply step.
+- Consequences / follow-ups: Prefer symlinks into the repo, including symlink templates for vendored assets or generated link targets, over copied/rendered runtime files. The shell layout refactor was updated to follow this rule; keep applying it as more zsh work lands.
+
+## 2026-04-22 — Split shell startup into POSIX baseline plus bash/zsh layers
+- Decider: Anthony
+- Decision: Replace the old bash-only repo-root shell bootstrap with a home-managed startup stack: `.profile` / `.shrc` as the POSIX baseline, `.bash_profile` / `.bashrc` for bash, and `.zprofile` / `.zshrc` for zsh. Move shared runtime logic under `home/dot_config/shell/`, bash-specific logic under `home/dot_config/bash/`, zsh-specific logic under `home/dot_config/zsh/`, and install user CLI tools from `home/dot_local/bin/` to `~/.local/bin/`.
+- Rationale: The repo should stay usable over SSH on arbitrary machines, including cases where only a subset of files are manually symlinked and chezmoi is not installed. A POSIX baseline keeps common behavior portable across `sh`, `bash`, and `zsh`, while shell-specific layers allow the zsh migration to move forward without breaking bash.
+- Consequences / follow-ups: Runtime shell startup should no longer depend on resolving the repo root dynamically inside the shell. The deployed shell stack is symlink-backed, and vendored Git prompt/completion helpers are exposed through symlink templates into `lib/git/`, so `git pull` and submodule updates propagate immediately. Manual symlink setups still degrade gracefully to system helpers or a minimal branch-only prompt. Next work is the actual zsh prompt/completion port on top of this shared layout.
+
 ## 2026-04-21 — Manage Ghostty Solarized Dark in chezmoi (modern color pipeline)
 - Decider: Anthony
 - Decision: Ship **`home/dot_config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`scripts/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.

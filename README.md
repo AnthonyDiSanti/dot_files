@@ -10,10 +10,9 @@ This repo uses [chezmoi](https://www.chezmoi.io/) to symlink dotfiles into
 2. Clone this repo, including submodules: `git clone --recurse-submodules ...`
 3. Run `./bootstrap.sh`
 
-`bootstrap.sh` runs `chezmoi apply` with this repo as the source, adding
-`--init` only when the chezmoi config is missing or older than the repo
-template. The chezmoi source root is `home/`, configured by `.chezmoiroot`, and
-`home/.chezmoi.toml.tmpl` sets symlink mode.
+`bootstrap.sh` hydrates git submodules, then runs chezmoi with an empty config,
+the repo as `--source`, and `--mode symlink`. The chezmoi source root is
+`home/`, configured by `.chezmoiroot`.
 
 ### Previewing Changes ###
 1. Run `chezmoi --source "$PWD" diff`

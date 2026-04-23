@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+case $- in
+  *i*) ;;
+  *) return 0 ;;
+esac
+
+if [ -r "$HOME/.shrc" ]; then
+  source "$HOME/.shrc"
+fi
+
+if [ -r "$HOME/.config/bash/rc.bash" ]; then
+  source "$HOME/.config/bash/rc.bash"
+fi

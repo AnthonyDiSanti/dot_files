@@ -1,16 +1,17 @@
 # Handoff
 
 ## Current State
-- What works: chezmoi bootstrap (`bootstrap.sh`) links dotfiles from `home/`; shell startup sources `bash/*.sh` and adds `bin/` to `PATH`; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`).
+- What works: chezmoi bootstrap (`bootstrap.sh`) installs dotfiles from `home/`; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `~/.config/{shell,bash,zsh}/`; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`).
 - Editor direction: **Vanilla Vim** is the target for dotfiles (Vim 8+ compatible plugins, no Neovim requirement) so SSH sessions can stay simple: get dotfiles on the machine, bootstrap, use `vim`. **Neovim** is explicitly a possible next step—see `context/decisions.md`—not part of the current plugin migration.
-- What’s in progress: No active implementation work. Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
+- What’s in progress: Shell startup now has the new POSIX baseline plus bash/zsh wrappers; the remaining shell work is the zsh prompt/completion port on top of that shared layout. The shell-language split is now intentional rather than transitional: `bootstrap.sh` is POSIX `sh`, `scripts/verify.sh` remains bash as a repo-local dev tool, and zsh is the interactive target. Codex now loads the managed `~/.codex/rules/global.rules` symlink from chezmoi, with broad `git` and `npm` allow rules and an empty local `default.rules`.
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Plan the shell migration from bash infrastructure toward zsh, while generalizing the new `.zshrc` use case back to bash where appropriate.
+1. Finish the zsh prompt and completion port on top of the new shared shell baseline, while keeping bash stable.
 2. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
-3. **Second-to-last (planned):** Re-evaluate all **git submodules** and **`bin/`** contents — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`.
-4. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
+3. **Third-to-last (planned):** Re-evaluate all **git submodules** and managed CLI utilities (`~/.local/bin`) — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`.
+4. **Second-to-last (planned):** Review the **tmux** configuration after that submodule/CLI audit and before any Neovim decision — see `context/tasks.md` task `01KPVT9N992M71VGJVBXDATR7B`.
+5. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
 
 ## Active Tasks
 None (see `tasks.md`).
@@ -20,7 +21,13 @@ None (see `tasks.md`).
 - Full gate: `scripts/verify.sh`; add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
-- 2026-04-21 — **Roadmap tail:** Planned **second-to-last** workstream — re-evaluate all **git submodules** and **`bin/`**; **Neovim** consideration is the **final** planned item (`context/tasks.md`).
+- 2026-04-22 — **Shell language roles clarified:** treat POSIX `sh` as the portability layer for deployment/shared runtime baselines, keep `scripts/verify.sh` in bash for predictable repo-local command orchestration, and reserve zsh effort for interactive prompt/completion UX. This is now a deliberate policy, not just a legacy artifact.
+- 2026-04-22 — **Bootstrap no longer depends on a chezmoi config template:** removed `home/.chezmoi.toml.tmpl`, made `bootstrap.sh` pass `--config /dev/null --config-format toml --mode symlink` directly, pinned its persistent state under `~/.local/state`, and updated `scripts/verify.sh` plus docs so bootstrap is self-contained and no longer warns about stale config-template state.
+- 2026-04-22 — **Shell baseline refactor:** Replaced the repo-root `DOTFILESDIR` startup path with a POSIX baseline (`.profile` / `.shrc`), shell-specific wrappers for bash/zsh, shared config under `~/.config/shell/`, shell-specific config under `~/.config/{bash,zsh}/`, and CLI utilities under `~/.local/bin/`. The deployed shell stack is symlink-backed again, including symlink templates for vendored git helpers, so `git pull` and submodule updates flow through without re-running bootstrap; temp-home bash/zsh startup smoke passes with the new layout.
+- 2026-04-22 — **Bootstrap now hydrates submodules:** `bootstrap.sh` runs `git submodule update --init --recursive` when the repo is a real git checkout, then applies chezmoi state. Live `./bootstrap.sh` and the full `./scripts/verify.sh` gate both pass after this change.
+- 2026-04-22 — **Shell tooling split clarified:** `scripts/verify.sh` still uses bash as the driver but now treats `zsh` as a required dev dependency and always runs zsh checks. `bootstrap.sh` is now POSIX `sh`, since deployment portability matters more there.
+- 2026-04-22 — **Roadmap tail update:** Inserted a planned **tmux config review** between the submodule/CLI audit and the final Neovim evaluation.
+- 2026-04-21 — **Roadmap tail:** Planned **third-to-last** workstream — re-evaluate all **git submodules** and managed CLI utilities under `home/dot_local/bin/`; **Neovim** consideration is the **final** planned item (`context/tasks.md`).
 - 2026-04-21 — **Vim + Solarized + Ghostty (single color stack):** **vim-plug** (`lib/vim-plug` submodule, `plug#begin('~/.vim/plugged')`, upgraded ctrlpvim / easymotion / mundo / preservim NERD*, Gundo → Mundo). **Vim colors:** **lifepillar/vim-solarized8** (`colorscheme solarized8`, `termguicolors`, `t_8f`/`t_8b`); removed unused **`settings/solarized`** submodule; **tmux** `terminal-features ',*:RGB'` for true-color passthrough. **Ghostty:** `home/dot_config/ghostty/config` → `~/.config/ghostty/config` — Solarized Dark (Xresources hex), `alpha-blending = native`, `palette-generate = true`, `macos-titlebar-style = transparent`. **`scripts/verify.sh`** extended for `.config/ghostty/*`; `settings/README.md`, `context/knowledge/solarized.md`, README/AGENTS/context updated. `scripts/verify.sh` passes.
 - 2026-04-20 — Removed dropped Vim plugins from `home/dot_vimrc` and `home/.vim/bundle/` (language stacks, a.vim, capslock, matchit); removed LESS compile maps.
 - 2026-04-20 — Decided to abandon Vundle for Vim native packages, drop language plugins and capslock, upgrade CtrlP/EasyMotion/Mundo/NERD* as planned, prefer ctrlpvim over fzf.vim for in-editor UX; require cleaning config references to removed plugins.

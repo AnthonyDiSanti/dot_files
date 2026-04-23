@@ -1,7 +1,7 @@
 # Shell initialization and shared functions
 
-- Source: `home/dot_bash_profile`, `bash/`
-- Why it matters: controls PATH, prompt, and shared shell helpers.
-- When to consult: adding new shell functions or CLI utilities.
-- Key points: `.bash_profile` sources every readable `bash/*.sh` (nullglob, quoted paths), adds `bin/` to `PATH`, and loads git prompt/completion from `lib/git/contrib`.
-- Gotchas: `lib/git` is vendored; keep it intact for prompt/completion to work.
+- Source: `home/dot_profile`, `home/dot_shrc`, `home/dot_bash_profile`, `home/dot_bashrc`, `home/dot_zprofile`, `home/dot_zshrc`, and `home/dot_config/{shell,bash,zsh}/`
+- Why it matters: controls PATH, prompt, aliases, and the shared shell baseline.
+- When to consult: changing shell startup order, adding shared shell helpers, or deciding whether behavior belongs in POSIX baseline vs shell-specific layers.
+- Key points: `.profile` loads `~/.config/shell/profile.sh`; `.shrc` loads `~/.config/shell/rc.sh`; bash and zsh each have profile/rc wrappers that layer their shell-specific config on top. `~/.local/bin` and `~/bin` are added in the shared POSIX login layer, and `make-chrome-app` now lives in `~/.local/bin/`. Shell-language policy is now explicit: use POSIX `sh` for deployment-critical bootstrap/shared runtime baselines, `bash` for repo-local dev automation like `scripts/verify.sh`, and `zsh` for interactive prompt/completion UX.
+- Gotchas: shell files under `home/dot_config/bash/` and `home/dot_config/zsh/` are intended for their target shell only; `lib/git` is vendored, and the managed git helper files under `~/.config/{bash,zsh}/` are symlinked into that vendor tree via `symlink_*.tmpl` entries so `git pull` and submodule updates flow through immediately. Do not assume zsh is automatically the best scripting language here; for mostly-orchestration scripts, bash remains the default unless there is a specific zsh-only payoff.

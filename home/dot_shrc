@@ -1,0 +1,12 @@
+case $- in
+  *i*) ;;
+  *) return 0 ;;
+esac
+
+if [ -r "$HOME/.config/shell/rc.sh" ]; then
+  . "$HOME/.config/shell/rc.sh"
+fi
+
+if [ -r "$HOME/.sh_local" ]; then
+  . "$HOME/.sh_local"
+fi
