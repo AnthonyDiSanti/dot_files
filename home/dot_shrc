@@ -3,10 +3,14 @@ case $- in
   *) return 0 ;;
 esac
 
-if [ -r "$HOME/.config/shell/rc.sh" ]; then
-  . "$HOME/.config/shell/rc.sh"
+dotfiles_shell_bootstrap_home="${XDG_CONFIG_HOME:-$HOME/.config}/shell"
+
+if [ -r "$dotfiles_shell_bootstrap_home/rc.sh" ]; then
+  . "$dotfiles_shell_bootstrap_home/rc.sh" || return 1
 fi
 
 if [ -r "$HOME/.sh_local" ]; then
-  . "$HOME/.sh_local"
+  . "$HOME/.sh_local" || return 1
 fi
+
+unset dotfiles_shell_bootstrap_home

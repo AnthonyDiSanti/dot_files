@@ -78,6 +78,7 @@ check_shell_syntax() {
   sh -n "$repo_root/home/dot_shrc"
   bash -n "$repo_root/home/dot_bash_profile"
   bash -n "$repo_root/home/dot_bashrc"
+  sh -n "$repo_root/home/dot_config/shell/paths.sh"
   sh -n "$repo_root/home/dot_config/shell/profile.sh"
   sh -n "$repo_root/home/dot_config/shell/rc.sh"
   sh -n "$repo_root/home/dot_config/shell/aliases.sh"
@@ -132,6 +133,7 @@ check_managed_targets() {
 .config/shell
 .config/shell/aliases.sh
 .config/shell/functions.sh
+.config/shell/paths.sh
 .config/shell/profile.sh
 .config/shell/rc.sh
 .config/zsh
@@ -172,6 +174,7 @@ check_temp_apply() {
   assert_symlink "$tmp_home/.bashrc" "$repo_root/home/dot_bashrc"
   assert_symlink "$tmp_home/.zprofile" "$repo_root/home/dot_zprofile"
   assert_symlink "$tmp_home/.zshrc" "$repo_root/home/dot_zshrc"
+  assert_symlink "$tmp_home/.config/shell/paths.sh" "$repo_root/home/dot_config/shell/paths.sh"
   assert_symlink "$tmp_home/.config/shell/profile.sh" "$repo_root/home/dot_config/shell/profile.sh"
   assert_symlink "$tmp_home/.config/shell/rc.sh" "$repo_root/home/dot_config/shell/rc.sh"
   assert_symlink "$tmp_home/.config/shell/aliases.sh" "$repo_root/home/dot_config/shell/aliases.sh"
@@ -215,9 +218,28 @@ check_shell_startup() {
     -u DOTFILES_SHELL_PROFILE_LOADED \
     -u DOTFILES_SHELL_RC_LOADED \
     -u DOTFILES_BASH_RC_LOADED \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE \
     bash -lic '
     [[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]
     [[ "${DOTFILES_BASH_RC_LOADED:-0}" == 1 ]]
+    [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]
+    [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]
+    [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]
+    [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]
+    [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]
+    [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]
+    [[ "${dotfiles_bash_config_home:-}" == "$HOME/.config/bash" ]]
+    [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]
+    [[ "${dotfiles_bash_state_home:-}" == "$HOME/.local/state/bash" ]]
+    [[ "${HISTFILE:-}" == "$HOME/.local/state/bash/history" ]]
+    [[ "${HISTSIZE:-}" == 50000 ]]
+    [[ "${HISTFILESIZE:-}" == 50000 ]]
     command -v make-chrome-app >/dev/null
   '
 
@@ -227,8 +249,15 @@ check_shell_startup() {
     -u DOTFILES_ZSH_RC_LOADED \
     -u DOTFILES_ZSH_PROMPT_LOADED \
     -u DOTFILES_ZSH_COMPLETION_LOADED \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u SAVEHIST \
     ZDOTDIR="$HOME" \
-    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
+    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]; [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]; [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]; [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]; [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]; [[ "${dotfiles_zsh_config_home:-}" == "$HOME/.config/zsh" ]]; [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_zsh_state_home:-}" == "$HOME/.local/state/zsh" ]]; [[ "${dotfiles_zsh_cache_home:-}" == "$HOME/.cache/zsh" ]]; [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]; [[ "${HISTSIZE:-}" == 50000 ]]; [[ "${SAVEHIST:-}" == 50000 ]]; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
 }
 
 main() {
