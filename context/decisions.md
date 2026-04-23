@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-23 — Default shell internals to XDG config/state paths
+- Decider: Anthony
+- Decision: Keep the standard shell entrypoints in `$HOME` (`.profile`, `.shrc`, `.bashrc`, `.zshrc`, etc.) for compatibility, but default the internal shell/runtime config to `XDG_CONFIG_HOME` and shell history/state to `XDG_STATE_HOME`. Concretely, `home/dot_config/shell/paths.sh` now exports default XDG base-dir variables and derives unexported internal `dotfiles_*` path variables, managed bash/zsh config is sourced through that internal path layer, and bash/zsh history files live under `~/.local/state/{bash,zsh}/history` unless overridden.
+- Rationale: The home-directory entrypoints are still the right compatibility boundary for login and interactive shells, but the internals behind them do not need to keep hardcoding `~/.config` or state files like shell history in `$HOME`. Separating exported `XDG_*` vars from the shell's internal resolved `dotfiles_*` layer keeps path policy centralized and gives future flexibility without leaking extra globals to child processes.
+- Consequences / follow-ups: Continue treating `$HOME` shell wrappers as compatibility shims into the real managed config under `XDG_CONFIG_HOME`. Prefer `XDG_CACHE_HOME` / `XDG_STATE_HOME` for shell-generated runtime artifacts such as completion caches and history files, but route shell-internal path lookups through `dotfiles_*` vars rather than sprinkling raw XDG fallback logic everywhere. `scripts/verify.sh` now asserts the default XDG env vars, internal path vars, and history locations in both bash and zsh startups.
+
 ## 2026-04-23 — Keep interactive shell internals native to bash vs zsh
 - Decider: Anthony
 - Decision: Share portable shell policy and helpers through `home/dot_config/shell/`, but keep prompt/completion/hook internals native to each interactive shell. Concretely, continue to share PATH/editor/pager defaults, aliases, and portable helper functions across shells, while keeping `PROMPT_COMMAND`/`__git_ps1` logic in bash and `precmd`/`compinit`/native prompt escapes in zsh.

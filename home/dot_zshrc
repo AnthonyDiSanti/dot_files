@@ -1,7 +1,14 @@
 if [ -r "$HOME/.shrc" ]; then
-  . "$HOME/.shrc"
+  . "$HOME/.shrc" || return 1
 fi
 
-if [ -r "$HOME/.config/zsh/rc.zsh" ]; then
-  . "$HOME/.config/zsh/rc.zsh"
+dotfiles_zsh_bootstrap_home="${dotfiles_zsh_config_home:-${dotfiles_config_home:-${XDG_CONFIG_HOME:-$HOME/.config}}/zsh}"
+if [ -r "$dotfiles_zsh_bootstrap_home/rc.zsh" ]; then
+  . "$dotfiles_zsh_bootstrap_home/rc.zsh" || return 1
 fi
+
+if [ -r "$HOME/.zsh_local" ]; then
+  . "$HOME/.zsh_local" || return 1
+fi
+
+unset dotfiles_zsh_bootstrap_home
