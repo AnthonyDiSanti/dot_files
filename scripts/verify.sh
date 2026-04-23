@@ -89,6 +89,7 @@ check_shell_syntax() {
   zsh -n "$repo_root/home/dot_zprofile"
   zsh -n "$repo_root/home/dot_zshrc"
   zsh -n "$repo_root/home/dot_config/zsh/rc.zsh"
+  zsh -n "$repo_root/home/dot_config/zsh/prompt.zsh"
 
   # Parse-only: never executes the file, so `verify.sh` in this list does not re-enter the script.
   for script_path in "$repo_root"/scripts/*.sh; do
@@ -135,6 +136,7 @@ check_managed_targets() {
 .config/shell/rc.sh
 .config/zsh
 .config/zsh/_git
+.config/zsh/prompt.zsh
 .config/zsh/rc.zsh
 .gitignore_global
 .local
@@ -179,6 +181,7 @@ check_temp_apply() {
   assert_symlink "$tmp_home/.config/bash/git-prompt.sh" "$repo_root/lib/git/contrib/completion/git-prompt.sh"
   assert_symlink "$tmp_home/.config/bash/git-completion.bash" "$repo_root/lib/git/contrib/completion/git-completion.bash"
   assert_symlink "$tmp_home/.config/zsh/rc.zsh" "$repo_root/home/dot_config/zsh/rc.zsh"
+  assert_symlink "$tmp_home/.config/zsh/prompt.zsh" "$repo_root/home/dot_config/zsh/prompt.zsh"
   assert_symlink "$tmp_home/.config/zsh/_git" "$repo_root/lib/git/contrib/completion/git-completion.zsh"
   assert_symlink "$tmp_home/.local/bin/make-chrome-app" "$repo_root/home/dot_local/bin/make-chrome-app"
   assert_symlink "$tmp_home/.claude/CLAUDE.md" "$repo_root/home/private_dot_claude/CLAUDE.md"
@@ -208,13 +211,24 @@ check_live_home_converged() {
 
 check_shell_startup() {
   log "checking shell startup smoke tests"
-  bash -lic '
+  env \
+    -u DOTFILES_SHELL_PROFILE_LOADED \
+    -u DOTFILES_SHELL_RC_LOADED \
+    -u DOTFILES_BASH_RC_LOADED \
+    bash -lic '
     [[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]
     [[ "${DOTFILES_BASH_RC_LOADED:-0}" == 1 ]]
     command -v make-chrome-app >/dev/null
   '
 
-  ZDOTDIR="$HOME" zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; command -v make-chrome-app >/dev/null'
+  env \
+    -u DOTFILES_SHELL_PROFILE_LOADED \
+    -u DOTFILES_SHELL_RC_LOADED \
+    -u DOTFILES_ZSH_RC_LOADED \
+    -u DOTFILES_ZSH_PROMPT_LOADED \
+    -u DOTFILES_ZSH_COMPLETION_LOADED \
+    ZDOTDIR="$HOME" \
+    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
 }
 
 main() {

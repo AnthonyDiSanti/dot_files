@@ -3,7 +3,6 @@ if [ "${DOTFILES_SHELL_PROFILE_LOADED:-0}" = 1 ]; then
   return 0
 fi
 DOTFILES_SHELL_PROFILE_LOADED=1
-export DOTFILES_SHELL_PROFILE_LOADED
 
 dotfiles_path_prepend() {
   case ":${PATH:-}:" in

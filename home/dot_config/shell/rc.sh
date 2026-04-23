@@ -3,7 +3,6 @@ if [ "${DOTFILES_SHELL_RC_LOADED:-0}" = 1 ]; then
   return 0
 fi
 DOTFILES_SHELL_RC_LOADED=1
-export DOTFILES_SHELL_RC_LOADED
 
 set -o vi 2>/dev/null || true
 

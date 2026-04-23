@@ -2,7 +2,6 @@ if [[ ${DOTFILES_BASH_RC_LOADED:-0} == 1 ]]; then
   return 0
 fi
 DOTFILES_BASH_RC_LOADED=1
-export DOTFILES_BASH_RC_LOADED
 
 __dotfiles_bash_source_first_readable() {
   local path
