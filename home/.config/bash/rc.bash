@@ -6,11 +6,6 @@ fi
 source "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-if [[ ${DOTFILES_BASH_RC_LOADED:-0} == 1 ]]; then
-  return 0
-fi
-DOTFILES_BASH_RC_LOADED=1
-
 __dotfiles_bash_source_first_readable() {
   local path
 

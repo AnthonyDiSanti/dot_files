@@ -202,22 +202,8 @@ check_live_home_converged() {
   fi
 }
 
-check_shell_startup() {
-  log "checking shell startup smoke tests"
-  env \
-    -u DOTFILES_SHELL_PROFILE_LOADED \
-    -u DOTFILES_SHELL_RC_LOADED \
-    -u DOTFILES_BASH_RC_LOADED \
-    -u XDG_CONFIG_HOME \
-    -u XDG_CACHE_HOME \
-    -u XDG_DATA_HOME \
-    -u XDG_STATE_HOME \
-    -u HISTFILE \
-    -u HISTSIZE \
-    -u HISTFILESIZE \
-    bash -lic '
-    [[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]
-    [[ "${DOTFILES_BASH_RC_LOADED:-0}" == 1 ]]
+assert_bash_startup() {
+  env "$@" bash -lic '
     [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]
     [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]
     [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]
@@ -238,14 +224,184 @@ check_shell_startup() {
       [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]
     fi
     command -v make-chrome-app >/dev/null
+    declare -F __dotfiles_set_ps1 >/dev/null 2>&1
+    case ";${PROMPT_COMMAND:-};" in
+      *";__dotfiles_set_ps1;"*) ;;
+      *) exit 1 ;;
+    esac
   '
+}
 
-  env \
-    -u DOTFILES_SHELL_PROFILE_LOADED \
-    -u DOTFILES_SHELL_RC_LOADED \
-    -u DOTFILES_ZSH_RC_LOADED \
-    -u DOTFILES_ZSH_PROMPT_LOADED \
-    -u DOTFILES_ZSH_COMPLETION_LOADED \
+assert_bash_rerunnable() {
+  env "$@" bash -lic '
+    old_path=$PATH
+    old_prompt_command=${PROMPT_COMMAND:-}
+
+    source "$HOME/.profile"
+    [[ "$PATH" == "$old_path" ]]
+
+    source "$HOME/.bashrc"
+    [[ "$PATH" == "$old_path" ]]
+    [[ "${PROMPT_COMMAND:-}" == "$old_prompt_command" ]]
+
+    source "$HOME/.bashrc"
+    [[ "$PATH" == "$old_path" ]]
+    [[ "${PROMPT_COMMAND:-}" == "$old_prompt_command" ]]
+  '
+}
+
+assert_sh_startup() {
+  env "$@" sh -lic '
+    [ "${ENV:-}" = "$HOME/.shrc" ]
+    [ "${XDG_CONFIG_HOME:-}" = "$HOME/.config" ]
+    [ "${XDG_CACHE_HOME:-}" = "$HOME/.cache" ]
+    [ "${XDG_DATA_HOME:-}" = "$HOME/.local/share" ]
+    [ "${XDG_STATE_HOME:-}" = "$HOME/.local/state" ]
+    [ "${dotfiles_config_home:-}" = "$HOME/.config" ]
+    [ "${dotfiles_shell_config_home:-}" = "$HOME/.config/shell" ]
+    command -v brew >/dev/null 2>&1 || [ ! -x /opt/homebrew/bin/brew -a ! -x /usr/local/bin/brew ]
+    command -v make-chrome-app >/dev/null 2>&1
+  '
+}
+
+assert_sh_rerunnable() {
+  env "$@" sh -lic '
+    old_path=$PATH
+
+    . "$HOME/.profile"
+    [ "$PATH" = "$old_path" ]
+
+    . "$HOME/.shrc"
+    [ "$PATH" = "$old_path" ]
+  '
+}
+
+assert_zsh_startup() {
+  env "$@" ZDOTDIR="$HOME" zsh -lic '
+    [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]
+    [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]
+    [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]
+    [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]
+    [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]
+    [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]
+    [[ "${dotfiles_zsh_config_home:-}" == "$HOME/.config/zsh" ]]
+    [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]
+    [[ "${dotfiles_zsh_state_home:-}" == "$HOME/.local/state/zsh" ]]
+    [[ "${dotfiles_zsh_cache_home:-}" == "$HOME/.cache/zsh" ]]
+    [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]
+    [[ "${HISTSIZE:-}" == 50000 ]]
+    [[ "${SAVEHIST:-}" == 50000 ]]
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+      [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]
+      [[ "${HOMEBREW_PREFIX:-}" == "/opt/homebrew" ]]
+    elif [[ -x /usr/local/bin/brew ]]; then
+      [[ "$(command -v brew 2>/dev/null)" == "/usr/local/bin/brew" ]]
+      [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]
+    fi
+    (( $+functions[_git] == 1 ))
+    command -v make-chrome-app >/dev/null
+    count=0
+    for fn in $precmd_functions; do
+      [[ $fn == __dotfiles_zsh_precmd ]] && (( count += 1 ))
+    done
+    (( count == 1 ))
+  '
+}
+
+assert_zsh_rerunnable() {
+  env "$@" ZDOTDIR="$HOME" zsh -lic '
+    count=0
+    old_path=
+
+    old_path=$PATH
+
+    . "$HOME/.profile"
+    [[ "$PATH" == "$old_path" ]]
+
+    . "$HOME/.zshrc"
+    [[ "$PATH" == "$old_path" ]]
+
+    . "$HOME/.zshrc"
+    [[ "$PATH" == "$old_path" ]]
+
+    for fn in $precmd_functions; do
+      [[ $fn == __dotfiles_zsh_precmd ]] && (( count += 1 ))
+    done
+    (( count == 1 ))
+
+    count=0
+    for fn in $fpath; do
+      [[ $fn == "$HOME/.config/zsh" ]] && (( count += 1 ))
+    done
+    (( count == 1 ))
+  '
+}
+
+check_shell_startup() {
+  log "checking shell startup smoke tests"
+  assert_sh_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME
+
+  assert_sh_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    DOTFILES_PATHS_LOADED=1 \
+    DOTFILES_SHELL_PROFILE_LOADED=1 \
+    DOTFILES_SHELL_RC_LOADED=1
+
+  assert_sh_rerunnable \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME
+
+  assert_bash_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE
+
+  # Cursor can inherit exported sentinels from an older parent shell session.
+  assert_bash_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE \
+    DOTFILES_PATHS_LOADED=1 \
+    DOTFILES_SHELL_PROFILE_LOADED=1 \
+    DOTFILES_SHELL_RC_LOADED=1 \
+    DOTFILES_BASH_RC_LOADED=1
+
+  assert_bash_rerunnable \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE
+
+  assert_zsh_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u SAVEHIST
+
+  assert_zsh_startup \
     -u XDG_CONFIG_HOME \
     -u XDG_CACHE_HOME \
     -u XDG_DATA_HOME \
@@ -253,8 +409,21 @@ check_shell_startup() {
     -u HISTFILE \
     -u HISTSIZE \
     -u SAVEHIST \
-    ZDOTDIR="$HOME" \
-    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]; [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]; [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]; [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]; [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]; [[ "${dotfiles_zsh_config_home:-}" == "$HOME/.config/zsh" ]]; [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_zsh_state_home:-}" == "$HOME/.local/state/zsh" ]]; [[ "${dotfiles_zsh_cache_home:-}" == "$HOME/.cache/zsh" ]]; [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]; [[ "${HISTSIZE:-}" == 50000 ]]; [[ "${SAVEHIST:-}" == 50000 ]]; if [[ -x /opt/homebrew/bin/brew ]]; then [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]; [[ "${HOMEBREW_PREFIX:-}" == "/opt/homebrew" ]]; elif [[ -x /usr/local/bin/brew ]]; then [[ "$(command -v brew 2>/dev/null)" == "/usr/local/bin/brew" ]]; [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]; fi; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
+    DOTFILES_PATHS_LOADED=1 \
+    DOTFILES_SHELL_PROFILE_LOADED=1 \
+    DOTFILES_SHELL_RC_LOADED=1 \
+    DOTFILES_ZSH_RC_LOADED=1 \
+    DOTFILES_ZSH_PROMPT_LOADED=1 \
+    DOTFILES_ZSH_COMPLETION_LOADED=1
+
+  assert_zsh_rerunnable \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u SAVEHIST
 }
 
 main() {

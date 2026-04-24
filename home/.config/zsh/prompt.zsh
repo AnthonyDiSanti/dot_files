@@ -1,8 +1,3 @@
-if [[ ${DOTFILES_ZSH_PROMPT_LOADED:-0} == 1 ]]; then
-  return
-fi
-DOTFILES_ZSH_PROMPT_LOADED=1
-
 __dotfiles_zsh_escape_prompt_text() {
   emulate -L zsh
   local text="${1:-}"
@@ -117,6 +112,7 @@ if [[ ${DOTFILES_USE_BUILTIN_PS1:-1} != 0 ]]; then
   autoload -Uz add-zsh-hook
   setopt prompt_subst
   PROMPT='%F{magenta}%n%F{blue}@%m %F{green}%~%F{cyan}${DOTFILES_ZSH_GIT_PROMPT} %f%!${DOTFILES_ZSH_JOBS_PROMPT} %f%(!.#.$) '
+  add-zsh-hook -d precmd __dotfiles_zsh_precmd 2>/dev/null || true
   add-zsh-hook precmd __dotfiles_zsh_precmd
   __dotfiles_zsh_precmd
 fi
