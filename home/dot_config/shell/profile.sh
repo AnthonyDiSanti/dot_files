@@ -24,6 +24,17 @@ dotfiles_path_prepend() {
   fi
 }
 
+dotfiles_homebrew=
+if [ -x /opt/homebrew/bin/brew ]; then
+  dotfiles_homebrew=/opt/homebrew/bin/brew
+elif [ -x /usr/local/bin/brew ]; then
+  dotfiles_homebrew=/usr/local/bin/brew
+fi
+
+if [ -n "$dotfiles_homebrew" ]; then
+  eval "$("$dotfiles_homebrew" shellenv)"
+fi
+
 if [ -d "$HOME/.local/bin" ]; then
   dotfiles_path_prepend "$HOME/.local/bin"
 fi
@@ -44,3 +55,4 @@ else
 fi
 
 unset -f dotfiles_path_prepend 2>/dev/null || true
+unset dotfiles_homebrew
