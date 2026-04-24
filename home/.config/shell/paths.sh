@@ -1,8 +1,5 @@
 # Shared dotfiles path resolution for sh, bash, and zsh.
-if [ "${DOTFILES_PATHS_LOADED:-0}" = 1 ]; then
-  return 0
-fi
-DOTFILES_PATHS_LOADED=1
+# Safe to rerun: we simply derive the internal path layer from current XDG/HOME state.
 
 : "${XDG_CONFIG_HOME:=$HOME/.config}"
 : "${XDG_CACHE_HOME:=$HOME/.cache}"

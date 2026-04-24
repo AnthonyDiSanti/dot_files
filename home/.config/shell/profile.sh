@@ -7,10 +7,7 @@ fi
 . "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-if [ "${DOTFILES_SHELL_PROFILE_LOADED:-0}" = 1 ]; then
-  return 0
-fi
-DOTFILES_SHELL_PROFILE_LOADED=1
+dotfiles_guard_token=${BASHPID:-$$}
 
 dotfiles_path_prepend() {
   case ":${PATH:-}:" in
@@ -31,8 +28,10 @@ elif [ -x /usr/local/bin/brew ]; then
   dotfiles_homebrew=/usr/local/bin/brew
 fi
 
-if [ -n "$dotfiles_homebrew" ]; then
+if [ -n "$dotfiles_homebrew" ] \
+  && [ "${DOTFILES_HOMEBREW_SHELLENV_LOADED:-}" != "$dotfiles_guard_token" ]; then
   eval "$("$dotfiles_homebrew" shellenv)"
+  DOTFILES_HOMEBREW_SHELLENV_LOADED=$dotfiles_guard_token
 fi
 
 if [ -d "$HOME/.local/bin" ]; then
@@ -56,3 +55,4 @@ fi
 
 unset -f dotfiles_path_prepend 2>/dev/null || true
 unset dotfiles_homebrew
+unset dotfiles_guard_token

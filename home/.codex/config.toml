@@ -63,3 +63,6 @@ network_access = true
 
 [plugins."github@openai-curated"]
 enabled = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 2

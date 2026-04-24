@@ -6,17 +6,25 @@ fi
 source "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-if [[ ${DOTFILES_ZSH_RC_LOADED:-0} == 1 ]]; then
-  return
-fi
-DOTFILES_ZSH_RC_LOADED=1
+__dotfiles_zsh_prepend_fpath() {
+  emulate -L zsh
+  local path="${1:-}" existing
+
+  [[ -n $path ]] || return 0
+
+  for existing in $fpath; do
+    [[ $existing == "$path" ]] && return 0
+  done
+
+  fpath=("$path" $fpath)
+}
 
 __dotfiles_zsh_init_completion() {
   emulate -L zsh
   local zcompdump_dir zcompdump_path
 
   if [[ -r "$dotfiles_zsh_config_home/_git" ]]; then
-    fpath=("$dotfiles_zsh_config_home" $fpath)
+    __dotfiles_zsh_prepend_fpath "$dotfiles_zsh_config_home"
   fi
 
   autoload -Uz compinit
@@ -26,8 +34,6 @@ __dotfiles_zsh_init_completion() {
   zcompdump_path="$zcompdump_dir/zcompdump"
   [[ -d $zcompdump_dir ]] || mkdir -p "$zcompdump_dir"
   compinit -d "$zcompdump_path"
-
-  DOTFILES_ZSH_COMPLETION_LOADED=1
 }
 
 if [[ ! -d "$dotfiles_zsh_state_home" ]]; then
@@ -39,6 +45,7 @@ SAVEHIST="${SAVEHIST:-$HISTSIZE}"
 export HISTFILE HISTSIZE SAVEHIST
 
 __dotfiles_zsh_init_completion
+unset -f __dotfiles_zsh_prepend_fpath
 unset -f __dotfiles_zsh_init_completion
 
 if [[ -r "$dotfiles_zsh_config_home/prompt.zsh" ]]; then

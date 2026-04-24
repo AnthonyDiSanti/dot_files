@@ -7,11 +7,6 @@ fi
 . "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-if [ "${DOTFILES_SHELL_RC_LOADED:-0}" = 1 ]; then
-  return 0
-fi
-DOTFILES_SHELL_RC_LOADED=1
-
 set -o vi 2>/dev/null || true
 
 if [ -r "$dotfiles_shell_config_home/aliases.sh" ]; then
