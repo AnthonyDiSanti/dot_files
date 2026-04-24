@@ -3,15 +3,21 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-24 — Replace chezmoi with a repo-native home tree
+- Decider: Anthony
+- Decision: Remove chezmoi entirely. Keep `home/` as a literal `$HOME` mirror, use the tracked `home/` tree itself as the deployment manifest, and let `bootstrap.sh` compute managed directories/leaves directly from Git-tracked paths via `scripts/home_tree_manifest.sh`. Use real symlink nodes in the repo where needed: vendored helpers now live at paths such as `home/.config/bash/git-prompt.sh`, and the whole-directory Vim case is represented as `home/.vim` -> `../managed/vim`.
+- Rationale: The repo already wanted live-update symlink semantics, and chezmoi’s source-state encoding (`dot_`, `private_`, `symlink_*.tmpl`, `.chezmoiroot`) had become more indirection than value. A literal home tree is easier to read, easier to reason about, and keeps the repo layout aligned with the deployed filesystem shape.
+- Consequences / follow-ups: `bootstrap.sh` now requires `git`, keeps a managed-path state file under `~/.local/state/dotfiles/managed-paths`, and uses that to clean up stale targets after deployment-shape changes. `scripts/verify.sh` now validates the repo-native managed-path list instead of chezmoi state. Prefer real symlink nodes and the `managed/` directory over reintroducing template-based target indirection unless a concrete new need appears.
+
 ## 2026-04-23 — Default shell internals to XDG config/state paths
 - Decider: Anthony
-- Decision: Keep the standard shell entrypoints in `$HOME` (`.profile`, `.shrc`, `.bashrc`, `.zshrc`, etc.) for compatibility, but default the internal shell/runtime config to `XDG_CONFIG_HOME` and shell history/state to `XDG_STATE_HOME`. Concretely, `home/dot_config/shell/paths.sh` now exports default XDG base-dir variables and derives unexported internal `dotfiles_*` path variables, managed bash/zsh config is sourced through that internal path layer, and bash/zsh history files live under `~/.local/state/{bash,zsh}/history` unless overridden.
+- Decision: Keep the standard shell entrypoints in `$HOME` (`.profile`, `.shrc`, `.bashrc`, `.zshrc`, etc.) for compatibility, but default the internal shell/runtime config to `XDG_CONFIG_HOME` and shell history/state to `XDG_STATE_HOME`. Concretely, `home/.config/shell/paths.sh` now exports default XDG base-dir variables and derives unexported internal `dotfiles_*` path variables, managed bash/zsh config is sourced through that internal path layer, and bash/zsh history files live under `~/.local/state/{bash,zsh}/history` unless overridden.
 - Rationale: The home-directory entrypoints are still the right compatibility boundary for login and interactive shells, but the internals behind them do not need to keep hardcoding `~/.config` or state files like shell history in `$HOME`. Separating exported `XDG_*` vars from the shell's internal resolved `dotfiles_*` layer keeps path policy centralized and gives future flexibility without leaking extra globals to child processes.
 - Consequences / follow-ups: Continue treating `$HOME` shell wrappers as compatibility shims into the real managed config under `XDG_CONFIG_HOME`. Prefer `XDG_CACHE_HOME` / `XDG_STATE_HOME` for shell-generated runtime artifacts such as completion caches and history files, but route shell-internal path lookups through `dotfiles_*` vars rather than sprinkling raw XDG fallback logic everywhere. `scripts/verify.sh` now asserts the default XDG env vars, internal path vars, and history locations in both bash and zsh startups.
 
 ## 2026-04-23 — Keep interactive shell internals native to bash vs zsh
 - Decider: Anthony
-- Decision: Share portable shell policy and helpers through `home/dot_config/shell/`, but keep prompt/completion/hook internals native to each interactive shell. Concretely, continue to share PATH/editor/pager defaults, aliases, and portable helper functions across shells, while keeping `PROMPT_COMMAND`/`__git_ps1` logic in bash and `precmd`/`compinit`/native prompt escapes in zsh.
+- Decision: Share portable shell policy and helpers through `home/.config/shell/`, but keep prompt/completion/hook internals native to each interactive shell. Concretely, continue to share PATH/editor/pager defaults, aliases, and portable helper functions across shells, while keeping `PROMPT_COMMAND`/`__git_ps1` logic in bash and `precmd`/`compinit`/native prompt escapes in zsh.
 - Rationale: The useful overlap between bash and zsh is at the policy/helper level, not at the prompt/completion mechanism level. Forcing a shared abstraction over shell-specific hooks and prompt semantics would add indirection without buying much reuse, and would make the zsh setup feel more like “bash compatibility mode” than a first-class zsh configuration.
 - Consequences / follow-ups: Treat the current shared `shell/` layer as the portability boundary. Prefer zsh-native solutions for future interactive work rather than trying to route new features through shared bash/zsh helper shims. Bash can remain stable/legacy unless a change clearly benefits both shells.
 
@@ -19,29 +25,29 @@ Keep newest decisions at the top (reverse chronological order).
 - Decider: Anthony
 - Decision: Use POSIX `sh` for deployment-critical bootstrap paths, `bash` for repo-local dev automation, and `zsh` as the interactive shell that receives ongoing UX investment. Concretely, keep `bootstrap.sh` POSIX `sh`, keep `scripts/verify.sh` in bash, and continue the prompt/completion migration work in zsh.
 - Rationale: The three use cases have different priorities. Deployment should optimize for portability, dev automation should optimize for boring/predictable command orchestration, and interactive shell config should optimize for completion, prompt, and daily ergonomics. Treating zsh as a universal scripting upgrade would not buy much for `verify.sh`, which is mostly assertions and subprocess calls.
-- Consequences / follow-ups: Shared runtime shell files under `home/dot_config/shell/` should stay POSIX-compatible unless there is a strong reason otherwise. New repo-local automation can default to bash unless portability pressure suggests `sh` or complexity suggests a higher-level language. Continue the next shell work in zsh without feeling pressure to port `verify.sh`.
+- Consequences / follow-ups: Shared runtime shell files under `home/.config/shell/` should stay POSIX-compatible unless there is a strong reason otherwise. New repo-local automation can default to bash unless portability pressure suggests `sh` or complexity suggests a higher-level language. Continue the next shell work in zsh without feeling pressure to port `verify.sh`.
 
 ## 2026-04-22 — Preserve live-update semantics for deployed dotfiles
 - Decider: Anthony
 - Decision: Treat bootstrap as initial deployment/hydration, not as the normal update path. `git pull` on the repo should live-update deployed config unless the deployment shape itself changes (new targets, removed targets, target type changes, etc.).
 - Rationale: This repo is intended to behave like a classic symlink-managed dotfiles checkout: the repo remains the obvious source of truth, and routine config updates should flow through by virtue of the filesystem links rather than requiring a separate apply step.
-- Consequences / follow-ups: Prefer symlinks into the repo, including symlink templates for vendored assets or generated link targets, over copied/rendered runtime files. The shell layout refactor was updated to follow this rule; keep applying it as more zsh work lands.
+- Consequences / follow-ups: Prefer symlinks into the repo, including real symlink nodes in `home/` or `managed/` for vendored assets and whole-directory targets, over copied/rendered runtime files. The shell layout refactor was updated to follow this rule; keep applying it as more zsh work lands.
 
 ## 2026-04-22 — Split shell startup into POSIX baseline plus bash/zsh layers
 - Decider: Anthony
-- Decision: Replace the old bash-only repo-root shell bootstrap with a home-managed startup stack: `.profile` / `.shrc` as the POSIX baseline, `.bash_profile` / `.bashrc` for bash, and `.zprofile` / `.zshrc` for zsh. Move shared runtime logic under `home/dot_config/shell/`, bash-specific logic under `home/dot_config/bash/`, zsh-specific logic under `home/dot_config/zsh/`, and install user CLI tools from `home/dot_local/bin/` to `~/.local/bin/`.
+- Decision: Replace the old bash-only repo-root shell bootstrap with a home-managed startup stack: `.profile` / `.shrc` as the POSIX baseline, `.bash_profile` / `.bashrc` for bash, and `.zprofile` / `.zshrc` for zsh. Move shared runtime logic under `home/.config/shell/`, bash-specific logic under `home/.config/bash/`, zsh-specific logic under `home/.config/zsh/`, and install user CLI tools from `home/.local/bin/` to `~/.local/bin/`.
 - Rationale: The repo should stay usable over SSH on arbitrary machines, including cases where only a subset of files are manually symlinked and chezmoi is not installed. A POSIX baseline keeps common behavior portable across `sh`, `bash`, and `zsh`, while shell-specific layers allow the zsh migration to move forward without breaking bash.
-- Consequences / follow-ups: Runtime shell startup should no longer depend on resolving the repo root dynamically inside the shell. The deployed shell stack is symlink-backed, and vendored Git prompt/completion helpers are exposed through symlink templates into `lib/git/`, so `git pull` and submodule updates propagate immediately. Manual symlink setups still degrade gracefully to system helpers or a minimal branch-only prompt. Next work is the actual zsh prompt/completion port on top of this shared layout.
+- Consequences / follow-ups: Runtime shell startup should no longer depend on resolving the repo root dynamically inside the shell. The deployed shell stack is symlink-backed, and vendored Git prompt/completion helpers are exposed through real symlink nodes into `lib/git/`, so `git pull` and submodule updates propagate immediately. Manual symlink setups still degrade gracefully to system helpers or a minimal branch-only prompt. Next work is the actual zsh prompt/completion port on top of this shared layout.
 
-## 2026-04-21 — Manage Ghostty Solarized Dark in chezmoi (modern color pipeline)
+## 2026-04-21 — Manage Ghostty Solarized Dark in the managed home tree
 - Decider: Anthony
-- Decision: Ship **`home/dot_config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`scripts/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.
+- Decision: Ship **`home/.config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`scripts/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.
 - Rationale: No need to restore the **altercation/solarized** submodule for terminal chrome; Ghostty’s own options cover wide-gamut blending and a cohesive 256-color ramp. Document **`linear-corrected`** in-config as an optional tweak if fringe artifacts appear.
 - Consequences / follow-ups: Reload Ghostty after apply (**Cmd+Shift+,**). Linux gets **`native`** as sRGB per Ghostty (still explicit and consistent).
 
 ## 2026-04-21 — Remove unused `settings/solarized` submodule
 - Decider: Anthony
-- Decision: Delete the **`settings/solarized`** git submodule (full **altercation/solarized** checkout). Replace with documentation: **`settings/README.md`** and **`context/knowledge/solarized.md`** pointing to upstream for Terminal/iTerm/Ghostty/Xresources needs. **Vim** remains **`lifepillar/vim-solarized8`** via vim-plug; **tmux** styling stays in **`home/dot_tmux.conf`**.
+- Decision: Delete the **`settings/solarized`** git submodule (full **altercation/solarized** checkout). Replace with documentation: **`settings/README.md`** and **`context/knowledge/solarized.md`** pointing to upstream for Terminal/iTerm/Ghostty/Xresources needs. **Vim** remains **`lifepillar/vim-solarized8`** via vim-plug; **tmux** styling stays in **`home/.tmux.conf`**.
 - Rationale: Nothing in bootstrap or scripts referenced the submodule (~19MB, 600+ files). It duplicated the old Vim bundle under `vim-colors-solarized/` and confused “vendored Solarized” vs the active vim-plug theme. Clone upstream on demand when configuring non-Vim apps.
 - Consequences / follow-ups: `git clone --recurse-submodules` no longer pulls Solarized; **AGENTS.md** and `context/` updated.
 
@@ -53,7 +59,7 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-21 — Use vim-plug with tracked submodule loader
 - Decider: Anthony
-- Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `home/.vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/dot_vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`home/.vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
+- Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `managed/vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/.vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`managed/vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
 - Rationale: Bare `pack/` + manual or submodule-per-plugin was heavier than wanted; vim-plug stays maintained, keeps SSH story to “submodules + bootstrap + `:PlugInstall`,” and avoids curling `plug.vim` on each machine when the submodule is present.
 - Alternatives considered: Only native packages; minpac—see prior discussion; deferred in favor of vim-plug ergonomics.
 - Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `scripts/verify.sh` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `scripts/verify.sh` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
@@ -93,12 +99,12 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-20 — Keep generated Codex rules separate from curated rules
 - Decider: Anthony
-- Decision: Do not git-manage `~/.codex/rules/default.rules`; instead, plan to add a curated managed rules file such as `home/private_dot_codex/rules/global.rules`.
+- Decision: Do not git-manage `~/.codex/rules/default.rules`; instead, plan to add a curated managed rules file such as `home/.codex/rules/global.rules`.
 - Rationale: Codex writes accepted/generated approval rules to `default.rules`, so that file should remain local and mutable. Portable rules that should apply across machines belong in a separate stable `.rules` file.
 - Alternatives considered: Track `default.rules` directly; rejected because Codex naturally mutates it. Add a merge script immediately; deferred because Codex natively scans multiple `.rules` files under `rules/`.
 - Consequences / follow-ups: Restart Codex after rule-file changes and test important commands with `codex execpolicy check --pretty --rules ... -- <command>`.
 
-## 2026-04-20 — Use chezmoi symlink mode for dotfiles
+## 2026-04-20 — Use chezmoi symlink mode for dotfiles (superseded 2026-04-24)
 - Decider: Anthony
 - Decision: Replace the Puppet bootstrap with chezmoi, keep `home/` as the source-state root via `.chezmoiroot`, and use `mode = "symlink"` so managed `$HOME` files point back into the git checkout.
 - Rationale: The repo should keep dotfiles as live tracked files so drift is visible in git instead of hidden in copied snapshots.

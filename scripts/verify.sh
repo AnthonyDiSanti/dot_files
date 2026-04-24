@@ -5,6 +5,12 @@ set -euo pipefail
 repo_root="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 tmp_paths=()
 
+if [[ ! -r "$repo_root/scripts/home_tree_manifest.sh" ]]; then
+  echo "verify: missing required helper: $repo_root/scripts/home_tree_manifest.sh" >&2
+  exit 1
+fi
+source "$repo_root/scripts/home_tree_manifest.sh"
+
 cleanup() {
   local path
 
@@ -46,17 +52,11 @@ make_temp_dir() {
   printf '%s\n' "$path"
 }
 
-mode_of() {
-  stat -f '%Lp' "$1" 2>/dev/null || stat -c '%a' "$1"
-}
-
-assert_mode() {
+assert_directory() {
   local path="$1"
-  local expected="$2"
-  local actual
 
-  actual="$(mode_of "$path")"
-  [[ "$actual" == "$expected" ]] || fail "$path mode is $actual, expected $expected"
+  [[ -d "$path" ]] || fail "$path is not a directory"
+  [[ ! -L "$path" ]] || fail "$path should be a real directory, not a symlink"
 }
 
 assert_symlink() {
@@ -74,23 +74,23 @@ check_shell_syntax() {
 
   log "checking shell syntax"
   sh -n "$repo_root/bootstrap.sh"
-  sh -n "$repo_root/home/dot_profile"
-  sh -n "$repo_root/home/dot_shrc"
-  bash -n "$repo_root/home/dot_bash_profile"
-  bash -n "$repo_root/home/dot_bashrc"
-  sh -n "$repo_root/home/dot_config/shell/paths.sh"
-  sh -n "$repo_root/home/dot_config/shell/profile.sh"
-  sh -n "$repo_root/home/dot_config/shell/rc.sh"
-  sh -n "$repo_root/home/dot_config/shell/aliases.sh"
-  sh -n "$repo_root/home/dot_config/shell/functions.sh"
-  bash -n "$repo_root/home/dot_config/bash/rc.bash"
-  bash -n "$repo_root/home/dot_config/bash/prompt.bash"
-  sh -n "$repo_root/home/dot_local/bin/make-chrome-app"
+  sh -n "$repo_root/home/.profile"
+  sh -n "$repo_root/home/.shrc"
+  bash -n "$repo_root/home/.bash_profile"
+  bash -n "$repo_root/home/.bashrc"
+  sh -n "$repo_root/home/.config/shell/paths.sh"
+  sh -n "$repo_root/home/.config/shell/profile.sh"
+  sh -n "$repo_root/home/.config/shell/rc.sh"
+  sh -n "$repo_root/home/.config/shell/aliases.sh"
+  sh -n "$repo_root/home/.config/shell/functions.sh"
+  bash -n "$repo_root/home/.config/bash/rc.bash"
+  bash -n "$repo_root/home/.config/bash/prompt.bash"
+  sh -n "$repo_root/home/.local/bin/make-chrome-app"
 
-  zsh -n "$repo_root/home/dot_zprofile"
-  zsh -n "$repo_root/home/dot_zshrc"
-  zsh -n "$repo_root/home/dot_config/zsh/rc.zsh"
-  zsh -n "$repo_root/home/dot_config/zsh/prompt.zsh"
+  zsh -n "$repo_root/home/.zprofile"
+  zsh -n "$repo_root/home/.zshrc"
+  zsh -n "$repo_root/home/.config/zsh/rc.zsh"
+  zsh -n "$repo_root/home/.config/zsh/prompt.zsh"
 
   # Parse-only: never executes the file, so `verify.sh` in this list does not re-enter the script.
   for script_path in "$repo_root"/scripts/*.sh; do
@@ -108,7 +108,7 @@ check_managed_targets() {
   local expected
   local actual
 
-  log "checking chezmoi managed target list"
+  log "checking managed target list"
   expected="$(make_temp_file)"
   actual="$(make_temp_file)"
 
@@ -154,49 +154,39 @@ check_managed_targets() {
 .zshrc
 EOF
 
-  chezmoi --source "$repo_root" managed --path-style=relative | sort >"$actual"
+  sort -o "$expected" "$expected"
+  "$repo_root/bootstrap.sh" --list-managed | sort >"$actual"
   diff -u "$expected" "$actual"
 }
 
 check_temp_apply() {
+  local manifest_path
   local tmp_home
+  local kind
+  local rel_path
+  local source_path
 
   log "checking bootstrap in a temporary home"
   tmp_home="$(make_temp_dir)"
-  HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" "$repo_root/bootstrap.sh" --verbose >/dev/null
+  manifest_path="$(make_temp_file)"
 
-  assert_mode "$tmp_home/.claude" 700
-  assert_mode "$tmp_home/.codex" 700
+  HOME="$tmp_home" \
+    XDG_CONFIG_HOME="$tmp_home/.config" \
+    XDG_STATE_HOME="$tmp_home/.local/state" \
+    "$repo_root/bootstrap.sh" --verbose >/dev/null
 
-  assert_symlink "$tmp_home/.profile" "$repo_root/home/dot_profile"
-  assert_symlink "$tmp_home/.shrc" "$repo_root/home/dot_shrc"
-  assert_symlink "$tmp_home/.bash_profile" "$repo_root/home/dot_bash_profile"
-  assert_symlink "$tmp_home/.bashrc" "$repo_root/home/dot_bashrc"
-  assert_symlink "$tmp_home/.zprofile" "$repo_root/home/dot_zprofile"
-  assert_symlink "$tmp_home/.zshrc" "$repo_root/home/dot_zshrc"
-  assert_symlink "$tmp_home/.config/shell/paths.sh" "$repo_root/home/dot_config/shell/paths.sh"
-  assert_symlink "$tmp_home/.config/shell/profile.sh" "$repo_root/home/dot_config/shell/profile.sh"
-  assert_symlink "$tmp_home/.config/shell/rc.sh" "$repo_root/home/dot_config/shell/rc.sh"
-  assert_symlink "$tmp_home/.config/shell/aliases.sh" "$repo_root/home/dot_config/shell/aliases.sh"
-  assert_symlink "$tmp_home/.config/shell/functions.sh" "$repo_root/home/dot_config/shell/functions.sh"
-  assert_symlink "$tmp_home/.config/bash/rc.bash" "$repo_root/home/dot_config/bash/rc.bash"
-  assert_symlink "$tmp_home/.config/bash/prompt.bash" "$repo_root/home/dot_config/bash/prompt.bash"
-  assert_symlink "$tmp_home/.config/bash/git-prompt.sh" "$repo_root/lib/git/contrib/completion/git-prompt.sh"
-  assert_symlink "$tmp_home/.config/bash/git-completion.bash" "$repo_root/lib/git/contrib/completion/git-completion.bash"
-  assert_symlink "$tmp_home/.config/zsh/rc.zsh" "$repo_root/home/dot_config/zsh/rc.zsh"
-  assert_symlink "$tmp_home/.config/zsh/prompt.zsh" "$repo_root/home/dot_config/zsh/prompt.zsh"
-  assert_symlink "$tmp_home/.config/zsh/_git" "$repo_root/lib/git/contrib/completion/git-completion.zsh"
-  assert_symlink "$tmp_home/.local/bin/make-chrome-app" "$repo_root/home/dot_local/bin/make-chrome-app"
-  assert_symlink "$tmp_home/.claude/CLAUDE.md" "$repo_root/home/private_dot_claude/CLAUDE.md"
-  assert_symlink "$tmp_home/.codex/AGENTS.md" "$repo_root/home/private_dot_codex/AGENTS.md"
-  assert_symlink "$tmp_home/.codex/config.toml" "$repo_root/home/private_dot_codex/config.toml"
-  assert_symlink "$tmp_home/.codex/rules/global.rules" "$repo_root/home/private_dot_codex/rules/global.rules"
-  assert_symlink "$tmp_home/.gitignore_global" "$repo_root/home/dot_gitignore_global"
-  assert_symlink "$tmp_home/.tmux.conf" "$repo_root/home/dot_tmux.conf"
-  assert_symlink "$tmp_home/.vim" "$repo_root/home/.vim"
-  assert_symlink "$tmp_home/.vimpagerrc" "$repo_root/home/dot_vimpagerrc"
-  assert_symlink "$tmp_home/.vimrc" "$repo_root/home/dot_vimrc"
-  assert_symlink "$tmp_home/.config/ghostty/config" "$repo_root/home/dot_config/ghostty/config"
+  dotfiles_emit_manifest "$repo_root" >"$manifest_path"
+
+  while read -r kind rel_path source_path; do
+    case "$kind" in
+      dir)
+        assert_directory "$tmp_home/$rel_path"
+        ;;
+      leaf)
+        assert_symlink "$tmp_home/$rel_path" "$repo_root/$source_path"
+        ;;
+    esac
+  done <"$manifest_path"
 }
 
 check_live_home_converged() {
@@ -208,7 +198,7 @@ check_live_home_converged() {
 
   if [[ -s "$diff_output" ]]; then
     cat "$diff_output"
-    fail "live home differs from chezmoi target state; run ./bootstrap.sh"
+    fail "live home differs from managed target state; run ./bootstrap.sh"
   fi
 }
 
@@ -268,12 +258,13 @@ check_shell_startup() {
 }
 
 main() {
+  require_command awk
   require_command bash
-  require_command chezmoi
+  require_command comm
   require_command diff
-  require_command find
   require_command git
   require_command readlink
+  require_command sort
   require_command zsh
 
   cd "$repo_root"
@@ -283,9 +274,6 @@ main() {
   check_temp_apply
   check_live_home_converged
   check_shell_startup
-
-  log "checking chezmoi doctor"
-  chezmoi --source "$repo_root" doctor --no-network >/dev/null
 
   log "all checks passed"
 }

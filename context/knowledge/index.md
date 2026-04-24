@@ -12,8 +12,7 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 - Keep short, cross-cutting notes here; promote them to a topic file once they grow.
 
 ## Topics
-- [Bootstrap & symlinks (chezmoi)](bootstrap.md) — how dotfiles are linked into `$HOME`.
-- [chezmoi source state](chezmoi.md) — source naming, `.chezmoiroot`, symlink mode, and script guidance.
+- [Bootstrap & symlinks](bootstrap.md) — repo-native home-tree bootstrap, managed-path state, and symlink behavior.
 - [Codex approval rules](codex-rules.md) — rule-file locations, generated vs curated rules, and testing commands.
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
 - [Vim plugins (vim-plug)](vim.md) — submodule loader, `plugged/`, Solarized 8 / truecolor, Mundo/python3.

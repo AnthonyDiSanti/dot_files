@@ -1,11 +1,8 @@
 # netrw's history file (vim plugin)
-/home/.vim/.netrwhist
+/managed/vim/.netrwhist
 
 # vim-plug installs plugins here (not committed)
-/home/.vim/plugged/
-
-# Legacy Vundle directory (safe until removed locally)
-/home/.vim/bundle/*
+/managed/vim/plugged/
 
 # Agents
 AGENTS.local.md
