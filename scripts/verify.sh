@@ -240,6 +240,13 @@ check_shell_startup() {
     [[ "${HISTFILE:-}" == "$HOME/.local/state/bash/history" ]]
     [[ "${HISTSIZE:-}" == 50000 ]]
     [[ "${HISTFILESIZE:-}" == 50000 ]]
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+      [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]
+      [[ "${HOMEBREW_PREFIX:-}" == "/opt/homebrew" ]]
+    elif [[ -x /usr/local/bin/brew ]]; then
+      [[ "$(command -v brew 2>/dev/null)" == "/usr/local/bin/brew" ]]
+      [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]
+    fi
     command -v make-chrome-app >/dev/null
   '
 
@@ -257,7 +264,7 @@ check_shell_startup() {
     -u HISTSIZE \
     -u SAVEHIST \
     ZDOTDIR="$HOME" \
-    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]; [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]; [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]; [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]; [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]; [[ "${dotfiles_zsh_config_home:-}" == "$HOME/.config/zsh" ]]; [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_zsh_state_home:-}" == "$HOME/.local/state/zsh" ]]; [[ "${dotfiles_zsh_cache_home:-}" == "$HOME/.cache/zsh" ]]; [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]; [[ "${HISTSIZE:-}" == 50000 ]]; [[ "${SAVEHIST:-}" == 50000 ]]; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
+    zsh -lic '[[ "${DOTFILES_SHELL_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_RC_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_PROMPT_LOADED:-0}" == 1 ]]; [[ "${DOTFILES_ZSH_COMPLETION_LOADED:-0}" == 1 ]]; [[ "${XDG_CONFIG_HOME:-}" == "$HOME/.config" ]]; [[ "${XDG_CACHE_HOME:-}" == "$HOME/.cache" ]]; [[ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]]; [[ "${XDG_STATE_HOME:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_config_home:-}" == "$HOME/.config" ]]; [[ "${dotfiles_shell_config_home:-}" == "$HOME/.config/shell" ]]; [[ "${dotfiles_zsh_config_home:-}" == "$HOME/.config/zsh" ]]; [[ "${dotfiles_state_home:-}" == "$HOME/.local/state" ]]; [[ "${dotfiles_zsh_state_home:-}" == "$HOME/.local/state/zsh" ]]; [[ "${dotfiles_zsh_cache_home:-}" == "$HOME/.cache/zsh" ]]; [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]; [[ "${HISTSIZE:-}" == 50000 ]]; [[ "${SAVEHIST:-}" == 50000 ]]; if [[ -x /opt/homebrew/bin/brew ]]; then [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]; [[ "${HOMEBREW_PREFIX:-}" == "/opt/homebrew" ]]; elif [[ -x /usr/local/bin/brew ]]; then [[ "$(command -v brew 2>/dev/null)" == "/usr/local/bin/brew" ]]; [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]; fi; (( $+functions[_git] == 1 )); command -v make-chrome-app >/dev/null'
 }
 
 main() {
