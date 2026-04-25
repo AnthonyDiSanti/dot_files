@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-24 — Append Bash history without live cross-session merging
+- Decider: Anthony
+- Decision: Enable `shopt -s histappend cmdhist lithist` in the Bash interactive layer. Do not add automatic `history -n` / `history -a` prompt syncing as part of this change.
+- Rationale: `histappend` prevents concurrent Bash sessions from clobbering each other's history files at shell exit, while avoiding live cross-session history imports that would move event numbers under a prompt-number workflow. `cmdhist` and `lithist` keep multiline commands grouped and readable in history.
+- Consequences / follow-ups: Bash history is still session-local until shell exit or manual `history` operations; future history work can separately consider `HISTTIMEFORMAT`, `histverify`, conservative `HISTCONTROL`, or explicit history sync tradeoffs.
+
 ## 2026-04-24 — Replace chezmoi with a repo-native home tree
 - Decider: Anthony
 - Decision: Remove chezmoi entirely. Keep `home/` as a literal `$HOME` mirror, use the tracked `home/` tree itself as the deployment manifest, and let `bootstrap.sh` compute managed directories/leaves directly from Git-tracked paths via `scripts/home_tree_manifest.sh`. Use real symlink nodes in the repo where needed: vendored helpers now live at paths such as `home/.config/bash/git-prompt.sh`, and the whole-directory Vim case is represented as `home/.vim` -> `../managed/vim`.

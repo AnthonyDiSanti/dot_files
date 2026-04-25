@@ -15,6 +15,7 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 - [Bootstrap & symlinks](bootstrap.md) — repo-native home-tree bootstrap, managed-path state, and symlink behavior.
 - [Codex approval rules](codex-rules.md) — rule-file locations, generated vs curated rules, and testing commands.
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
+- [Oh My Bash comparison](oh-my-bash.md) — selective Bash ergonomics worth considering without adopting the framework.
 - [Vim plugins (vim-plug)](vim.md) — submodule loader, `plugged/`, Solarized 8 / truecolor, Mundo/python3.
 - [Solarized assets](solarized.md) — no vendored `settings/solarized`; where Vim vs other apps get colors.
 - [macOS defaults scripts](macos-defaults.md) — system UI defaults via `defaults`.
