@@ -12,6 +12,7 @@ Planned **last three** items before considering the dotfiles “mature” for th
 - id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: active — last update: 2026-04-22 — note: POSIX baseline + bootstrap simplification checkpoint reached; zsh now has a native prompt/completion layer, and the next slice is tuning interactive UX on top of that shared layout while keeping bash stable.
 
 ## Paused / Blocked
+- id: 01KPZR91C2GZB5GKM9Z9GQP8EK — title: Evaluate selective Bash ergonomics from Oh My Bash — owner: Anthony/Codex — status: planned — last update: 2026-04-24 — note: Started history defaults with `histappend cmdhist lithist`; still consider timestamp/history-safety choices, readline defaults, opt-in command completions, and fzf/zoxide-style integrations. Do not adopt Oh My Bash wholesale.
 - id: 01KPR9WB7K84CJXMSM8HD9VQRX — title: Re-evaluate git submodules and CLI utility contents — owner: Anthony/Codex — status: planned — last update: 2026-04-22 — note: Roadmap **third-to-last** — audit `lib/*`, `.gitmodules`, and each managed `home/.local/bin/*` utility for currency and fit.
 - id: 01KPVT9N992M71VGJVBXDATR7B — title: Review tmux configuration — owner: Anthony/Codex — status: planned — last update: 2026-04-22 — note: Planned after the submodule/CLI audit and before the Neovim evaluation.
 - id: 01KPNZ3YB7K74CJXMSM8HD9VQR — title: Write repo documentation pass — owner: Anthony/Codex — status: planned — last update: 2026-04-20

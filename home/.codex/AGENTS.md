@@ -133,6 +133,7 @@ When you consult external/internal docs and find something repeatedly useful or 
 - Use the repo’s preferred commit-message format when one exists.
 - If no repo-specific format exists, default to: title, blank line, bullet list.
 - If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.
+- Do not stage, commit, or amend normal follow-up edits unless explicitly asked. Exception: when the user asks you to perform a Git operation that inherently requires staging, such as resolving rebase or merge conflicts, you may stage/commit only the files needed to complete that requested operation.
 
 ## Communication cadence
 - Default: one plan up front, one final summary.

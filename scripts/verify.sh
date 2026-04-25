@@ -216,6 +216,7 @@ assert_bash_startup() {
     [[ "${HISTFILE:-}" == "$HOME/.local/state/bash/history" ]]
     [[ "${HISTSIZE:-}" == 50000 ]]
     [[ "${HISTFILESIZE:-}" == 50000 ]]
+    shopt -q histappend cmdhist lithist
     if [[ -x /opt/homebrew/bin/brew ]]; then
       [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]
       [[ "${HOMEBREW_PREFIX:-}" == "/opt/homebrew" ]]

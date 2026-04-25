@@ -24,6 +24,8 @@ fi
 export HISTFILE="$dotfiles_bash_state_home/history"
 export HISTSIZE="${HISTSIZE:-50000}"
 export HISTFILESIZE="${HISTFILESIZE:-$HISTSIZE}"
+# Keep Bash history usable across concurrent shells without live event-number merging.
+shopt -s histappend cmdhist lithist
 
 if command -v git >/dev/null 2>&1; then
   export GIT_PS1_SHOWDIRTYSTATE='auto'
