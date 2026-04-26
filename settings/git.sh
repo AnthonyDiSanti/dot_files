@@ -2,8 +2,12 @@
 
 # Finds the dereferenced directory of the current script
 get_script_dir () {
-  local SOURCE="${BASH_SOURCE[0]}"
-  local DIR="$( dirname "$SOURCE" )"
+  local SOURCE
+  local DIR
+  local RETVAL
+
+  SOURCE="${BASH_SOURCE[0]}"
+  DIR="$( dirname "$SOURCE" )"
 
   while [ -h "$SOURCE" ]; do 
     SOURCE="$(readlink "$SOURCE")"
@@ -11,12 +15,8 @@ get_script_dir () {
     DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
   done
 
-  local RETVAL="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  if [[ $# = 0 ]]; then
-    printf -v SCRIPTDIR '%s' "$RETVAL"
-  else
-    printf -v "$1" '%s' "$RETVAL"
-  fi
+  RETVAL="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  printf -v "$1" '%s' "$RETVAL"
 }
 
 get_script_dir GITSETTINGSDIR

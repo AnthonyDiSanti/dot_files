@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-26 — Require ShellCheck in verification
+- Decider: Anthony
+- Decision: Treat ShellCheck as a required development dependency for `test/verify.sh`. Keep `bootstrap.sh` free of the ShellCheck dependency, and route static analysis through `scripts/shellcheck-dotfiles.bash --all` so editor and full-suite linting share one repo-aware shell dialect policy.
+- Rationale: ShellCheck is a useful static analyzer for real shell bugs, especially in a repo that intentionally mixes POSIX `sh`, Bash, and zsh. Making it part of the full gate catches quoting, portability, arithmetic, and dialect mistakes before runtime tests.
+- Consequences / follow-ups: `scripts/shellcheck-dotfiles.bash` owns path-specific suppressions for sourced fragments and zsh skips. Add real fixes when ShellCheck finds genuine issues; keep false-positive policy centralized rather than adding inline editor hints to managed shell files.
+
 ## 2026-04-25 — Prefer explicit shell data flow
 - Decider: Anthony
 - Decision: In shell startup code, prefer explicit call-site data flow over passing string-encoded function names. When a helper consumes generated candidate lines, make the helper read stdin and feed it with process substitution or redirection at the call site when the current shell supports it.

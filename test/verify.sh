@@ -120,6 +120,11 @@ check_shell_file_syntax() {
   fi
 }
 
+check_shell_lint() {
+  log "checking shell static analysis"
+  "$repo_root/scripts/shellcheck-dotfiles.bash" --all
+}
+
 check_managed_targets() {
   local expected
   local actual
@@ -320,12 +325,14 @@ main() {
   require_command diff
   require_command git
   require_command readlink
+  require_command shellcheck
   require_command sort
   require_command zsh
 
   cd "$repo_root"
 
   check_shell_syntax
+  check_shell_lint
   check_managed_targets
   check_temp_apply
   check_live_home_converged
