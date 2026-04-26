@@ -148,10 +148,19 @@ nnoremap <Leader>dtw :%s/\v\s+$//<CR><C-o>
 vnoremap <Leader>dtw :s/\v\s+$//<CR>gv
 
 "******* BEGIN STATUSLINE CONFIGURATION *******"
+" Render the Fugitive branch segment only when vim-fugitive is installed/loaded.
+function! DotfilesGitStatusline() abort
+  if exists('*FugitiveHead')
+    let l:head = FugitiveHead()
+    return empty(l:head) ? '' : '(' . l:head . ')'
+  endif
+  return ''
+endfunction
+
 " Add the current git branch to the default statusline
 set statusline=%<                             " Left-align the initial first part of the statusline
 set statusline+=%n:\ %f                       " Buffer #: Filename
-set statusline+=\ (%{FugitiveHead()})        " git branch (vim-fugitive)
+set statusline+=\ %{DotfilesGitStatusline()}  " git branch (vim-fugitive)
 set statusline+=\ %h%m%r                      " [Help][Modified?(+|-)][ReadOnly?(RO)]
 set statusline+=%=                            " Right-align the remaining part of the statusline
 set statusline+=%l/%L\ %P                     " Lines in / Total Lines XX%
