@@ -25,15 +25,11 @@ alias digs='dig +short'
 alias grep='grep --color=auto'
 
 # git aliases
-alias gd='git diff'
-alias gs='git status'
+alias gdiff='git diff'
+alias gstat='git status'
 
-# webpack aliases
-alias wp='webpack --progress --colors'
-alias ww='wp --watch'
-
-# homebrew aliases
-alias brewup='brew update && brew upgrade'
+# git-spice aliases
+alias gs='git-spice'
 
 # codex aliases
 alias codex='codex --add-dir ~/.codex'
