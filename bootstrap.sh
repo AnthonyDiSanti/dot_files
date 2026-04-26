@@ -153,7 +153,8 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 dotfiles_dir="$(
-  CDPATH= cd "$(dirname "$0")" || exit 1
+  unset CDPATH
+  cd "$(dirname "$0")" || exit 1
   pwd
 )"
 

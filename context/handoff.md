@@ -3,24 +3,25 @@
 ## Current State
 - What works: repo-native bootstrap (`bootstrap.sh`) installs the tracked `home/` tree into `$HOME` without chezmoi; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `XDG_CONFIG_HOME` / `~/.config`; `home/.config/shell/paths.sh` exports default XDG base-dir variables and derives the shell's internal `dotfiles_*` path layer, bash/zsh history lives under `XDG_STATE_HOME` / `~/.local/state`, and bash/zsh Git prompt/completion support now uses helper files from the active Git install instead of a vendored `lib/git` submodule; Vim plugins use **vim-plug** (`lib/vim-plug` submodule, `~/.vim/plugged/` after `:PlugInstall`) with the whole tree exposed through `home/.vim` -> `../managed/vim`.
 - Editor direction: **Vanilla Vim** is the target for dotfiles (Vim 8+ compatible plugins, no Neovim requirement) so SSH sessions can stay simple: get dotfiles on the machine, bootstrap, use `vim`. **Neovim** is explicitly a possible next step—see `context/decisions.md`—not part of the current plugin migration.
-- What’s in progress: Shell startup now has the new POSIX baseline plus bash/zsh wrappers, and the first real zsh prompt/completion slice has landed. The shell-language split is now intentional rather than transitional: `bootstrap.sh` is POSIX `sh`, `test/verify.sh` remains bash as a repo-local dev tool, and zsh is the interactive target. Remaining shell work is now zsh-first tuning/extensions rather than basic bootstrapping, with the shared boundary clarified as “portable policy/helpers in `shell/`, shell-native prompt/completion internals in `bash/` and `zsh/`.” Codex now loads the managed `~/.codex/rules/global.rules` symlink from the repo-native bootstrap, with broad `git` and `npm` allow rules and an empty local `default.rules`.
+- What’s in progress: Shell startup now has the new POSIX baseline plus bash/zsh wrappers, and the first real zsh prompt/completion slice has landed. The former zsh stack branch has been folded into `feature/oh-my-bash-inspiration`, which now carries the Bash history defaults, bootstrap/verify restructuring, Git helper submodule removal, and ShellCheck wrapper follow-up. Remaining shell work is now zsh-first tuning/extensions rather than basic bootstrapping, with the shared boundary clarified as “portable policy/helpers in `shell/`, shell-native prompt/completion internals in `bash/` and `zsh/`.” Codex now loads the managed `~/.codex/rules/global.rules` symlink from the repo-native bootstrap, with broad `git` and `npm` allow rules and an empty local `default.rules`.
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. Tune and extend the zsh interactive experience now that native prompt/completion parity is in place, while keeping bash stable.
-2. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
-3. **Third-to-last (planned):** Continue evaluating remaining **git submodules** and managed CLI utilities (`~/.local/bin`) — see `context/tasks.md` task `01KPR9WB7K84CJXMSM8HD9VQRX`; the Git helper submodule has already been removed.
-4. **Second-to-last (planned):** Review the **tmux** configuration after that submodule/CLI audit and before any Neovim decision — see `context/tasks.md` task `01KPVT9N992M71VGJVBXDATR7B`.
-5. **Final (planned):** Consider **Neovim** only after that — see `context/tasks.md` / `context/decisions.md`; vanilla Vim remains the default until then.
+1. Finish the Oh My Bash-inspired Bash ergonomics pass, then port relevant Bash upgrades to zsh using idiomatic zsh mechanisms.
+2. Evaluate Oh My Zsh for selective zsh ideas without adopting the framework wholesale.
+3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+4. Continue planned reviews of `settings/`, remaining submodules / `~/.local/bin` utilities, tmux, and optional Neovim evaluation as separate workstreams in `context/tasks.md`.
 
 ## Active Tasks
 - `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; the next slice is zsh-specific tuning/extensions on top of the new native prompt/completion layer.
 
 ## Quick Verify
-- Fast checks: `bash -n` on edited shell scripts; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
-- Full gate: `test/verify.sh`; multi-line startup probes live under `test/fixtures/verify/`. Add manual smoke tests for touched interactive tools such as Vim when behavior changes.
+- Fast checks: `bash -n` on edited Bash scripts, `sh -n` for POSIX scripts, and `scripts/shellcheck-dotfiles.bash path/to/file` for modified shell files; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
+- Full gate: `test/verify.sh`; it requires `shellcheck` and runs `scripts/shellcheck-dotfiles.bash --all` before managed-target and startup checks. Multi-line startup probes live under `test/fixtures/verify/`. Add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-04-26 — **ShellCheck required in verify:** `test/verify.sh` now requires ShellCheck and runs the repo-aware `scripts/shellcheck-dotfiles.bash --all` phase. The wrapper discovers tracked shell files, skips zsh files that ShellCheck cannot parse, and centralizes narrow false-positive suppressions for sourced fragments.
+- 2026-04-25 — **OMB branch absorbed zsh stack:** rebased `feature/oh-my-bash-inspiration` onto the former `feature/zsh` head, resolved the VS Code ShellCheck settings conflict by keeping both ignore patterns and the wrapper path, deleted the local `feature/zsh` branch through git-spice, and confirmed `test/verify.sh` passes.
 - 2026-04-25 — **VS Code ShellCheck tuned for dotfiles:** added repo-local `.vscode/settings.json` to opt sh/bash/zsh startup files back into the ShellCheck extension, plus `.shellcheckrc` suppressions for sourced dotfiles without shebangs and dynamic `$HOME` source paths.
 - 2026-04-25 — **Project markdownlint preferences:** added repo-root `.markdownlint.json` to disable MD013, MD022, MD029, and MD032 project-wide while keeping the MD034 exception scoped to `context/`. MD029 was made project-wide because the only clean path-scoped markdownlint mechanism would require placing config under `home/`, whose filesystem layout is bootstrap data.
 - 2026-04-25 — **Context markdownlint exception:** added `context/.markdownlint.json` to disable MD034 only for the committed notebook/context tree, where raw URLs are often useful as references.

@@ -2,21 +2,18 @@
 
 Task IDs are ULIDs; keep titles short and human-readable.
 
-## Roadmap ordering (tail)
-Planned **last three** items before considering the dotfiles “mature” for this phase:
-1. **Third-to-last:** Re-evaluate all **git submodules** and managed CLI utilities under **`home/.local/bin/`** / `~/.local/bin` (still needed, versions, security, PATH ergonomics, docs).
-2. Review the **tmux** configuration and decide what cleanup or modernization is still needed before editor-shell integration is considered stable.
-3. **Final:** **Neovim** evaluation — see task `01KPNZ4YNEOVIMEVALSTEP2026` (optional; vanilla Vim stays the portable SSH baseline unless you deliberately switch).
-
 ## Active
-- id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: active — last update: 2026-04-22 — note: POSIX baseline + bootstrap simplification checkpoint reached; zsh now has a native prompt/completion layer, and the next slice is tuning interactive UX on top of that shared layout while keeping bash stable.
+- id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: active — last update: 2026-04-25 — note: POSIX baseline + bootstrap simplification checkpoint reached; zsh now has a native prompt/completion layer, and the former zsh branch has been folded into `feature/oh-my-bash-inspiration`. The next slice is tuning interactive UX on top of that shared layout while keeping bash stable.
 
 ## Paused / Blocked
 - id: 01KPZR91C2GZB5GKM9Z9GQP8EK — title: Evaluate selective Bash ergonomics from Oh My Bash — owner: Anthony/Codex — status: planned — last update: 2026-04-24 — note: Started history defaults with `histappend cmdhist lithist`; still consider timestamp/history-safety choices, readline defaults, opt-in command completions, and fzf/zoxide-style integrations. Do not adopt Oh My Bash wholesale.
-- id: 01KPR9WB7K84CJXMSM8HD9VQRX — title: Re-evaluate git submodules and CLI utility contents — owner: Anthony/Codex — status: planned — last update: 2026-04-25 — note: Roadmap **third-to-last** — `lib/git` has been removed after moving bash/zsh Git helpers to the active system Git install; still audit remaining `lib/*`, `.gitmodules`, and each managed `home/.local/bin/*` utility for currency and fit.
-- id: 01KPVT9N992M71VGJVBXDATR7B — title: Review tmux configuration — owner: Anthony/Codex — status: planned — last update: 2026-04-22 — note: Planned after the submodule/CLI audit and before the Neovim evaluation.
+- id: 01KQ3XW4XXCF3J4R8FXD916CEM — title: Port Bash upgrades to idiomatic zsh — owner: Anthony/Codex — status: planned — last update: 2026-04-26 — note: After the Oh My Bash-inspired Bash pass, evaluate which improvements should also exist in zsh and implement them using zsh-native mechanisms rather than Bash compatibility shims.
+- id: 01KQ3XW4XX02RMQ7TW36T5942Y — title: Evaluate Oh My Zsh inspiration — owner: Anthony/Codex — status: planned — last update: 2026-04-26 — note: Compare Oh My Zsh against this repo's zsh layer for selective ideas around completion, prompt, history, plugins, and ergonomics. Do not adopt the framework wholesale without a separate decision.
+- id: 01KQ3XW4XXE0YD3WJ06V3EQ195 — title: Re-evaluate settings scripts — owner: Anthony/Codex — status: planned — last update: 2026-04-26 — note: Review the whole `settings/` section for current macOS/Git defaults, stale assumptions, idempotency, docs, and whether any settings should move into clearer shell/bootstrap flows.
+- id: 01KPR9WB7K84CJXMSM8HD9VQRX — title: Re-evaluate git submodules and CLI utility contents — owner: Anthony/Codex — status: planned — last update: 2026-04-25 — note: `lib/git` has been removed after moving bash/zsh Git helpers to the active system Git install; still audit remaining `lib/*`, `.gitmodules`, and each managed `home/.local/bin/*` utility for currency and fit.
+- id: 01KPVT9N992M71VGJVBXDATR7B — title: Review tmux configuration — owner: Anthony/Codex — status: planned — last update: 2026-04-22 — note: Review tmux configuration for stale assumptions, macOS integration needs, plugin/submodule fit, and alignment with the shell/editor setup.
 - id: 01KPNZ3YB7K74CJXMSM8HD9VQR — title: Write repo documentation pass — owner: Anthony/Codex — status: planned — last update: 2026-04-20
-- id: 01KPNZ4YNEOVIMEVALSTEP2026 — title: Evaluate Neovim after Vim migration stabilizes — owner: Anthony — status: planned — last update: 2026-04-21 — note: Roadmap **final** item after the submodule/CLI audit and tmux review; optional; vanilla Vim remains the portable SSH baseline.
+- id: 01KPNZ4YNEOVIMEVALSTEP2026 — title: Evaluate Neovim after Vim migration stabilizes — owner: Anthony — status: planned — last update: 2026-04-21 — note: Optional future work; vanilla Vim remains the portable SSH baseline unless you deliberately switch.
 
 ## Completed (recent; keep last ~10)
 - id: 01KPWZ6ZQPJHEE3YM1BYVPG679 — title: Do an XDG integration pass — owner: Anthony/Codex — status: done — last update: 2026-04-23 — note: Defaulted shell runtime to XDG base dirs where it makes sense: added `shell/paths.sh` to export `XDG_*` defaults plus internal `dotfiles_*` path vars, sourced managed shell config through that layer, and stored bash/zsh history under `XDG_STATE_HOME`.

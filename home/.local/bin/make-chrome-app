@@ -1,15 +1,15 @@
 #!/bin/sh
 
 echo "What should the Application be called (e.g. Google Calendar)?"
-read inputline
+read -r inputline
 name="$inputline"
 
 echo "What is the url (e.g. https://www.google.com/calendar/render)?"
-read inputline
+read -r inputline
 url="$inputline"
 
 echo "What is the full path to the icon (e.g. /Users/username/Desktop/icon.png)?"
-read inputline
+read -r inputline
 icon="$inputline"
 
 chromePath="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
