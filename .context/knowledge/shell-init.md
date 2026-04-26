@@ -15,6 +15,7 @@
 - Non-Git tool support: Bash loads system/package-manager `bash-completion` frameworks plus generated completions for selected installed commands such as `codex`, `docker`, `gh`, `git-spice`, and `kubectl`; zsh prepends Homebrew site-functions before `compinit` and only falls back to generated completions when no native command completion exists. fzf integration is command-detected with no repo opt-out and sourced through the installed `fzf --bash` / `fzf --zsh` generators from the same tool-support layer.
 - Bash completion framework order: treat an already-loaded `bash-completion` as authoritative, then try direct Homebrew formula prefixes, optional `pkg-config` metadata, and finally conventional distro paths such as `/etc/profile.d/bash_completion.sh` and `/usr/share/bash-completion/bash_completion`.
 - Line-editor policy: Bash uses Readline bindings/settings directly in `rc.bash`; zsh uses native ZLE widgets and completion matcher styles in `rc.zsh`. Both bind Up/Down to typed-prefix history search and use case-/hyphen-insensitive completion matching where native support exists.
+- History policy: Bash uses `HISTTIMEFORMAT='%F %T '` for `YYYY-MM-DD HH:MM:SS` history output and timestamp storage for newly written entries. Zsh uses `EXTENDED_HISTORY` for timestamp/duration storage and wraps `history` around `fc -l -D -t '%F %T'` for timestamp plus elapsed-duration display: `<1s`, `1s`-`9s`, then native `M:SS` for 10 seconds and above. `HISTCONTROL` stays unset by default.
 - Prompt/interactive boundary: keep shared policy/helpers in `shell/`, but keep shell-native prompt, completion, and hook internals in `bash/` and `zsh/` rather than building a shared abstraction over them.
 - User tools: `make-chrome-app` lives in `~/.local/bin/`.
 
@@ -22,6 +23,8 @@
 
 - The shell entrypoints intentionally remain in `$HOME` for compatibility, even though the managed internals now prefer XDG-derived paths.
 - Bash and zsh history live under `XDG_STATE_HOME` / `~/.local/state` unless explicitly overridden.
+- Existing history entries without stored timestamps will not gain accurate old timestamps after enabling timestamp storage.
+- Keep history event numbers stable inside an interactive shell: Anthony often uses the prompt's history number to rerun commands with `!num`. Avoid prompt-time/importing/immediate-write sync policies such as Bash `history -n` / `history -a`, zsh `INC_APPEND_HISTORY`, zsh `INC_APPEND_HISTORY_TIME`, and zsh `SHARE_HISTORY` unless that workflow is explicitly revisited.
 - zsh predefines `HISTSIZE`, so use assignment rather than `${HISTSIZE:-...}` when pinning repo defaults; host-specific overrides can still happen later in `.zshrc_local`.
 - Prefer the internal `dotfiles_*` vars for shell path plumbing after `paths.sh` has loaded, and reserve raw `XDG_*` fallback logic for the tiny wrapper/bootstrap edge.
 - `paths.sh` is required infrastructure rather than a best-effort helper: the shared and shell-specific rc/profile layers fail fast if it cannot be loaded or does not initialize the expected path vars.

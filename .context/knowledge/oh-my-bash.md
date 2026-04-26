@@ -12,7 +12,7 @@ This repo is intentionally smaller: POSIX shared shell policy in `home/.config/s
 
 ## Useful ideas to selectively reuse
 
-- Bash sensible defaults: `histappend`, `cmdhist`, and `lithist` are now enabled, along with prefix history search on Up/Down and case-/hyphen-insensitive completion matching. Still consider `checkwinsize`, `show-all-if-ambiguous`, and `mark-symlinked-directories` only if those behaviors are explicitly wanted.
+- Bash sensible defaults: `histappend`, `cmdhist`, `lithist`, `HISTTIMEFORMAT='%F %T '`, and `checkwinsize` are now enabled, along with prefix history search on Up/Down and case-/hyphen-insensitive completion matching. Still consider `show-all-if-ambiguous` and `mark-symlinked-directories` only if those behaviors are explicitly wanted.
 - Command tool-support layer: prefer installed command/package-manager shell support when available. Git prompt helper discovery is shared POSIX policy, while Git bash-completion candidate ordering lives under `home/.config/bash/` for fallback use when no existing Git completion is registered. The old vendored `lib/git` fallback was removed. Consider command-detected support for installed tools such as `brew` and other CLIs with first-party generators.
 - Navigation/tool integrations: fzf is now loaded from the installed `fzf --bash` / `fzf --zsh` generators. Still consider a small directory bookmark/jump story only if it fits the interactive workflow.
 - Man-page coloring and optional prompt delegation to tools like Starship may be useful only if enabled explicitly.
@@ -20,7 +20,8 @@ This repo is intentionally smaller: POSIX shared shell policy in `home/.config/s
 ## Review status
 
 Implemented:
-- Bash history preservation: enabled `shopt -s histappend cmdhist lithist`.
+- Bash history preservation: enabled `shopt -s histappend cmdhist lithist`, added `HISTTIMEFORMAT='%F %T '`, and intentionally left `HISTCONTROL` unset. Zsh now stores timestamps/durations with `EXTENDED_HISTORY` and displays plain `history` through a compact wrapper around `fc -l -D -t '%F %T'`.
+- Bash terminal resize support: enabled `checkwinsize` so Readline updates terminal dimensions after commands.
 - Line-editor polish: Bash binds Up/Down to prefix history search and sets Readline case-insensitive completion plus `completion-map-case` where supported. Zsh binds Up/Down to `up-line-or-beginning-search` / `down-line-or-beginning-search` and uses native completion matcher styles for case-insensitive `-` / `_` matching.
 - Git helper source policy: removed the vendored `lib/git` submodule and now use helper files from the active Git install.
 - Git helper abstraction boundary: shared POSIX functions own Git root and prompt-helper discovery; `home/.config/bash/git-completion.sh` owns Git bash-completion candidate ordering for fallback use; zsh consumes that helper only when it must configure an active-Git fallback because no native `_git` is already available.
@@ -28,9 +29,8 @@ Implemented:
 - fzf shell integration: Bash and zsh source the installed fzf generators from the shell-specific tool-support layer, with no repo-level opt-out. The zsh wrapper filters the known upstream `can't change option: zle` restore warning while preserving other integration errors.
 
 Discussed and deferred:
-- `HISTTIMEFORMAT`: useful for timestamped history, but not yet pinned.
 - `HISTIGNORE` / secret suppression: no default chosen; broad secret filtering is hard to make correct and can create false confidence.
-- `history -n` / prompt-time history syncing: intentionally not enabled because it can move Bash event numbers under the history-number rerun workflow.
+- Prompt-time, immediate-write, or cross-session history syncing: intentionally not enabled because Anthony uses stable prompt history event numbers to rerun commands with `!num`. Avoid Bash `history -n` / `history -a`, zsh `INC_APPEND_HISTORY`, zsh `INC_APPEND_HISTORY_TIME`, and zsh `SHARE_HISTORY` unless that workflow is explicitly revisited.
 - `history -p` and history expansion features such as `!prefix`, modifiers, and `:s/old/new/`: understood as user-facing Bash capabilities, but no config change needed.
 - Readline/completion defaults such as `show-all-if-ambiguous` and `mark-symlinked-directories`: still candidates only after explicit behavior review.
 - Additional command completions beyond the first system-first pass: still candidates when a tool lacks package-manager/native completions, with installed-command/package-manager sources preferred over vendored copies.
@@ -42,6 +42,7 @@ Dismissed:
 - Adopting Oh My Bash wholesale.
 - Loading broad alias packs by default.
 - zoxide-style directory ranking/jump behavior.
+- `HISTCONTROL=ignoredups`.
 - Bash `magic-space`, `histverify`, and `histreedit` for now.
 - OMZ `history-substring-search`, autosuggestions, syntax highlighting, autocomplete, and broad keybinding tables.
 - High-surprise shell behavior defaults such as `noclobber`, `autocd`, `cdspell`, `CDPATH`, and sudo key bindings.

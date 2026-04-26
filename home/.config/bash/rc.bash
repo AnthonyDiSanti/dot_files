@@ -28,8 +28,11 @@ fi
 export HISTFILE="$dotfiles_bash_state_home/history"
 export HISTSIZE="${HISTSIZE:-50000}"
 export HISTFILESIZE="${HISTFILESIZE:-$HISTSIZE}"
+export HISTTIMEFORMAT='%F %T '
 # Keep Bash history usable across concurrent shells without live event-number merging.
 shopt -s histappend cmdhist lithist
+# Keep Readline wrapping aligned with resized terminal windows.
+shopt -s checkwinsize
 
 __dotfiles_bash_configure_line_editor() {
   # Search history by the typed prefix when pressing Up/Down.

@@ -11,6 +11,20 @@
 [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]
 [[ "${HISTSIZE:-}" == 50000 ]]
 [[ "${SAVEHIST:-}" == 50000 ]]
+[[ -o EXTENDED_HISTORY ]]
+(( ${+functions[history]} == 1 ))
+history_fixture_dir="${DOTFILES_VERIFY_FIXTURE:h}"
+history_fixture_input="$history_fixture_dir/zsh-history.input"
+history_fixture_expected="$history_fixture_dir/zsh-history.expected"
+history_fixture_file="${TMPDIR:-/tmp}/dotfiles_zsh_history_$$"
+history_fixture_actual="${TMPDIR:-/tmp}/dotfiles_zsh_history_actual_$$"
+cp "$history_fixture_input" "$history_fixture_file"
+fc -p "$history_fixture_file" 10 0
+TZ=UTC history 1 3 >"$history_fixture_actual"
+diff -u "$history_fixture_expected" "$history_fixture_actual"
+fc -P
+rm -f "$history_fixture_file" "$history_fixture_actual"
+unset history_fixture_actual history_fixture_dir history_fixture_expected history_fixture_file history_fixture_input
 [[ "$(bindkey -M emacs '^[[A')" == *up-line-or-beginning-search ]]
 [[ "$(bindkey -M emacs '^[[B')" == *down-line-or-beginning-search ]]
 zstyle -a ':completion:*' matcher-list completion_matchers

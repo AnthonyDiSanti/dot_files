@@ -18,6 +18,31 @@ HISTFILE="$dotfiles_zsh_state_home/history"
 HISTSIZE=50000
 SAVEHIST=50000
 export HISTFILE HISTSIZE SAVEHIST
+# Store timestamps and elapsed command duration in the zsh history file.
+setopt EXTENDED_HISTORY
+
+history() {
+  local command date duration elapsed event line output time
+
+  output="$(fc -l -D -t '%F %T' "$@")" || return $?
+  while IFS= read -r line; do
+    read -r event date time elapsed command <<<"$line"
+    if [[ $date == [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] \
+      && $time == [0-9][0-9]:[0-9][0-9]:[0-9][0-9] \
+      && $elapsed == *:* ]]; then
+      # zsh only stores whole seconds; keep sub-10s display compact without faking ms.
+      if [[ $elapsed == 0:0[0-9] ]]; then
+        duration="${elapsed##*:0}"
+        [[ $duration == 0 ]] && duration="<1s" || duration="${duration}s"
+      else
+        duration="$elapsed"
+      fi
+      printf '%5s  %s %s  %-4s  %s\n' "$event" "$date" "$time" "$duration" "$command"
+    else
+      print -r -- "$line"
+    fi
+  done <<<"$output"
+}
 
 __dotfiles_zsh_configure_line_editor() {
   emulate -L zsh
