@@ -6,15 +6,13 @@ fi
 source "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-if ! declare -F dotfiles_git_share_roots >/dev/null 2>&1; then
+if ! declare -F dotfiles_git_prompt_candidates >/dev/null 2>&1; then
   source "$dotfiles_shell_config_home/functions.sh" || return 1
 fi
-source "$dotfiles_bash_config_home/git-completion.sh" || return 1
 
-__dotfiles_bash_source_first_git_candidate() {
+__dotfiles_bash_source_first_git_prompt_candidate() {
   local path
 
-  # Prefer helper files from the active Git install so completion matches the binary on PATH.
   while IFS= read -r path; do
     [[ -r $path ]] || continue
     source "$path"
@@ -33,16 +31,21 @@ export HISTFILESIZE="${HISTFILESIZE:-$HISTSIZE}"
 # Keep Bash history usable across concurrent shells without live event-number merging.
 shopt -s histappend cmdhist lithist
 
+if [[ -r "$dotfiles_bash_config_home/completion.bash" ]]; then
+  source "$dotfiles_bash_config_home/completion.bash"
+fi
+
 if command -v git >/dev/null 2>&1; then
   export GIT_PS1_SHOWDIRTYSTATE='auto'
   export GIT_PS1_SHOWUNTRACKEDFILES='auto'
   export GIT_PS1_SHOWUPSTREAM='auto'
 
-  __dotfiles_bash_source_first_git_candidate < <(dotfiles_git_prompt_candidates)
-  __dotfiles_bash_source_first_git_candidate < <(dotfiles_bash_git_completion_candidates)
+  if ! declare -F __git_ps1 >/dev/null 2>&1; then
+    __dotfiles_bash_source_first_git_prompt_candidate < <(dotfiles_git_prompt_candidates)
+  fi
 fi
 
-unset -f __dotfiles_bash_source_first_git_candidate
+unset -f __dotfiles_bash_source_first_git_prompt_candidate
 
 if [ -r "$dotfiles_bash_config_home/prompt.bash" ]; then
   source "$dotfiles_bash_config_home/prompt.bash"

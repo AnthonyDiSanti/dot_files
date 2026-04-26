@@ -22,7 +22,14 @@ fi
 
 command -v make-chrome-app >/dev/null
 declare -F __git_ps1 >/dev/null 2>&1
-declare -F __git_complete >/dev/null 2>&1
+complete -p git >/dev/null 2>&1
+if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] && command -v gh >/dev/null 2>&1; then
+  complete -p gh >/dev/null 2>&1 || exit 1
+fi
+if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] \
+  && command -v kubectl >/dev/null 2>&1; then
+  complete -p kubectl >/dev/null 2>&1 || exit 1
+fi
 declare -F __dotfiles_set_ps1 >/dev/null 2>&1
 case ";${PROMPT_COMMAND:-};" in
   *";__dotfiles_set_ps1;"*) ;;

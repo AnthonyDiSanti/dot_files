@@ -14,8 +14,8 @@ if [ -r "$dotfiles_bash_bootstrap_home/rc.bash" ]; then
   source "$dotfiles_bash_bootstrap_home/rc.bash" || return 1
 fi
 
-if [ -r "$HOME/.bash_local" ]; then
-  source "$HOME/.bash_local" || return 1
+if [ -r "$HOME/.bashrc_local" ]; then
+  source "$HOME/.bashrc_local" || return 1
 fi
 
 unset dotfiles_bash_bootstrap_home

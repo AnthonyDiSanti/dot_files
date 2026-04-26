@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-26 — Prefer system completion sources across Bash and zsh
+- Decider: Anthony
+- Decision: Keep command completions system-first instead of vendoring Oh My Bash completion files. Bash treats an already-loaded `bash-completion` as authoritative, otherwise tries Homebrew formula prefixes, optional `pkg-config` metadata, and common system framework paths; it does not broadly source snippets without a framework. Active-Git completion is a fallback only when `complete -p git` reports no existing Git completion. Zsh prepends Homebrew zsh site-functions before `compinit`, adds active-Git completion only when no `_git` is already visible in `fpath`, and uses command-generated zsh completions only when no native command completion is registered.
+- Rationale: Completion scripts need to match the installed command version, but many Bash snippets in Homebrew's `etc/bash_completion.d` assume framework helpers such as `_get_comp_words_by_ref` or `_filedir`. The framework owns broad snippet loading; direct fallback sourcing would be brittle. Runtime capability checks protect external integration points without reintroducing stale file-level `DOTFILES_*_LOADED` guards.
+- Consequences / follow-ups: Keep Git's prompt helper discovery separate because Bash prompt support needs `__git_ps1`, which `bash-completion` does not provide. `gh` and `kubectl` have explicit command-generated fallbacks for non-package-manager installs. Add future completions by extending the system/package-manager loader or narrow generated-completion list, guarded by shell-observed capability checks such as `complete -p command` or zsh `_comps[command]`.
+
 ## 2026-04-26 — Centralize dev-tool shell discovery separately from deployment
 - Decider: Anthony
 - Decision: Keep deployment discovery in the POSIX `scripts/home_tree_manifest.sh`, and centralize repo-local shell tooling discovery/dialect classification in the Bash-only `scripts/shell_files.bash`. Use that helper from verify, ShellCheck, and shfmt wrappers.
@@ -31,7 +37,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decider: Anthony
 - Decision: Drop the `lib/git` submodule and the managed Git helper symlinks under `home/.config/{bash,zsh}/`. Git prompt helper discovery lives in shared POSIX functions, while Git bash-completion candidate discovery lives under `home/.config/bash/` and is explicitly consumed by zsh because Git's upstream zsh wrapper depends on a matching bash completion script.
 - Rationale: Git completions and prompt helpers should match the selected `git` binary on PATH. Keeping a separate pinned Git checkout made completion behavior drift from the installed command and added a large submodule for files that macOS/Homebrew Git already ship.
-- Consequences / follow-ups: Zsh handles both native `_git` installs and installs that only ship `git-completion.zsh` by creating an XDG-cache `_git` symlink to the active system file, then pointing that wrapper at the bash-owned completion candidate. Machines without packaged Git completion helpers will get reduced Git completion/prompt behavior until Git's helpers are installed. Continue the broader submodule/CLI audit separately.
+- Consequences / follow-ups: Zsh prefers any native `_git` already visible in `fpath`; only when that capability is missing does it create an XDG-cache `_git` symlink to the active system file and point that fallback wrapper at the bash-owned completion candidate. Machines without packaged Git completion helpers will get reduced Git completion/prompt behavior until Git's helpers are installed. Continue the broader submodule/CLI audit separately.
 
 ## 2026-04-24 — Append Bash history without live cross-session merging
 - Decider: Anthony
