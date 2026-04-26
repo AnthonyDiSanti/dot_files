@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # Abbreviation Aliases
+git config --global alias.b 'branch'
+git config --global alias.s 'switch'
 git config --global alias.co 'checkout'
 git config --global alias.subdo 'submodule foreach'
 git config --global alias.ff 'merge --ff-only'
