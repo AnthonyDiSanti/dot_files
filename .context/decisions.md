@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-26 — Timestamp shell history and keep Bash window size current
+- Decider: Anthony
+- Decision: Set Bash `HISTTIMEFORMAT='%F %T '` so `history` shows `YYYY-MM-DD HH:MM:SS` timestamps and newly written Bash history entries preserve timestamps. Enable zsh `EXTENDED_HISTORY` so zsh history stores timestamps and elapsed command duration, and wrap zsh `history` around `fc -l -D -t '%F %T'` so plain `history` displays the timestamp plus elapsed duration. Since zsh stores whole seconds, show `0` seconds as `<1s`, `1`-`9` seconds as `Ns`, and keep zsh's native `M:SS` display for 10 seconds and above. Also set Bash `checkwinsize` so Readline gets fresh terminal dimensions after resizes. Keep `HISTCONTROL` unset, including no `ignoredups`.
+- Rationale: Timestamped history is useful for recall and auditing, and the chosen Bash display format is readable without being noisy. Zsh needs `EXTENDED_HISTORY` for durable timestamp storage rather than a Bash-style display variable. `checkwinsize` is a low-risk Bash ergonomics fix for terminal resizing, while `HISTCONTROL` changes what gets saved and should remain explicit rather than surprising.
+- Consequences / follow-ups: Existing history entries without timestamps will not gain accurate old timestamps. Zsh history display uses `fc` output under the hood, so unusual `history` flags should be checked against zsh `fc` behavior. Do not add prompt-time, immediate-write, or cross-session history sync (`history -n`/`history -a`, `INC_APPEND_HISTORY`, `INC_APPEND_HISTORY_TIME`, or `SHARE_HISTORY`) because Anthony relies on stable prompt history event numbers for the `!num` workflow. Do not add secret-suppression filters as part of this policy.
+
 ## 2026-04-26 — Hide the working-memory directory
 - Decider: Anthony
 - Decision: Rename the committed working-memory directory from `context/` to `.context/` in the live repo and from `code_template/context/` to `code_template/.context/` in the repo template. Update AGENTS, README, settings, and template references to point at the hidden path.

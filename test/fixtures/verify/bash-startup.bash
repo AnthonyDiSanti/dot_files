@@ -10,7 +10,8 @@
 [[ "${HISTFILE:-}" == "$HOME/.local/state/bash/history" ]]
 [[ "${HISTSIZE:-}" == 50000 ]]
 [[ "${HISTFILESIZE:-}" == 50000 ]]
-shopt -q histappend cmdhist lithist
+[[ "${HISTTIMEFORMAT:-}" == "%F %T " ]]
+shopt -q checkwinsize histappend cmdhist lithist
 bind -q history-search-backward | grep -q 'history-search-backward can be invoked'
 bind -q history-search-forward | grep -q 'history-search-forward can be invoked'
 bind -v | grep -q '^set completion-ignore-case on$'
