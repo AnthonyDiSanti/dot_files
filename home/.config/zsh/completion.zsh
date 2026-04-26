@@ -115,6 +115,7 @@ __dotfiles_zsh_init_completion() {
   compinit -d "$zcompdump_path"
 
   # Some tools ship completion generators instead of package-manager functions.
+  (( ${+_comps[docker]} )) || __dotfiles_zsh_load_generated_completion docker docker completion zsh
   (( ${+_comps[gh]} )) || __dotfiles_zsh_load_generated_completion gh gh completion -s zsh
   (( ${+_comps[kubectl]} )) || __dotfiles_zsh_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion zsh
 }

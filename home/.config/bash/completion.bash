@@ -94,6 +94,7 @@ __dotfiles_bash_load_completion_framework || true
 __dotfiles_bash_load_git_completion
 
 # Some tools ship completion generators instead of package-manager snippets.
+__dotfiles_bash_load_generated_completion docker docker completion bash
 __dotfiles_bash_load_generated_completion gh gh completion -s bash
 __dotfiles_bash_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion bash
 
