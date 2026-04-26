@@ -20,7 +20,7 @@ What does NOT belong there:
 Precedence:
 - This file (`AGENTS.md`) is the source of truth for repo workflow expectations.
 - `AGENTS.local.md` may override **commands and environment steps** only when necessary on this machine.
-- If local overrides materially change how the project is run/tested, record a short note in `/context/handoff.md`.
+- If local overrides materially change how the project is run/tested, record a short note in `/.context/handoff.md`.
 
 Maintenance:
 - Keep `AGENTS.local.md` short and delta-based.
@@ -31,12 +31,12 @@ Use this retrieval order unless the task clearly calls for something else:
 1. Read `README.md` for the repo/template quick start.
 2. Read `/docs/README.md` for the documentation map.
 3. Open the most relevant topic file(s) under `/docs/`.
-4. Read `/context/handoff.md`, `/context/tasks.md`, and `/context/decisions.md` for live state.
+4. Read `/.context/handoff.md`, `/.context/tasks.md`, and `/.context/decisions.md` for live state.
 5. Only then dive into the code.
 
 AGENTS is the routing layer, not the encyclopedia.
 Stable repo truth belongs in `/docs/`.
-Live working state belongs in `/context/`.
+Live working state belongs in `/.context/`.
 
 ## 2) Canonical Docs (`/docs`)
 `/docs/` is the canonical documentation system for this repo.
@@ -51,24 +51,24 @@ Rules:
 - Favor explicit file paths, entrypoints, data flows, failure modes, and debugging guidance over high-level summaries.
 - Roll external/vendor knowledge into the relevant `/docs/` topic when it materially affects stable repo behavior.
 
-## 3) Live Working Memory (`/context`)
-`/context/` is durable, agent-facing working memory.
+## 3) Live Working Memory (`/.context`)
+`/.context/` is durable, agent-facing working memory.
 It stores live state, coordination artifacts, and short-lived collaboration material.
 
-### Context structure
-- `/context/README.md` — what belongs in `/context` and what should be promoted into `/docs/`
-- `/context/handoff.md` — current state + next steps (living snapshot)
-- `/context/tasks.md` — active/paused/completed workstreams
-- `/context/decisions.md` — decision log (newest first; include decision-maker)
-- `/context/knowledge/` — agent-oriented supplemental knowledge that is useful but not appropriate as canonical repo docs
-- `/context/scratch/` — git-tracked staging area for collaborative drafts, experiments, and other content that does not yet have a stable home in the repo
+### .context structure
+- `/.context/README.md` — what belongs in `/.context` and what should be promoted into `/docs/`
+- `/.context/handoff.md` — current state + next steps (living snapshot)
+- `/.context/tasks.md` — active/paused/completed workstreams
+- `/.context/decisions.md` — decision log (newest first; include decision-maker)
+- `/.context/knowledge/` — agent-oriented supplemental knowledge that is useful but not appropriate as canonical repo docs
+- `/.context/scratch/` — git-tracked staging area for collaborative drafts, experiments, and other content that does not yet have a stable home in the repo
 
 Rules:
-- Do not let `/context/` become the primary documentation system.
-- If a note becomes stable repo truth, move it into `/docs/` and leave only a short breadcrumb in `/context/`.
-- Use `/context/knowledge/` for high-value agent notes that are reusable across sessions but do not belong in canonical repo docs.
-- Namespace `/context/scratch/` by task ID or work thread and clean it up once the content is promoted or no longer needed.
-- Treat `/context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/context` before answering status or “what’s next?” questions.
+- Do not let `/.context/` become the primary documentation system.
+- If a note becomes stable repo truth, move it into `/docs/` and leave only a short breadcrumb in `/.context/`.
+- Use `/.context/knowledge/` for high-value agent notes that are reusable across sessions but do not belong in canonical repo docs.
+- Namespace `/.context/scratch/` by task ID or work thread and clean it up once the content is promoted or no longer needed.
+- Treat `/.context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/.context` before answering status or “what’s next?” questions.
 
 ## 4) Documentation Maintenance
 Documentation is part of the product for agent workflows.
@@ -78,9 +78,9 @@ Rules:
 - After every turn that materially changes code, behavior, architecture, integrations, debugging understanding, or workflow knowledge, update the relevant docs before finishing.
 - When a change materially affects stable repo behavior, code navigation, setup, debugging, or integrations, update the relevant `/docs/` topic file in the same change.
 - Update `/docs/README.md` whenever a new topic file is added, renamed, split, or removed.
-- When the new knowledge is useful mainly to agents and not appropriate for canonical repo docs, update `/context/knowledge/` in the same turn.
+- When the new knowledge is useful mainly to agents and not appropriate for canonical repo docs, update `/.context/knowledge/` in the same turn.
 - Prefer dense, explicit documentation that helps an agent find the right code quickly, even if it is more detailed than a human-oriented guide would be.
-- Use `/context/` for live state, short breadcrumbs, and coordination; use `/docs/` for durable repo truth; use `/context/knowledge/` for agent-oriented supplemental knowledge.
+- Use `/.context/` for live state, short breadcrumbs, and coordination; use `/docs/` for durable repo truth; use `/.context/knowledge/` for agent-oriented supplemental knowledge.
 
 ## 5) Git commits (workflow)
 When a coherent unit of work is complete, pause and recommend a git commit with a proposed message. The message format must be:
@@ -93,7 +93,7 @@ This file should evolve as friction is discovered.
 
 Proactively update AGENTS.md when:
 - repeated mistakes recur across sessions,
-- routing into the right docs/context files is unclear,
+- routing into the right docs or `.context` files is unclear,
 - documentation boundaries need to be tightened,
 - or new workflow constraints need to be enforced.
 

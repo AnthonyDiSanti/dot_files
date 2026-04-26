@@ -1,7 +1,7 @@
-# /context
+# /.context
 
 Durable, agent-facing working memory for this repo.
-Stable documentation belongs in `/docs/`; `/context/` is for live state, coordination, supplemental agent knowledge, drafts, and scratch work.
+Stable documentation belongs in `/docs/`; `/.context/` is for live state, coordination, supplemental agent knowledge, drafts, and scratch work.
 
 ## What goes here
 - Handoffs between sessions/agents (living snapshot)
@@ -25,7 +25,7 @@ Stable documentation belongs in `/docs/`; `/context/` is for live state, coordin
 
 ## Hygiene
 - Keep entries short and high-signal.
-- Prefer promoting durable repo truth into `/docs/` instead of expanding `/context/`.
+- Prefer promoting durable repo truth into `/docs/` instead of expanding `/.context/`.
 - Prune old items regularly.
 - Keep `tasks.md` **Active** limited to in-progress/planned items; move completed items to **Completed** promptly.
 - If a `knowledge/` note becomes stable repo truth, move it into `/docs/` and leave a short breadcrumb behind.

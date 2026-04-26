@@ -27,4 +27,3 @@ Task IDs are ULIDs; keep titles short and human-readable.
 - id: 01KP3BBZ7QM352FJBYPXHES4D8 — title: Lighten code_template docs scaffold — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13
 - id: 01KP3B51BKMYS0GBYT6Z7921BX — title: Fold repo reference notes into knowledge — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13
 - id: 01KP39VX2MRPFN9W61ZF4TFAZ4 — title: Merge repo user_shared into scratch and reorder decisions — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13
-- id: 01KP39KSBFMKY3XE7GYXJV23MD — title: Merge code_template user_shared into scratch — owner: Codex (model: gpt-5.2-codex) — status: done — last update: 2026-04-13

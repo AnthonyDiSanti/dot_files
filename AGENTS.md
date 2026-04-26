@@ -20,7 +20,7 @@ What does NOT belong there:
 Precedence:
 - This file (`AGENTS.md`) is the source of truth for repo details.
 - `AGENTS.local.md` may override **commands and environment steps** only when necessary on this machine.
-- If local overrides materially change how the project is run/tested, record a short note in `/context/handoff.md`.
+- If local overrides materially change how the project is run/tested, record a short note in `/.context/handoff.md`.
 
 Maintenance:
 - Keep `AGENTS.local.md` short and delta-based.
@@ -30,14 +30,14 @@ Maintenance:
 - What this project is: Personal dotfiles and setup scripts for shell, Vim, tmux, Git, and agent configs, primarily on macOS.
 - Key user-facing behavior: `./bootstrap.sh` hydrates git submodules from a real checkout, then interprets the tracked `home/` tree as a literal `$HOME` mirror and symlinks managed targets into place; shell startup reads shared config from `~/.config/shell/` and shell-specific config from `~/.config/bash/` or `~/.config/zsh/`; `settings/*.sh` apply macOS defaults and Git config; `~/.local/bin/make-chrome-app` generates a Chrome app wrapper.
 - Non-goals / out of scope: Not a general-purpose app/library; not cross-platform; no CI/test harness; avoid ad-hoc edits inside vendored directories.
-- Definition of done: Dotfiles updated in the literal `home/` target-tree form (plus `managed/` for whole-directory symlink cases), bootstrap/scripts run without errors on macOS, and `/context` is kept current.
+- Definition of done: Dotfiles updated in the literal `home/` target-tree form (plus `managed/` for whole-directory symlink cases), bootstrap/scripts run without errors on macOS, and `/.context` is kept current.
 
 ## 2) Tech stack & constraints
 - Languages + versions: Shell (bash/sh, system), Vimscript (`home/.vimrc`), TOML (`home/.codex/config.toml`), plist/dict (`settings/OSXKeyBindings.dict`).
 - Frameworks: None.
 - Package manager: None in-repo (system installs via Homebrew/RubyGems are assumed externally).
 - Storage/database: None.
-- Deployment target: Local macOS workstation; **WSL** is supported (e.g. block-cursor tweak in `home/.config/bash/rc.bash` only after `[[ -r /proc/version ]]`). Vim configuration targets **vanilla Vim** (8+) so dotfiles stay usable over SSH on typical servers; Neovim is optional future work—see `/context/decisions.md`.
+- Deployment target: Local macOS workstation; **WSL** is supported (e.g. block-cursor tweak in `home/.config/bash/rc.bash` only after `[[ -r /proc/version ]]`). Vim configuration targets **vanilla Vim** (8+) so dotfiles stay usable over SSH on typical servers; Neovim is optional future work—see `/.context/decisions.md`.
 - Constraints (perf/security/compliance/no-new-deps/etc.): Prefer macOS-compatible commands (`defaults`, `sips`, `tiff2icns`); avoid touching vendored directories; keep scripts compatible with their shebang (`bash` vs `sh`); no secrets in repo. **Live-update principle:** `git pull` on the repo should update deployed config without re-running bootstrap except when the deployment shape changes. Prefer symlinks into the repo, including real symlink nodes in `home/` for vendored assets or whole-directory cases such as `home/.vim`, over copied/runtime-generated files for long-lived config.
 
 ## 3) Repo map
@@ -52,8 +52,8 @@ Maintenance:
   - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `shell_files.bash`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
   - `lib/` — vendored dependencies (`lib/vim-plug`, `lib/make-chrome-app`).
-  - `context/` — shared working memory for humans and agents.
-  - `code_template/` — template skeleton for new repos (AGENTS/context, etc.).
+  - `.context/` — shared working memory for humans and agents.
+  - `code_template/` — template skeleton for new repos (`AGENTS.md`, `/.context`, etc.).
 - Where to add new:
   - Shared shell setup for `sh`/`bash`/`zsh`: `home/.config/shell/`.
   - Bash-only shell setup: `home/.config/bash/`.
@@ -95,12 +95,14 @@ Verify (targeted first, full at end):
 
 ## 6) Git commits (workflow)
 When a coherent unit of work is complete, pause and recommend a git commit with a proposed message. The message format must be:
-1) Title in present tense
+1) Title in third-person present tense and sentence-style capitalization, e.g. `Adds shell startup verification`
 2) Blank line
-3) Bullet list of key changes
+3) Bullet list of key changes, with each bullet starting capitalized and using third-person present tense, e.g. `- Adds ...`
 
-## 7) /context — shared working memory (COMMITTED)
-This repo uses `/context` as durable, agent-facing working memory.
+Avoid imperative verbs (`Add`), gerunds (`Adding`), past tense (`Added`), lowercase-leading bullets, and title-casing every word.
+
+## 7) /.context — shared working memory (COMMITTED)
+This repo uses `/.context` as durable, agent-facing working memory.
 It is committed to git to support continuity across devices and developers.
 
 ### Goals
@@ -108,20 +110,20 @@ It is committed to git to support continuity across devices and developers.
 - Enable multi-session continuity and agent handoffs.
 - Keep key decisions and knowledge discoverable.
 
-### Context Structure
-- `/context/README.md` — purpose, scope, and how the context files are used in this repo.
-- `/context/handoff.md` — current state and next steps (living snapshot).
-- `/context/tasks.md` — active/paused/completed workstreams.
-- `/context/decisions.md` — decision log with dates and rationale, newest first. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
-- `/context/knowledge/` — curated repo, vendor, and workflow insights with “when to consult” guidance (index at `knowledge/index.md`).
-- `/context/scratch/` — git-tracked staging area for collaborative drafts, experiments, pre-repo code, and other content that does not yet have a stable home in the repo; namespace by task ID or work thread and clean it up after promotion.
+### .context Structure
+- `/.context/README.md` — purpose, scope, and how the `.context` files are used in this repo.
+- `/.context/handoff.md` — current state and next steps (living snapshot).
+- `/.context/tasks.md` — active/paused/completed workstreams.
+- `/.context/decisions.md` — decision log with dates and rationale, newest first. Use `Decider: Anthony` for human decisions and `Decider: Codex (model: gpt-5.2-codex)` for agent decisions.
+- `/.context/knowledge/` — curated repo, vendor, and workflow insights with “when to consult” guidance (index at `knowledge/index.md`).
+- `/.context/scratch/` — git-tracked staging area for collaborative drafts, experiments, pre-repo code, and other content that does not yet have a stable home in the repo; namespace by task ID or work thread and clean it up after promotion.
 
-### /context hygiene rules
+### /.context hygiene rules
 - Store summaries and insights, not giant dumps.
 - Prefer updating existing notes over creating many redundant files.
 - Never store secrets.
-- Keep `/context` concise and retrieval-oriented: live state belongs in `handoff.md`, `tasks.md`, and `decisions.md`, while reusable knowledge belongs in `knowledge/`.
-- Treat `/context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/context` before answering status or “what’s next?” questions.
+- Keep `/.context` concise and retrieval-oriented: live state belongs in `handoff.md`, `tasks.md`, and `decisions.md`, while reusable knowledge belongs in `knowledge/`.
+- Treat `/.context` as a helpful snapshot, not infallible ground truth: when it conflicts with live repo evidence (`git status`, current files, recent commits, or the working tree), prefer the live state and reconcile `/.context` before answering status or “what’s next?” questions.
 
 ## 8) Documentation references (maintain)
 List the project’s key references and when to consult them:
@@ -131,7 +133,7 @@ List the project’s key references and when to consult them:
 - `settings/osx_*.sh` — before changing macOS defaults.
 - `settings/git.sh` and `settings/git/*.sh` — before altering Git global config.
 - `settings/README.md` — scope of `settings/`; Solarized reference links (upstream not vendored).
-- `/context/knowledge/index.md` — quick repo, vendor, and workflow notes plus links to deeper topics.
+- `/.context/knowledge/index.md` — quick repo, vendor, and workflow notes plus links to deeper topics.
 
 Capture external docs only when they are:
 - repeatedly referenced,
@@ -139,8 +141,8 @@ Capture external docs only when they are:
 - or likely to prevent recurring mistakes.
 
 Documentation maintenance rule:
-- When a change materially affects stable repo behavior, navigation, debugging, or an external system the repo depends on, update the nearest durable doc in the same change. In this repo that usually means `README.md`, a README in the touched subtree, or a topic under `/context/knowledge/` when the note is primarily agent-facing.
-- Preserve the boundary: `/context/handoff.md`, `/context/tasks.md`, and `/context/decisions.md` are live state, while `/context/knowledge/` holds reusable knowledge.
+- When a change materially affects stable repo behavior, navigation, debugging, or an external system the repo depends on, update the nearest durable doc in the same change. In this repo that usually means `README.md`, a README in the touched subtree, or a topic under `/.context/knowledge/` when the note is primarily agent-facing.
+- Preserve the boundary: `/.context/handoff.md`, `/.context/tasks.md`, and `/.context/decisions.md` are live state, while `/.context/knowledge/` holds reusable knowledge.
 
 ## 9) Continuous improvement of instructions (silent edits allowed)
 This file should evolve as friction is discovered.
