@@ -12,6 +12,29 @@ dotfiles_codex_git() (
   exec codex --add-dir "$HOME/.codex" -C "$dotfiles_repo_root" --add-dir "$dotfiles_git_common" "$@"
 )
 
+# Emit Homebrew prefixes that may contribute shell completions.
+dotfiles_homebrew_prefix_roots() {
+  dotfiles_homebrew_seen=
+  dotfiles_homebrew_prefix=$(brew --prefix 2>/dev/null) || dotfiles_homebrew_prefix=
+  if [ -n "$dotfiles_homebrew_prefix" ]; then
+    printf '%s\n' "$dotfiles_homebrew_prefix"
+    dotfiles_homebrew_seen=$dotfiles_homebrew_prefix
+  fi
+
+  for dotfiles_homebrew_prefix in /opt/homebrew /usr/local; do
+    [ -x "$dotfiles_homebrew_prefix/bin/brew" ] || continue
+    case ":$dotfiles_homebrew_seen:" in
+      *:"$dotfiles_homebrew_prefix":*) ;;
+      *)
+        printf '%s\n' "$dotfiles_homebrew_prefix"
+        dotfiles_homebrew_seen="${dotfiles_homebrew_seen:+$dotfiles_homebrew_seen:}$dotfiles_homebrew_prefix"
+        ;;
+    esac
+  done
+
+  unset dotfiles_homebrew_seen dotfiles_homebrew_prefix
+}
+
 # Emit share roots for the active Git install; shell-specific layers decide which helpers to load.
 dotfiles_git_share_roots() {
   dotfiles_git_seen=

@@ -13,7 +13,7 @@ This repo is intentionally smaller: POSIX shared shell policy in `home/.config/s
 ## Useful ideas to selectively reuse
 
 - Bash sensible defaults: `histappend`, `cmdhist`, and `lithist` are now enabled. Still consider `checkwinsize`, `completion-ignore-case`, `show-all-if-ambiguous`, `mark-symlinked-directories`, `magic-space`, and maybe prefix history search bindings.
-- Command completion layer: prefer installed command/package-manager completion sources when available. Git prompt helper discovery is shared POSIX policy, while Git bash-completion candidate ordering lives under `home/.config/bash/` and is explicitly consumed by zsh because upstream Git's zsh wrapper sources a matching bash completion script. The old vendored `lib/git` fallback was removed. Consider opt-in/command-detected completion for `gh`, `brew`, `docker`, `kubectl`, `tmux`, `uv`, and similar tools when they are installed.
+- Command completion layer: prefer installed command/package-manager completion sources when available. Git prompt helper discovery is shared POSIX policy, while Git bash-completion candidate ordering lives under `home/.config/bash/` for fallback use when no existing Git completion is registered. The old vendored `lib/git` fallback was removed. Consider opt-in/command-detected completion for installed tools such as `gh`, `brew`, `docker`, `kubectl`, and `tmux`.
 - Navigation/tool integrations: `fzf --bash`, `zoxide init bash`, and a small directory bookmark/jump story are worth evaluating if Bash remains a common interactive shell.
 - Man-page coloring and optional prompt delegation to tools like Starship may be useful only if enabled explicitly.
 
@@ -22,7 +22,8 @@ This repo is intentionally smaller: POSIX shared shell policy in `home/.config/s
 Implemented:
 - Bash history preservation: enabled `shopt -s histappend cmdhist lithist`.
 - Git helper source policy: removed the vendored `lib/git` submodule and now use helper files from the active Git install.
-- Git helper abstraction boundary: shared POSIX functions own Git root and prompt-helper discovery; `home/.config/bash/git-completion.sh` owns Git bash-completion candidate ordering; zsh explicitly consumes that helper because upstream Git's zsh wrapper depends on a bash completion script.
+- Git helper abstraction boundary: shared POSIX functions own Git root and prompt-helper discovery; `home/.config/bash/git-completion.sh` owns Git bash-completion candidate ordering for fallback use; zsh consumes that helper only when it must configure an active-Git fallback because no native `_git` is already available.
+- System completion source policy: Bash loads Homebrew or common system `bash-completion` frameworks when present and does not broadly source snippets without a framework. Git completion fallback runs only when `complete -p git` reports no existing Git completion; generated Bash completions check the same command-specific registration before installing. Zsh prepends Homebrew `share/zsh/site-functions` before `compinit`, adds active-Git fallback only when no `_git` is visible in `fpath`, and uses generated completions only when no `_comps[command]` entry exists. `gh` and `kubectl` have explicit command-generated fallbacks for non-package-manager installs. On Anthony's 2026-04-26 setup, Homebrew Bash, `bash-completion@2`, and zsh are installed; `/opt/homebrew/etc/bash_completion.d` and `/opt/homebrew/share/zsh/site-functions` contain formula/app-provided completion symlinks plus Homebrew's own `brew` completion. Some Bash snippets (`gh`, `docker`, `mas`, `npm`, `pnpm`) assume framework helpers such as `_get_comp_words_by_ref` or `_filedir`, so direct fallback sourcing is intentionally avoided.
 
 Discussed and deferred:
 - `HISTTIMEFORMAT`: useful for timestamped history, but not yet pinned.
@@ -30,7 +31,7 @@ Discussed and deferred:
 - `history -n` / prompt-time history syncing: intentionally not enabled because it can move Bash event numbers under the history-number rerun workflow.
 - `history -p` and history expansion features such as `!prefix`, modifiers, and `:s/old/new/`: understood as user-facing Bash capabilities, but no config change needed.
 - Readline/completion defaults such as `completion-ignore-case`, `show-all-if-ambiguous`, `mark-symlinked-directories`, `magic-space`, and prefix history search bindings: still candidates for a later pass.
-- Additional command completions for tools such as `gh`, `brew`, `docker`, `kubectl`, `tmux`, and `uv`: still candidates, with installed-command/package-manager sources preferred over vendored copies.
+- Additional command completions beyond the first system-first pass: still candidates when a tool lacks package-manager/native completions, with installed-command/package-manager sources preferred over vendored copies.
 - Navigation/tool integrations such as `fzf`, `zoxide`, and directory bookmarks: still candidates, probably opt-in or command-detected.
 
 Dismissed:

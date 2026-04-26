@@ -7,8 +7,8 @@ if [ -r "$dotfiles_zsh_bootstrap_home/rc.zsh" ]; then
   . "$dotfiles_zsh_bootstrap_home/rc.zsh" || return 1
 fi
 
-if [ -r "$HOME/.zsh_local" ]; then
-  . "$HOME/.zsh_local" || return 1
+if [ -r "$HOME/.zshrc_local" ]; then
+  . "$HOME/.zshrc_local" || return 1
 fi
 
 unset dotfiles_zsh_bootstrap_home

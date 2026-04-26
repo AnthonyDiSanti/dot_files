@@ -9,8 +9,8 @@ if [ -r "$dotfiles_shell_bootstrap_home/rc.sh" ]; then
   . "$dotfiles_shell_bootstrap_home/rc.sh" || return 1
 fi
 
-if [ -r "$HOME/.sh_local" ]; then
-  . "$HOME/.sh_local" || return 1
+if [ -r "$HOME/.shrc_local" ]; then
+  . "$HOME/.shrc_local" || return 1
 fi
 
 unset dotfiles_shell_bootstrap_home

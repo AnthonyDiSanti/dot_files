@@ -17,6 +17,7 @@ for fn in $precmd_functions; do
 done
 (( count == 1 ))
 
-zstyle -s ":completion:*:*:git:*" script git_completion_script
-[[ -r "$git_completion_script" ]]
+if zstyle -s ":completion:*:*:git:*" script git_completion_script; then
+  [[ -r "$git_completion_script" ]]
+fi
 autoload +X _git

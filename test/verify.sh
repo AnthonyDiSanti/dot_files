@@ -190,7 +190,7 @@ run_bash_fixture() {
   shift
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" bash -lic 'source "$DOTFILES_VERIFY_FIXTURE"'
+  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" bash -lic 'set -e; source "$DOTFILES_VERIFY_FIXTURE"'
 }
 
 run_sh_fixture() {
@@ -198,7 +198,7 @@ run_sh_fixture() {
   shift
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" sh -lic '. "$DOTFILES_VERIFY_FIXTURE"'
+  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" sh -lic 'set -e; . "$DOTFILES_VERIFY_FIXTURE"'
 }
 
 run_zsh_fixture() {
@@ -206,7 +206,7 @@ run_zsh_fixture() {
   shift
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" ZDOTDIR="$HOME" zsh -lic 'source "$DOTFILES_VERIFY_FIXTURE"'
+  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" ZDOTDIR="$HOME" zsh -lic 'setopt ERR_EXIT; source "$DOTFILES_VERIFY_FIXTURE"'
 }
 
 assert_bash_startup() {
