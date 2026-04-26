@@ -31,8 +31,8 @@ export HISTFILESIZE="${HISTFILESIZE:-$HISTSIZE}"
 # Keep Bash history usable across concurrent shells without live event-number merging.
 shopt -s histappend cmdhist lithist
 
-if [[ -r "$dotfiles_bash_config_home/completion.bash" ]]; then
-  source "$dotfiles_bash_config_home/completion.bash"
+if [[ -r "$dotfiles_bash_config_home/tool-support.bash" ]]; then
+  source "$dotfiles_bash_config_home/tool-support.bash"
 fi
 
 if command -v git >/dev/null 2>&1; then

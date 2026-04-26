@@ -13,8 +13,8 @@ This repo is intentionally smaller: POSIX shared shell policy in `home/.config/s
 ## Useful ideas to selectively reuse
 
 - Bash sensible defaults: `histappend`, `cmdhist`, and `lithist` are now enabled. Still consider `checkwinsize`, `completion-ignore-case`, `show-all-if-ambiguous`, `mark-symlinked-directories`, `magic-space`, and maybe prefix history search bindings.
-- Command completion layer: prefer installed command/package-manager completion sources when available. Git prompt helper discovery is shared POSIX policy, while Git bash-completion candidate ordering lives under `home/.config/bash/` for fallback use when no existing Git completion is registered. The old vendored `lib/git` fallback was removed. Consider opt-in/command-detected completion for installed tools such as `brew` and other CLIs with first-party generators.
-- Navigation/tool integrations: `fzf --bash`, `zoxide init bash`, and a small directory bookmark/jump story are worth evaluating if Bash remains a common interactive shell.
+- Command tool-support layer: prefer installed command/package-manager shell support when available. Git prompt helper discovery is shared POSIX policy, while Git bash-completion candidate ordering lives under `home/.config/bash/` for fallback use when no existing Git completion is registered. The old vendored `lib/git` fallback was removed. Consider command-detected support for installed tools such as `brew` and other CLIs with first-party generators.
+- Navigation/tool integrations: fzf is now loaded from the installed `fzf --bash` / `fzf --zsh` generators. Still consider `zoxide init bash` / `zoxide init zsh` and a small directory bookmark/jump story if they fit the interactive workflow.
 - Man-page coloring and optional prompt delegation to tools like Starship may be useful only if enabled explicitly.
 
 ## Review status
@@ -24,6 +24,7 @@ Implemented:
 - Git helper source policy: removed the vendored `lib/git` submodule and now use helper files from the active Git install.
 - Git helper abstraction boundary: shared POSIX functions own Git root and prompt-helper discovery; `home/.config/bash/git-completion.sh` owns Git bash-completion candidate ordering for fallback use; zsh consumes that helper only when it must configure an active-Git fallback because no native `_git` is already available.
 - System completion source policy: Bash loads Homebrew or common system `bash-completion` frameworks when present and does not broadly source snippets without a framework. Git completion fallback runs only when `complete -p git` reports no existing Git completion; generated Bash completions check the same command-specific registration before installing. Zsh prepends Homebrew `share/zsh/site-functions` before `compinit`, adds active-Git fallback only when no `_git` is visible in `fpath`, and uses generated completions only when no `_comps[command]` entry exists. `codex`, `docker`, `gh`, `git-spice`, and `kubectl` have explicit command-generated fallbacks for non-package-manager installs. The `gs` alias is rebound to git-spice completion only when `gs` aliases `git-spice`, because zsh otherwise treats `gs` as Ghostscript. On Anthony's 2026-04-26 setup, Homebrew Bash, `bash-completion@2`, zsh, and tmux are installed; `/opt/homebrew/etc/bash_completion.d` and `/opt/homebrew/share/zsh/site-functions` contain formula/app-provided completion symlinks plus Homebrew's own `brew` completion. Some Bash snippets (`gh`, `docker`, `mas`, `npm`, `pnpm`) assume framework helpers such as `_get_comp_words_by_ref` or `_filedir`, so direct fallback sourcing is intentionally avoided. tmux and Vim do not get dotfiles fallbacks: tmux lacks a Docker-style first-party generator, Homebrew supplies Bash snippets, and zsh ships `_tmux` and `_vim`.
+- fzf shell integration: Bash and zsh source the installed fzf generators from the shell-specific tool-support layer, with no repo-level opt-out. The zsh wrapper filters the known upstream `can't change option: zle` restore warning while preserving other integration errors.
 
 Discussed and deferred:
 - `HISTTIMEFORMAT`: useful for timestamped history, but not yet pinned.
@@ -32,7 +33,9 @@ Discussed and deferred:
 - `history -p` and history expansion features such as `!prefix`, modifiers, and `:s/old/new/`: understood as user-facing Bash capabilities, but no config change needed.
 - Readline/completion defaults such as `completion-ignore-case`, `show-all-if-ambiguous`, `mark-symlinked-directories`, `magic-space`, and prefix history search bindings: still candidates for a later pass.
 - Additional command completions beyond the first system-first pass: still candidates when a tool lacks package-manager/native completions, with installed-command/package-manager sources preferred over vendored copies.
-- Navigation/tool integrations such as `fzf`, `zoxide`, and directory bookmarks: still candidates, probably opt-in or command-detected.
+- Navigation/tool integrations such as `zoxide` and directory bookmarks: still candidates.
+- Clipboard helpers: defer for now. If simple `copyfile` / `copypath` helpers are added, prefer delegating text clipboard access to a maintained external CLI such as `clipboard-cli` when installed, or use a tiny macOS-only `pbcopy` path. Avoid owning a broad cross-platform clipboard backend matrix in this repo.
+- Ghostty/macOS tab or split automation: skipped for now because the available OMZ-style helpers are osascript/UI-automation driven and likely brittle.
 
 Dismissed:
 - Adopting Oh My Bash wholesale.

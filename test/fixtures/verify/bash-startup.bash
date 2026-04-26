@@ -23,22 +23,26 @@ fi
 command -v make-chrome-app >/dev/null
 declare -F __git_ps1 >/dev/null 2>&1
 complete -p git >/dev/null 2>&1
-if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] && command -v codex >/dev/null 2>&1; then
+if command -v codex >/dev/null 2>&1; then
   complete -p codex >/dev/null 2>&1 || exit 1
 fi
-if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] && command -v docker >/dev/null 2>&1; then
+if command -v docker >/dev/null 2>&1; then
   complete -p docker >/dev/null 2>&1 || exit 1
 fi
-if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] && command -v gh >/dev/null 2>&1; then
+if command -v gh >/dev/null 2>&1; then
   complete -p gh >/dev/null 2>&1 || exit 1
 fi
-if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] && command -v git-spice >/dev/null 2>&1; then
+if command -v git-spice >/dev/null 2>&1; then
   complete -p git-spice >/dev/null 2>&1 || exit 1
   complete -p gs >/dev/null 2>&1 || exit 1
 fi
-if [[ -r "${dotfiles_bash_config_home:-}/completion.bash" ]] \
-  && command -v kubectl >/dev/null 2>&1; then
+if command -v kubectl >/dev/null 2>&1; then
   complete -p kubectl >/dev/null 2>&1 || exit 1
+fi
+if command -v fzf >/dev/null 2>&1; then
+  declare -F fzf-file-widget >/dev/null 2>&1 || exit 1
+  declare -F __fzf_history__ >/dev/null 2>&1 || exit 1
+  complete -p fzf >/dev/null 2>&1 || exit 1
 fi
 declare -F __dotfiles_set_ps1 >/dev/null 2>&1
 case ";${PROMPT_COMMAND:-};" in
