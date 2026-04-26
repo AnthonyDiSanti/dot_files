@@ -6,8 +6,8 @@ fi
 source "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-dotfiles_bash_completion_home="${dotfiles_bash_config_home:-}"
-if [[ -z $dotfiles_bash_completion_home ]]; then
+dotfiles_bash_tool_support_home="${dotfiles_bash_config_home:-}"
+if [[ -z $dotfiles_bash_tool_support_home ]]; then
   printf 'dotfiles: missing required bash config path\n' >&2
   return 1
 fi
@@ -15,7 +15,7 @@ fi
 if ! declare -F dotfiles_git_share_roots >/dev/null 2>&1; then
   source "$dotfiles_shell_config_home/functions.sh" || return 1
 fi
-source "$dotfiles_bash_completion_home/git-completion.sh" || return 1
+source "$dotfiles_bash_tool_support_home/git-completion.sh" || return 1
 
 __dotfiles_bash_source_if_readable() {
   local path="$1"
@@ -100,6 +100,11 @@ __dotfiles_bash_configure_git_spice_alias_completion() {
   complete -o default -C "$git_spice_path" gs
 }
 
+__dotfiles_bash_load_fzf_shell_support() {
+  command -v fzf >/dev/null 2>&1 || return 0
+  eval "$(fzf --bash)"
+}
+
 # Some snippets rely on bash-completion helper functions; avoid broad direct sourcing.
 __dotfiles_bash_load_completion_framework || true
 
@@ -112,10 +117,12 @@ __dotfiles_bash_load_generated_completion gh gh completion -s bash
 __dotfiles_bash_load_generated_completion git-spice git-spice shell completion bash
 __dotfiles_bash_configure_git_spice_alias_completion
 __dotfiles_bash_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion bash
+__dotfiles_bash_load_fzf_shell_support
 
 unset -f __dotfiles_bash_source_if_readable
 unset -f __dotfiles_bash_load_completion_framework
 unset -f __dotfiles_bash_load_git_completion
 unset -f __dotfiles_bash_load_generated_completion
 unset -f __dotfiles_bash_configure_git_spice_alias_completion
-unset dotfiles_bash_completion_home
+unset -f __dotfiles_bash_load_fzf_shell_support
+unset dotfiles_bash_tool_support_home

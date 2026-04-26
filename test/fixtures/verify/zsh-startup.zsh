@@ -25,22 +25,26 @@ if zstyle -s ":completion:*:*:git:*" script git_completion_script; then
   [[ -r "$git_completion_script" ]]
 fi
 autoload +X _git
-if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v codex >/dev/null 2>&1; then
+if command -v codex >/dev/null 2>&1; then
   (( ${+_comps[codex]} == 1 )) || exit 1
 fi
-if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v docker >/dev/null 2>&1; then
+if command -v docker >/dev/null 2>&1; then
   (( ${+_comps[docker]} == 1 )) || exit 1
 fi
-if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v gh >/dev/null 2>&1; then
+if command -v gh >/dev/null 2>&1; then
   (( ${+_comps[gh]} == 1 )) || exit 1
 fi
-if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v git-spice >/dev/null 2>&1; then
+if command -v git-spice >/dev/null 2>&1; then
   (( ${+_comps[git-spice]} == 1 )) || exit 1
   [[ "${_comps[gs]-}" == "${_comps[git-spice]-}" ]] || exit 1
 fi
-if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] \
-  && command -v kubectl >/dev/null 2>&1; then
+if command -v kubectl >/dev/null 2>&1; then
   (( ${+_comps[kubectl]} == 1 )) || exit 1
+fi
+if command -v fzf >/dev/null 2>&1; then
+  (( ${+functions[fzf-file-widget]} == 1 )) || exit 1
+  (( ${+functions[fzf-history-widget]} == 1 )) || exit 1
+  (( ${+functions[fzf-completion]} == 1 )) || exit 1
 fi
 
 git_completion_error="${TMPDIR:-/tmp}/dotfiles_zsh_git_completion_$$.err"

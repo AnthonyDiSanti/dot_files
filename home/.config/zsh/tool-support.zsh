@@ -108,7 +108,21 @@ __dotfiles_zsh_configure_git_spice_alias_completion() {
   compdef gs=git-spice
 }
 
-__dotfiles_zsh_init_completion() {
+__dotfiles_zsh_load_fzf_shell_support() {
+  emulate -L zsh
+
+  command -v fzf >/dev/null 2>&1 || return 0
+  # fzf may try to restore zsh's immutable zle option; keep startup quiet while
+  # passing through any other upstream integration errors.
+  eval "$(fzf --zsh)" 2> >(
+    while IFS= read -r line; do
+      [[ "$line" == "(eval):1: can't change option: zle" ]] && continue
+      print -r -- "$line" >&2
+    done
+  )
+}
+
+__dotfiles_zsh_init_tool_support() {
   emulate -L zsh
   local zcompdump_dir zcompdump_path
 
@@ -130,9 +144,10 @@ __dotfiles_zsh_init_completion() {
   (( ${+_comps[git-spice]} )) || __dotfiles_zsh_load_generated_completion git-spice git-spice shell completion zsh
   __dotfiles_zsh_configure_git_spice_alias_completion
   (( ${+_comps[kubectl]} )) || __dotfiles_zsh_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion zsh
+  __dotfiles_zsh_load_fzf_shell_support
 }
 
-__dotfiles_zsh_init_completion
+__dotfiles_zsh_init_tool_support
 
 unset -f __dotfiles_zsh_prepend_fpath
 unset -f __dotfiles_zsh_add_homebrew_fpath
@@ -140,4 +155,5 @@ unset -f __dotfiles_zsh_fpath_has_function
 unset -f __dotfiles_zsh_configure_git_completion
 unset -f __dotfiles_zsh_load_generated_completion
 unset -f __dotfiles_zsh_configure_git_spice_alias_completion
-unset -f __dotfiles_zsh_init_completion
+unset -f __dotfiles_zsh_load_fzf_shell_support
+unset -f __dotfiles_zsh_init_tool_support

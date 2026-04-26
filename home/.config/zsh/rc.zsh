@@ -19,8 +19,8 @@ HISTSIZE=50000
 SAVEHIST=50000
 export HISTFILE HISTSIZE SAVEHIST
 
-if [[ -r "$dotfiles_zsh_config_home/completion.zsh" ]]; then
-  source "$dotfiles_zsh_config_home/completion.zsh"
+if [[ -r "$dotfiles_zsh_config_home/tool-support.zsh" ]]; then
+  source "$dotfiles_zsh_config_home/tool-support.zsh"
 fi
 
 if [[ -r "$dotfiles_zsh_config_home/prompt.zsh" ]]; then
