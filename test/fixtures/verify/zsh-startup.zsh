@@ -11,6 +11,12 @@
 [[ "${HISTFILE:-}" == "$HOME/.local/state/zsh/history" ]]
 [[ "${HISTSIZE:-}" == 50000 ]]
 [[ "${SAVEHIST:-}" == 50000 ]]
+[[ "$(bindkey -M emacs '^[[A')" == *up-line-or-beginning-search ]]
+[[ "$(bindkey -M emacs '^[[B')" == *down-line-or-beginning-search ]]
+zstyle -a ':completion:*' matcher-list completion_matchers
+completion_matcher='m:{[:lower:][:upper:]-_}={[:upper:][:lower:]_-}'
+(( ${completion_matchers[(Ie)$completion_matcher]} > 0 ))
+unset completion_matcher completion_matchers
 
 if [[ -x /opt/homebrew/bin/brew ]]; then
   [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]

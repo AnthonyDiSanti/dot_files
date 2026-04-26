@@ -11,6 +11,12 @@
 [[ "${HISTSIZE:-}" == 50000 ]]
 [[ "${HISTFILESIZE:-}" == 50000 ]]
 shopt -q histappend cmdhist lithist
+bind -q history-search-backward | grep -q 'history-search-backward can be invoked'
+bind -q history-search-forward | grep -q 'history-search-forward can be invoked'
+bind -v | grep -q '^set completion-ignore-case on$'
+if bind -v | grep -q '^set completion-map-case '; then
+  bind -v | grep -q '^set completion-map-case on$'
+fi
 
 if [[ -x /opt/homebrew/bin/brew ]]; then
   [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]
