@@ -134,7 +134,7 @@ When you consult external/internal docs and find something repeatedly useful or 
 - If no repo-specific format exists, default to: title, blank line, bullet list.
 - Write commit titles and bullet verbs in third-person present tense, such as `Adds`, `Fixes`, `Tightens`, `Omits`, or `Keeps`; avoid imperative (`Add`), gerund (`Adding`), past tense (`Added`), or lowercase-leading bullets.
 - Use sentence-style capitalization: capitalize the first word and proper nouns, but do not title-case every word.
-- Omit documentation or context-update bullets from commit messages when they only align docs with code or behavior changes; that maintenance is assumed. Mention documentation explicitly only when the commit is purely documentation or docs are the primary user-facing change.
+- Omit routine supporting-maintenance bullets from commit messages when they only align with code or behavior changes; docs/context updates and test updates are assumed. Mention them explicitly only when they are the primary change or the main user-facing value.
 - If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.
 - Do not stage, commit, or amend normal follow-up edits unless explicitly asked. Exception: when the user asks you to perform a Git operation that inherently requires staging, such as resolving rebase or merge conflicts, you may stage/commit only the files needed to complete that requested operation.
 
