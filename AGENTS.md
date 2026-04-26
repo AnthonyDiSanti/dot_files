@@ -49,7 +49,7 @@ Maintenance:
   - `home/.local/bin/` — user CLI utilities installed to `~/.local/bin/`.
   - `managed/` — repo-owned directories exposed through symlink nodes from `home/` when a whole target tree should stay linked as a directory (currently `managed/vim` via `home/.vim`).
   - `test/` — repo-local verification entrypoint (`test/verify.sh`) and test fixtures (`test/fixtures/`).
-  - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `print-ansi-colors.sh`); not added to `PATH`.
+  - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `shell_files.bash`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
   - `lib/` — vendored dependencies (`lib/vim-plug`, `lib/make-chrome-app`).
   - `context/` — shared working memory for humans and agents.
@@ -69,7 +69,7 @@ Maintenance:
 
 ## 4) Commands
 Setup:
-- Install deps: `git` (required for `bootstrap.sh`), `zsh` and `shellcheck` (required for `test/verify.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`), `tiff2icns` if using `make-chrome-app`.
+- Install deps: `git` (required for `bootstrap.sh`), `zsh`, `shellcheck`, and `shfmt` (required for `test/verify.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`), `tiff2icns` if using `make-chrome-app`.
 - Env setup: `./bootstrap.sh` (POSIX `sh`; hydrates submodules and applies the repo-native symlink-backed home tree).
 
 Run:
@@ -78,18 +78,18 @@ Run:
 - Create a Chrome app wrapper: `~/.local/bin/make-chrome-app` (macOS only).
 
 Verify (targeted first, full at end):
-- Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh` and `scripts/shellcheck-dotfiles.bash path/to/script.sh` for modified shell scripts; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
+- Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh`, `scripts/shellcheck-dotfiles.bash path/to/script.sh`, and `scripts/shfmt-dotfiles.bash --check path/to/script.sh` for modified shell scripts; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
 - Run a single test: Manual smoke check of the changed script or config (e.g., open a new shell and ensure `.bash_profile` loads cleanly).
 - Full suite (final gate): `test/verify.sh`.
 - Build (final gate if applicable): Not applicable.
 
 ## 5) Engineering standards
 - Formatting: Match existing style; 2-space indentation in shell scripts, keep shebangs consistent (`/usr/bin/env bash` vs `sh`).
-- Lint rules: `test/verify.sh` requires ShellCheck through `scripts/shellcheck-dotfiles.bash --all`; VS Code ShellCheck uses the same wrapper to externalize shell dialect mapping and narrow path-specific suppressions.
+- Lint/format rules: `test/verify.sh` requires ShellCheck through `scripts/shellcheck-dotfiles.bash --all` and shfmt through `scripts/shfmt-dotfiles.bash --all --check`; VS Code ShellCheck uses the same wrapper to externalize shell dialect mapping and narrow path-specific suppressions. `scripts/shell_files.bash` owns Bash-only dev-tool shell file discovery/dialect classification; do not use it from POSIX deployment paths.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; keep shared helpers in `home/.config/shell/functions.sh`.
 - Shell data flow: Prefer explicit call-site data flow over string-encoded function names. When a helper consumes generated lines, make it read stdin and feed it with redirection/process substitution at the call site when shell semantics allow; document exceptions.
-- Testing expectations: Run `test/verify.sh` for bootstrap/dotfile changes; it checks shell syntax/static analysis, repo-native managed target mapping, temporary-home apply behavior, live-home convergence, and shell startup.
+- Testing expectations: Run `test/verify.sh` for bootstrap/dotfile changes; it checks shell syntax/static analysis/formatting, repo-native managed target mapping, temporary-home apply behavior, live-home convergence, and shell startup.
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
 

@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-26 — Centralize dev-tool shell discovery separately from deployment
+- Decider: Anthony
+- Decision: Keep deployment discovery in the POSIX `scripts/home_tree_manifest.sh`, and centralize repo-local shell tooling discovery/dialect classification in the Bash-only `scripts/shell_files.bash`. Use that helper from verify, ShellCheck, and shfmt wrappers.
+- Rationale: Bootstrap needs a small POSIX manifest helper because deployment runs under `sh`; developer tooling already depends on Bash and needs richer shell dialect classification across `sh`, Bash, and zsh files. Sharing only the dev-tool discovery layer removes duplication without coupling bootstrap to Bash.
+- Consequences / follow-ups: `scripts/shfmt-dotfiles.bash` uses `shfmt -i 2 -ci -bn` and is part of the `test/verify.sh` full gate through `--all --check`. Keep tool-specific policy such as ShellCheck suppressions and zsh skips in the wrappers.
+
 ## 2026-04-26 — Require ShellCheck in verification
 - Decider: Anthony
 - Decision: Treat ShellCheck as a required development dependency for `test/verify.sh`. Keep `bootstrap.sh` free of the ShellCheck dependency, and route static analysis through `scripts/shellcheck-dotfiles.bash --all` so editor and full-suite linting share one repo-aware shell dialect policy.

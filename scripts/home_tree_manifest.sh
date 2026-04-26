@@ -10,8 +10,8 @@ dotfiles_emit_tracked_home_sources() {
 dotfiles_emit_manifest() {
   repo_root=$1
 
-  dotfiles_emit_tracked_home_sources "$repo_root" |
-    while IFS= read -r source_path; do
+  dotfiles_emit_tracked_home_sources "$repo_root" \
+    | while IFS= read -r source_path; do
       [ -n "$source_path" ] || continue
 
       rel_path=${source_path#home/}
@@ -23,27 +23,27 @@ dotfiles_emit_manifest() {
         [ "$parent_path" = "." ] && break
         printf 'dir %s\n' "$parent_path"
       done
-    done |
-    LC_ALL=C sort -u
+    done \
+    | LC_ALL=C sort -u
 }
 
 dotfiles_emit_state_manifest() {
   repo_root=$1
 
-  dotfiles_emit_manifest "$repo_root" |
-    while IFS=' ' read -r kind rel_path source_path; do
+  dotfiles_emit_manifest "$repo_root" \
+    | while IFS=' ' read -r kind rel_path source_path; do
       case $kind in
-        dir|leaf) printf '%s %s\n' "$kind" "$rel_path" ;;
+        dir | leaf) printf '%s %s\n' "$kind" "$rel_path" ;;
       esac
-    done |
-    LC_ALL=C sort -u
+    done \
+    | LC_ALL=C sort -u
 }
 
 dotfiles_emit_managed_paths() {
   repo_root=$1
 
-  dotfiles_emit_state_manifest "$repo_root" |
-    while IFS=' ' read -r kind rel_path; do
+  dotfiles_emit_state_manifest "$repo_root" \
+    | while IFS=' ' read -r kind rel_path; do
       printf '%s\n' "$rel_path"
     done
 }

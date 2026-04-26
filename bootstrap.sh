@@ -105,9 +105,9 @@ remove_stale_paths() {
     remove_path "$rel_path"
   done <"$stale_manifest"
 
-  awk '$1 == "dir" { print length($2), $2 }' "$stale_manifest" |
-    LC_ALL=C sort -rn |
-    while IFS=' ' read -r _depth rel_path; do
+  awk '$1 == "dir" { print length($2), $2 }' "$stale_manifest" \
+    | LC_ALL=C sort -rn \
+    | while IFS=' ' read -r _depth rel_path; do
       [ -n "${rel_path:-}" ] || continue
       remove_dir_if_empty "$rel_path"
     done
@@ -134,7 +134,7 @@ while [ "$#" -gt 0 ]; do
     --list-managed)
       list_managed=1
       ;;
-    --help|-h)
+    --help | -h)
       usage
       exit 0
       ;;
