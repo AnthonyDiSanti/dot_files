@@ -1,4 +1,4 @@
-# /context/knowledge
+# /.context/knowledge
 
 Supplemental, agent-oriented knowledge that is useful across sessions but is not appropriate as canonical repo documentation.
 

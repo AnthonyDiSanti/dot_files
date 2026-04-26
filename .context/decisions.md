@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-26 — Hide the working-memory directory
+- Decider: Anthony
+- Decision: Rename the committed working-memory directory from `context/` to `.context/` in the live repo and from `code_template/context/` to `code_template/.context/` in the repo template. Update AGENTS, README, settings, and template references to point at the hidden path.
+- Rationale: `.context` better communicates that the directory is supporting agent/project memory rather than part of the normal user-facing source tree, while keeping it committed and discoverable to agents that know the project contract.
+- Consequences / follow-ups: Future references should use `/.context/...` for repo-root paths and `.context/...` for relative paths. Continue treating `.context` as committed working memory, not as canonical product documentation.
+
 ## 2026-04-26 — Prefer system completion sources across Bash and zsh
 - Decider: Anthony
 - Decision: Keep command completions system-first instead of vendoring Oh My Bash completion files. Bash treats an already-loaded `bash-completion` as authoritative, otherwise tries Homebrew formula prefixes, optional `pkg-config` metadata, and common system framework paths; it does not broadly source snippets without a framework. Active-Git completion is a fallback only when `complete -p git` reports no existing Git completion. Zsh prepends Homebrew zsh site-functions before `compinit`, adds active-Git completion only when no `_git` is already visible in `fpath`, and uses command-generated zsh completions only when no native command completion is registered.
@@ -89,15 +95,15 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-21 — Remove unused `settings/solarized` submodule
 - Decider: Anthony
-- Decision: Delete the **`settings/solarized`** git submodule (full **altercation/solarized** checkout). Replace with documentation: **`settings/README.md`** and **`context/knowledge/solarized.md`** pointing to upstream for Terminal/iTerm/Ghostty/Xresources needs. **Vim** remains **`lifepillar/vim-solarized8`** via vim-plug; **tmux** styling stays in **`home/.tmux.conf`**.
+- Decision: Delete the **`settings/solarized`** git submodule (full **altercation/solarized** checkout). Replace with documentation: **`settings/README.md`** and **`.context/knowledge/solarized.md`** pointing to upstream for Terminal/iTerm/Ghostty/Xresources needs. **Vim** remains **`lifepillar/vim-solarized8`** via vim-plug; **tmux** styling stays in **`home/.tmux.conf`**.
 - Rationale: Nothing in bootstrap or scripts referenced the submodule (~19MB, 600+ files). It duplicated the old Vim bundle under `vim-colors-solarized/` and confused “vendored Solarized” vs the active vim-plug theme. Clone upstream on demand when configuring non-Vim apps.
-- Consequences / follow-ups: `git clone --recurse-submodules` no longer pulls Solarized; **AGENTS.md** and `context/` updated.
+- Consequences / follow-ups: `git clone --recurse-submodules` no longer pulls Solarized; **AGENTS.md** and `.context/` updated.
 
 ## 2026-04-21 — Use Solarized 8 for true-color terminal Vim
 - Decider: Anthony
 - Decision: Replace **altercation/vim-colors-solarized** with **lifepillar/vim-solarized8**; load **`colorscheme solarized8`**. Enable **`termguicolors`** when `has('termguicolors')`, and set **`t_8f` / `t_8b`** per `:help xterm-true-color`. Remove the old **`g:solarized_termcolors`** hack and the **`ColorColumn`** `ctermfg=Red` override (the scheme styles `ColorColumn`). In **tmux**, set **`terminal-features ',*:RGB'`** so nested Vim receives true color.
 - Rationale: Original Solarized does not define `guifg`/`guibg` for terminal Vim, so **`termguicolors`** cannot apply canonical hex colors; Solarized 8 is maintained for true-color and 256/16 fallbacks.
-- Consequences / follow-ups: Run **`:PlugInstall`** to swap plugins; **reload tmux** after pulling `dot_tmux.conf`. On hosts where true color fails, **`set notermguicolors`** then **`:colorscheme solarized8`** (documented in README and `context/knowledge/vim.md`).
+- Consequences / follow-ups: Run **`:PlugInstall`** to swap plugins; **reload tmux** after pulling `dot_tmux.conf`. On hosts where true color fails, **`set notermguicolors`** then **`:colorscheme solarized8`** (documented in README and `.context/knowledge/vim.md`).
 
 ## 2026-04-21 — Use vim-plug with tracked submodule loader
 - Decider: Anthony
@@ -116,14 +122,14 @@ Keep newest decisions at the top (reverse chronological order).
   - **Config hygiene**: After removing plugins, delete or rewrite every `.vimrc` mapping, `autocmd`, `g:` variable, and statusline segment that referenced a removed plugin (including Less compile maps if LESS plugin goes).
 - Rationale: Native packages avoid another manager abstraction; ctrlpvim matches CtrlP muscle memory and stays pure VimScript for SSH; fzf remains a great CLI tool but vim integration is intentionally thin; preservim forks are the maintained NERD* line; vim-mundo is the maintained Gundo descendant (last upstream activity newer than sjl/gundo.vim).
 - Alternatives considered: **fzf.vim**—defer; **vim-plug**—optional later if native layout feels too manual; **dirvish/oil**—different UX than NERDTree; keep NERDTree via preservim.
-- Consequences / follow-ups: **Done 2026-04-21** via vim-plug (`context` decisions entry); remove legacy `bundle/` dirs locally if present.
+- Consequences / follow-ups: **Done 2026-04-21** via vim-plug (`.context/decisions.md` entry); remove legacy `bundle/` dirs locally if present.
 
 ## 2026-04-20 — Prefer vanilla Vim for portable dotfiles; defer Neovim
 - Decider: Anthony
 - Decision: Treat **Vim** (not Neovim) as the supported editor in this repo for now, so a minimal setup over SSH—clone or unpack dotfiles, run bootstrap, open `vim`—works without extra runtime dependencies. Consider **Neovim** as a deliberate next step later, not part of the current migration.
 - Rationale: Remote servers often have Vim or can install it easily; Neovim adds another version matrix and plugin/runtime expectations. Aligning the Vundle replacement and plugin refresh with stock Vim keeps the “ssh in and be productive” story simple.
 - Alternatives considered: Standardize on Neovim now for better LSP and plugin ecosystem; deferred until local/SSH workflows are stable on Vim.
-- Consequences / follow-ups: Plugin manager and plugin choices should stay compatible with Vim 8+ where possible; document any optional Neovim path in `/context` when revisited.
+- Consequences / follow-ups: Plugin manager and plugin choices should stay compatible with Vim 8+ where possible; document any optional Neovim path in `/.context` when revisited.
 
 ## 2026-04-20 — Use broad managed Codex allow rules for git and npm
 - Decider: Anthony
@@ -132,11 +138,11 @@ Keep newest decisions at the top (reverse chronological order).
 - Alternatives considered: Keep the seeded list of specific command approvals; rejected because it was noisier and offered no practical benefit once broad `git` and `npm` access were deemed acceptable.
 - Consequences / follow-ups: Restart Codex after the rule-file change and add any future non-portable approvals back to the local `default.rules` only if they should stay machine-specific.
 
-## 2026-04-20 — Prefer live repo state over stale `/context` snapshots
+## 2026-04-20 — Prefer live repo state over stale `/.context` snapshots
 - Decider: Anthony
-- Decision: When `/context` conflicts with live repo evidence such as `git status`, current files, recent commits, or the working tree, agents should trust the live state and reconcile `/context` before answering status or next-step questions.
-- Rationale: `/context` is durable working memory, but it can naturally lag behind the actual repository state and should not override direct evidence.
-- Alternatives considered: Treat `/context` as authoritative until manually updated; rejected because it can leave agents one step behind after commits or other state changes.
+- Decision: When `/.context` conflicts with live repo evidence such as `git status`, current files, recent commits, or the working tree, agents should trust the live state and reconcile `/.context` before answering status or next-step questions.
+- Rationale: `/.context` is durable working memory, but it can naturally lag behind the actual repository state and should not override direct evidence.
+- Alternatives considered: Treat `/.context` as authoritative until manually updated; rejected because it can leave agents one step behind after commits or other state changes.
 - Consequences / follow-ups: Mirror the guidance in both the live repo and `code_template` `AGENTS.md` files so future repos inherit the same precedence rule.
 
 ## 2026-04-20 — Keep generated Codex rules separate from curated rules
@@ -167,47 +173,47 @@ Keep newest decisions at the top (reverse chronological order).
 - Alternatives considered: Keep the starter topic set and ask agents to replace it; rejected because the scaffold itself was adding noise and biasing structure too early.
 - Consequences / follow-ups: Template adopters should create only the topic files their repo needs and keep `/docs/README.md` as a lightweight routing map.
 
-## 2026-04-13 — Fold repo `context/reference` into `context/knowledge`
+## 2026-04-13 — Fold repo `.context/reference` into `.context/knowledge`
 - Decider: Anthony
-- Decision: Remove the live repo `context/reference/` split and keep reusable repo, vendor, and workflow notes in `context/knowledge/` instead.
+- Decision: Remove the live repo `.context/reference/` split and keep reusable repo, vendor, and workflow notes in `.context/knowledge/` instead.
 - Rationale: A single retrieval path is easier for agents to follow and matches the streamlined context model used elsewhere in the repo.
 - Alternatives considered: Keep a separate `reference/` library; rejected because the split added indirection without enough value in practice.
-- Consequences / follow-ups: Update AGENTS/context guidance to route future reusable notes into `knowledge/` topic files and remove the placeholder `reference/` files.
+- Consequences / follow-ups: Update AGENTS and `.context` guidance to route future reusable notes into `knowledge/` topic files and remove the placeholder `reference/` files.
 
 ## 2026-04-13 — Merge repo `user_shared` into `scratch`
 - Decider: Anthony
-- Decision: Removed `context/user_shared/` and redefined `context/scratch/` as the single git-tracked staging area for collaborative drafts, experiments, pre-repo code, and other content that does not yet have a stable home in the repo.
+- Decision: Removed `.context/user_shared/` and redefined `.context/scratch/` as the single git-tracked staging area for collaborative drafts, experiments, pre-repo code, and other content that does not yet have a stable home in the repo.
 - Rationale: One staging area is easier for agents to use consistently than trying to distinguish between collaborative drafts and scratch artifacts.
 - Alternatives considered: Keep `user_shared` and `scratch` separate; rejected because the distinction was not driving useful behavior.
 - Consequences / follow-ups: Namespace `scratch/` by task or work thread and promote or delete contents once they have a proper home.
 
 ## 2026-04-13 — Keep decision logs in reverse chronological order
 - Decider: Anthony
-- Decision: Keep `context/decisions.md` and `code_template/context/decisions.md` ordered newest first.
+- Decision: Keep `.context/decisions.md` and `code_template/.context/decisions.md` ordered newest first.
 - Rationale: Reverse chronological order optimizes retrieval by putting the most relevant, recent decisions at the top.
 - Alternatives considered: Keep oldest-first ordering; rejected because it makes current policy harder to find quickly.
 - Consequences / follow-ups: Add new decisions at the top of the file and update templates to reinforce the convention.
 
 ## 2026-04-13 — Merge template `user_shared` into `scratch`
 - Decider: Anthony
-- Decision: Removed `code_template/context/user_shared/` and redefined `code_template/context/scratch/` as the single git-tracked staging area for collaborative drafts, experiments, and other content that does not yet have a stable home in the repo.
+- Decision: Removed `code_template/.context/user_shared/` and redefined `code_template/.context/scratch/` as the single git-tracked staging area for collaborative drafts, experiments, and other content that does not yet have a stable home in the repo.
 - Rationale: The separate folders were not pulling their weight, while one shared staging area is easier for agents to understand and use consistently.
 - Alternatives considered: Keep `user_shared` and `scratch` separate; rejected because the distinction was not producing useful agent behavior.
 - Consequences / follow-ups: Template adopters should namespace `scratch/` by task or work thread and promote or delete contents once they have a proper home.
 
-## 2026-04-13 — Make documentation upkeep mandatory and restore template `context/knowledge`
+## 2026-04-13 — Make documentation upkeep mandatory and restore template `.context/knowledge`
 - Decider: Anthony
-- Decision: Updated `code_template/AGENTS.md` to require proactive documentation updates after every substantial turn, and restored `code_template/context/knowledge/` as a place for agent-oriented supplemental knowledge that does not belong in canonical repo docs.
+- Decision: Updated `code_template/AGENTS.md` to require proactive documentation updates after every substantial turn, and restored `code_template/.context/knowledge/` as a place for agent-oriented supplemental knowledge that does not belong in canonical repo docs.
 - Rationale: Agents were not maintaining docs reliably enough, and some reusable agent knowledge needs a home outside `/docs/`.
 - Alternatives considered: Keep all durable writing in `/docs/` only; rejected because agent workflows, sandbox notes, and certain third-party learnings are useful but not appropriate as main repo docs.
-- Consequences / follow-ups: Template adopters should treat `/docs/` as canonical repo truth and `/context/knowledge/` as supplemental agent knowledge.
+- Consequences / follow-ups: Template adopters should treat `/docs/` as canonical repo truth and `/.context/knowledge/` as supplemental agent knowledge.
 
 ## 2026-04-13 — Recenter `code_template` around `/docs` as canonical documentation
 - Decider: Anthony
-- Decision: Reworked `code_template` so `AGENTS.md` is a routing layer, `/docs` is the canonical documentation system, and `/context` is limited to live state, drafts, and scratch artifacts.
+- Decision: Reworked `code_template` so `AGENTS.md` is a routing layer, `/docs` is the canonical documentation system, and `/.context` is limited to live state, drafts, and scratch artifacts.
 - Rationale: Optimize retrieval for agents and avoid splitting durable documentation across `knowledge/`, `reference/`, and context files.
 - Alternatives considered: Keep the old `knowledge/` and `reference/` split; rejected because it added indirection without improving retrieval.
-- Consequences / follow-ups: Template adopters should maintain `/docs/README.md` plus topic files and keep `/context` focused on working memory.
+- Consequences / follow-ups: Template adopters should maintain `/docs/README.md` plus topic files and keep `/.context` focused on working memory.
 
 ## 2026-02-04 — Add no-tech-debt rule to global AGENTS
 - Decider: Anthony
@@ -216,26 +222,26 @@ Keep newest decisions at the top (reverse chronological order).
 - Alternatives considered: Keep guidance implicit; rejected to make the expectation explicit.
 - Consequences / follow-ups: None.
 
-## 2026-01-20 — Migrate knowledge to `/context/knowledge/` with index
+## 2026-01-20 — Migrate knowledge to `/.context/knowledge/` with index
 - Decider: Anthony
-- Decision: Replace `context/knowledge.md` with a `context/knowledge/` directory and an `index.md` that links to topic files.
+- Decision: Replace `.context/knowledge.md` with a `.context/knowledge/` directory and an `index.md` that links to topic files.
 - Rationale: Keep the knowledge base scalable without bloating a single file or the context window.
-- Alternatives considered: Keep a single `knowledge.md` and rely on `/context/reference/`; rejected due to size and discoverability concerns.
+- Alternatives considered: Keep a single `knowledge.md` and rely on `/.context/reference/`; rejected due to size and discoverability concerns.
 - Consequences / follow-ups: Update references from `knowledge.md` to `knowledge/index.md` and keep topic files concise.
 
-## 2026-01-20 — Add `/context/scratch` for transient session artifacts
+## 2026-01-20 — Add `/.context/scratch` for transient session artifacts
 - Decider: Anthony
-- Decision: Create `/context/scratch` for short-lived debugging artifacts, namespaced by task ID and cleaned up aggressively.
+- Decision: Create `/.context/scratch` for short-lived debugging artifacts, namespaced by task ID and cleaned up aggressively.
 - Rationale: Preserve temporary work without polluting durable knowledge or source code.
 - Alternatives considered: Use `/tmp` only; rejected because it hides useful session context that may need short-term retention.
-- Consequences / follow-ups: Document the scratch workflow in AGENTS and `/context` README.
+- Consequences / follow-ups: Document the scratch workflow in AGENTS and `/.context` README.
 
-## 2026-01-20 — Add `/context/user_shared` for collaborative drafts and pre-repo code
+## 2026-01-20 — Add `/.context/user_shared` for collaborative drafts and pre-repo code
 - Decider: Anthony
-- Decision: Create `/context/user_shared` with guidance for shared docs and early code not yet ready for the repo.
+- Decision: Create `/.context/user_shared` with guidance for shared docs and early code not yet ready for the repo.
 - Rationale: Provide a structured place for collaboration separate from production code and context summaries.
-- Alternatives considered: Use `/context/knowledge/` only; rejected because drafts/prototypes can overwhelm curated notes.
-- Consequences / follow-ups: Ensure AGENTS/context docs reference the folder and keep it organized.
+- Alternatives considered: Use `/.context/knowledge/` only; rejected because drafts/prototypes can overwhelm curated notes.
+- Consequences / follow-ups: Ensure AGENTS and `.context` docs reference the folder and keep it organized.
 
 ## 2026-01-20 — Use ULIDs for task IDs in `tasks.md`
 - Decider: Anthony
@@ -251,23 +257,23 @@ Keep newest decisions at the top (reverse chronological order).
 - Alternatives considered: Keep commit guidance implicit; rejected to make the behavior explicit and repeatable.
 - Consequences / follow-ups: Apply this recommendation flow after coherent units of work.
 
-## 2026-01-18 — Populate repo AGENTS.md and /context with repo-specific details
+## 2026-01-18 — Populate repo AGENTS.md and /.context with repo-specific details
 - Decider: Codex (model: gpt-5.2-codex)
-- Decision: Replaced placeholders in root `AGENTS.md` and `/context` with dot_files-specific guidance and current state; removed the unused reference template.
+- Decision: Replaced placeholders in root `AGENTS.md` and `/.context` with dot_files-specific guidance and current state; removed the unused reference template.
 - Rationale: Move docs from scaffold to production-grade, actionable guidance.
 - Alternatives considered: Leave templates for future manual fill-in; rejected to avoid stale placeholders.
 - Consequences / follow-ups: Update entries as the repo evolves.
 
-## 2026-01-18 — Treat template /context files as baseline in `code_template/AGENTS.md`
+## 2026-01-18 — Treat template /.context files as baseline in `code_template/AGENTS.md`
 - Decider: Codex (model: gpt-5.2-codex)
-- Decision: Use "seeded structure" wording in the template to reflect that `/context` files are already present.
-- Rationale: The template ships with a prebuilt `/context`, so it should be treated as the default baseline.
+- Decision: Use "seeded structure" wording in the template to reflect that `/.context` files are already present.
+- Rationale: The template ships with a prebuilt `/.context`, so it should be treated as the default baseline.
 - Alternatives considered: Keep "recommended" wording; rejected because it implies the structure is optional.
 - Consequences / follow-ups: None.
 
-## 2026-01-18 — Remove template/seeding phrasing from /context base section
+## 2026-01-18 — Remove template/seeding phrasing from /.context base section
 - Decider: Codex (model: gpt-5.2-codex)
-- Decision: Updated `code_template/AGENTS.md` to describe `/context` files as the day-1 base state without referencing templates or seeding.
+- Decision: Updated `code_template/AGENTS.md` to describe `/.context` files as the day-1 base state without referencing templates or seeding.
 - Rationale: The document should stand alone as a living guide and describe the current baseline, not its origin.
 - Alternatives considered: Keep "seeded structure" wording; rejected to avoid provenance language in day-1 guidance.
 - Consequences / follow-ups: None.

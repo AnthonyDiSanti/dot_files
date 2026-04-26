@@ -12,4 +12,4 @@ This repo **does not** ship the full [altercation/solarized](https://github.com/
 - **Ghostty** Solarized Dark is checked in as `home/.config/ghostty/config` (bootstrap links `~/.config/ghostty/config`). Reload Ghostty after changes (e.g. **Cmd+Shift+,**).
 - **Other apps** (iTerm2, Terminal.app, Xresources, etc.): clone or browse upstream when you need a profile, or copy canonical hex values from the [Solarized homepage](https://ethanschoonover.com/solarized/) / repo README.
 
-See also `context/knowledge/solarized.md`.
+See also `.context/knowledge/solarized.md`.

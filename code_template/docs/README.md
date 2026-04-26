@@ -22,5 +22,5 @@ This directory is optimized for agents first and humans second.
 ## Maintenance
 - Update relevant topic files in the same change as any behavior or navigation change.
 - Keep this landing page current when topic files are added, removed, renamed, regrouped, or split.
-- If a `/context/` note becomes stable truth, promote it into `/docs/`.
-- Keep `/context/knowledge/` for agent-oriented supplemental notes that help future sessions but do not belong in canonical repo docs.
+- If a `/.context/` note becomes stable truth, promote it into `/docs/`.
+- Keep `/.context/knowledge/` for agent-oriented supplemental notes that help future sessions but do not belong in canonical repo docs.

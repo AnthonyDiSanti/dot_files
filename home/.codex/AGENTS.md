@@ -107,24 +107,24 @@ You SHOULD proactively update:
 Rules:
 - Keep instruction changes small, specific, and testable.
 - Deduplicate; avoid bloat.
-- When you edit instructions, leave a short breadcrumb in the project’s /context (handoff or decisions): what changed and why.
+- When you edit instructions, leave a short breadcrumb in the project’s `/.context` working-memory directory (handoff or decisions): what changed and why.
 
 ## Notebook discipline
 Treat the project’s committed working-memory system as part of the product.
 
 Rules:
-- If the repo has a notebook/context system (for example `/context/handoff.md`, `/context/tasks.md`, `/context/decisions.md`, `/context/knowledge/`), keep it current after every substantial turn. Do not wait for the user to ask.
+- If the repo has a notebook/working-memory system (for example `/.context/handoff.md`, `/.context/tasks.md`, `/.context/decisions.md`, `/.context/knowledge/`), keep it current after every substantial turn. Do not wait for the user to ask.
 - Record status in the status-oriented files (`handoff`, `tasks`) and durable learnings/rationale in the knowledge-oriented files (`decisions`, `knowledge`).
 - Keep notebook updates compact, retrieval-oriented, and specific to what changed, what was learned, and what should happen next.
 
 ## Documentation capture & reference usage
 When you consult external/internal docs and find something repeatedly useful or broadly insightful:
-- Create/extend a short “knowledge note” (project /context preferred).
+- Create/extend a short “knowledge note” (project `/.context` preferred).
 - Record: source, why it matters, when to consult, key gotchas.
 
 **Knowledge trigger (important):**
-- If `/context/knowledge/index.md` exists, consult it **before** integrating or debugging third-party vendors, APIs, SDKs, infrastructure systems, or protocols.
-- If the repo also has `/context/reference/index.md`, consult that too when the repo uses a separate vendor-reference layer.
+- If `/.context/knowledge/index.md` exists, consult it **before** integrating or debugging third-party vendors, APIs, SDKs, infrastructure systems, or protocols.
+- If the repo also has `/.context/reference/index.md`, consult that too when the repo uses a separate vendor-reference layer.
 - Prefer reusing or extending existing knowledge/reference notes over creating new ones.
 - Add a new note only when it would reduce future escalations or repeated lookups.
 
@@ -132,6 +132,9 @@ When you consult external/internal docs and find something repeatedly useful or 
 - In a git worktree, inspect the full current uncommitted state at the end of every turn and provide a proposed commit message for all uncommitted changes, including staged changes.
 - Use the repo’s preferred commit-message format when one exists.
 - If no repo-specific format exists, default to: title, blank line, bullet list.
+- Write commit titles and bullet verbs in third-person present tense, such as `Adds`, `Fixes`, `Tightens`, `Omits`, or `Keeps`; avoid imperative (`Add`), gerund (`Adding`), past tense (`Added`), or lowercase-leading bullets.
+- Use sentence-style capitalization: capitalize the first word and proper nouns, but do not title-case every word.
+- Omit documentation or context-update bullets from commit messages when they only align docs with code or behavior changes; that maintenance is assumed. Mention documentation explicitly only when the commit is purely documentation or docs are the primary user-facing change.
 - If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.
 - Do not stage, commit, or amend normal follow-up edits unless explicitly asked. Exception: when the user asks you to perform a Git operation that inherently requires staging, such as resolving rebase or merge conflicts, you may stage/commit only the files needed to complete that requested operation.
 
