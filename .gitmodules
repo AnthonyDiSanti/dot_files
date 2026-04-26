@@ -1,9 +1,3 @@
-[submodule "lib/git"]
-	path = lib/git
-	url = https://github.com/git/git.git
-[submodule "lib/tmux-osx-pasteboard"]
-	path = lib/tmux-osx-pasteboard
-	url = https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.git
 [submodule "lib/make-chrome-app"]
 	path = lib/make-chrome-app
 	url = https://gist.github.com/8284acbd2517a7c34af6.git

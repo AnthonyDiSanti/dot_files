@@ -6,11 +6,17 @@ fi
 source "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
-__dotfiles_bash_source_first_readable() {
+if ! declare -F dotfiles_git_share_roots >/dev/null 2>&1; then
+  source "$dotfiles_shell_config_home/functions.sh" || return 1
+fi
+source "$dotfiles_bash_config_home/git-completion.sh" || return 1
+
+__dotfiles_bash_source_first_git_candidate() {
   local path
 
-  for path in "$@"; do
-    [[ -r "$path" ]] || continue
+  # Prefer helper files from the active Git install so completion matches the binary on PATH.
+  while IFS= read -r path; do
+    [[ -r $path ]] || continue
     source "$path"
     return 0
   done
@@ -32,23 +38,11 @@ if command -v git >/dev/null 2>&1; then
   export GIT_PS1_SHOWUNTRACKEDFILES='auto'
   export GIT_PS1_SHOWUPSTREAM='auto'
 
-  __dotfiles_bash_source_first_readable \
-    "$dotfiles_bash_config_home/git-prompt.sh" \
-    "/opt/homebrew/etc/bash_completion.d/git-prompt.sh" \
-    "/opt/homebrew/share/git-core/contrib/completion/git-prompt.sh" \
-    "/usr/local/etc/bash_completion.d/git-prompt.sh" \
-    "/usr/local/share/git-core/contrib/completion/git-prompt.sh" \
-    "/usr/share/git/completion/git-prompt.sh" \
-    "/usr/share/git-core/contrib/completion/git-prompt.sh"
-
-  __dotfiles_bash_source_first_readable \
-    "$dotfiles_bash_config_home/git-completion.bash" \
-    "/opt/homebrew/etc/bash_completion.d/git-completion.bash" \
-    "/opt/homebrew/share/git-core/contrib/completion/git-completion.bash" \
-    "/usr/local/etc/bash_completion.d/git-completion.bash" \
-    "/usr/local/share/git-core/contrib/completion/git-completion.bash" \
-    "/usr/share/bash-completion/completions/git"
+  __dotfiles_bash_source_first_git_candidate < <(dotfiles_git_prompt_candidates)
+  __dotfiles_bash_source_first_git_candidate < <(dotfiles_bash_git_completion_candidates)
 fi
+
+unset -f __dotfiles_bash_source_first_git_candidate
 
 if [ -r "$dotfiles_bash_config_home/prompt.bash" ]; then
   source "$dotfiles_bash_config_home/prompt.bash"

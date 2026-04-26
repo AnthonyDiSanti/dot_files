@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-25 — Prefer explicit shell data flow
+- Decider: Anthony
+- Decision: In shell startup code, prefer explicit call-site data flow over passing string-encoded function names. When a helper consumes generated candidate lines, make the helper read stdin and feed it with process substitution or redirection at the call site when the current shell supports it.
+- Rationale: Bash and zsh allow indirect function calls, but passing function names as strings obscures where values are produced and consumed. Explicit redirection keeps the stream visible at the call site and avoids unnecessary dispatch branches.
+- Consequences / follow-ups: Use process substitution only in shell-specific files that support it (`bash`, `zsh`). Keep shared POSIX files portable and document any exception where shell semantics force a different shape.
+
+## 2026-04-25 — Keep tests under `test/`
+- Decider: Anthony
+- Decision: Move the verification entrypoint from `scripts/verify.sh` to `test/verify.sh`, with multi-line shell fixtures under `test/fixtures/verify/`. Keep `scripts/` for bootstrap-support helpers and small non-test utilities.
+- Rationale: Verification had grown into a fixture-based test harness and was starting to dominate `scripts/`, making the directory name misleading. A top-level `test/` tree is a more idiomatic place for the harness and fixtures while preserving `scripts/` for runtime/support utilities.
+- Consequences / follow-ups: Use `test/verify.sh` as the full gate. `scripts/home_tree_manifest.sh` remains under `scripts/` because bootstrap uses it directly, not only tests.
+
+## 2026-04-25 — Remove the vendored Git helper submodule
+- Decider: Anthony
+- Decision: Drop the `lib/git` submodule and the managed Git helper symlinks under `home/.config/{bash,zsh}/`. Git prompt helper discovery lives in shared POSIX functions, while Git bash-completion candidate discovery lives under `home/.config/bash/` and is explicitly consumed by zsh because Git's upstream zsh wrapper depends on a matching bash completion script.
+- Rationale: Git completions and prompt helpers should match the selected `git` binary on PATH. Keeping a separate pinned Git checkout made completion behavior drift from the installed command and added a large submodule for files that macOS/Homebrew Git already ship.
+- Consequences / follow-ups: Zsh handles both native `_git` installs and installs that only ship `git-completion.zsh` by creating an XDG-cache `_git` symlink to the active system file, then pointing that wrapper at the bash-owned completion candidate. Machines without packaged Git completion helpers will get reduced Git completion/prompt behavior until Git's helpers are installed. Continue the broader submodule/CLI audit separately.
+
 ## 2026-04-24 — Append Bash history without live cross-session merging
 - Decider: Anthony
 - Decision: Enable `shopt -s histappend cmdhist lithist` in the Bash interactive layer. Do not add automatic `history -n` / `history -a` prompt syncing as part of this change.
@@ -13,13 +31,13 @@ Keep newest decisions at the top (reverse chronological order).
 - Decider: Anthony
 - Decision: Remove chezmoi entirely. Keep `home/` as a literal `$HOME` mirror, use the tracked `home/` tree itself as the deployment manifest, and let `bootstrap.sh` compute managed directories/leaves directly from Git-tracked paths via `scripts/home_tree_manifest.sh`. Use real symlink nodes in the repo where needed: vendored helpers now live at paths such as `home/.config/bash/git-prompt.sh`, and the whole-directory Vim case is represented as `home/.vim` -> `../managed/vim`.
 - Rationale: The repo already wanted live-update symlink semantics, and chezmoi’s source-state encoding (`dot_`, `private_`, `symlink_*.tmpl`, `.chezmoiroot`) had become more indirection than value. A literal home tree is easier to read, easier to reason about, and keeps the repo layout aligned with the deployed filesystem shape.
-- Consequences / follow-ups: `bootstrap.sh` now requires `git`, keeps a managed-path state file under `~/.local/state/dotfiles/managed-paths`, and uses that to clean up stale targets after deployment-shape changes. `scripts/verify.sh` now validates the repo-native managed-path list instead of chezmoi state. Prefer real symlink nodes and the `managed/` directory over reintroducing template-based target indirection unless a concrete new need appears.
+- Consequences / follow-ups: `bootstrap.sh` now requires `git`, keeps a managed-path state file under `~/.local/state/dotfiles/managed-paths`, and uses that to clean up stale targets after deployment-shape changes. `test/verify.sh` now validates the repo-native managed-path list instead of chezmoi state. Prefer real symlink nodes and the `managed/` directory over reintroducing template-based target indirection unless a concrete new need appears.
 
 ## 2026-04-23 — Default shell internals to XDG config/state paths
 - Decider: Anthony
 - Decision: Keep the standard shell entrypoints in `$HOME` (`.profile`, `.shrc`, `.bashrc`, `.zshrc`, etc.) for compatibility, but default the internal shell/runtime config to `XDG_CONFIG_HOME` and shell history/state to `XDG_STATE_HOME`. Concretely, `home/.config/shell/paths.sh` now exports default XDG base-dir variables and derives unexported internal `dotfiles_*` path variables, managed bash/zsh config is sourced through that internal path layer, and bash/zsh history files live under `~/.local/state/{bash,zsh}/history` unless overridden.
 - Rationale: The home-directory entrypoints are still the right compatibility boundary for login and interactive shells, but the internals behind them do not need to keep hardcoding `~/.config` or state files like shell history in `$HOME`. Separating exported `XDG_*` vars from the shell's internal resolved `dotfiles_*` layer keeps path policy centralized and gives future flexibility without leaking extra globals to child processes.
-- Consequences / follow-ups: Continue treating `$HOME` shell wrappers as compatibility shims into the real managed config under `XDG_CONFIG_HOME`. Prefer `XDG_CACHE_HOME` / `XDG_STATE_HOME` for shell-generated runtime artifacts such as completion caches and history files, but route shell-internal path lookups through `dotfiles_*` vars rather than sprinkling raw XDG fallback logic everywhere. `scripts/verify.sh` now asserts the default XDG env vars, internal path vars, and history locations in both bash and zsh startups.
+- Consequences / follow-ups: Continue treating `$HOME` shell wrappers as compatibility shims into the real managed config under `XDG_CONFIG_HOME`. Prefer `XDG_CACHE_HOME` / `XDG_STATE_HOME` for shell-generated runtime artifacts such as completion caches and history files, but route shell-internal path lookups through `dotfiles_*` vars rather than sprinkling raw XDG fallback logic everywhere. `test/verify.sh` now asserts the default XDG env vars, internal path vars, and history locations in both bash and zsh startups.
 
 ## 2026-04-23 — Keep interactive shell internals native to bash vs zsh
 - Decider: Anthony
@@ -29,7 +47,7 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-22 — Split shell language roles by use case
 - Decider: Anthony
-- Decision: Use POSIX `sh` for deployment-critical bootstrap paths, `bash` for repo-local dev automation, and `zsh` as the interactive shell that receives ongoing UX investment. Concretely, keep `bootstrap.sh` POSIX `sh`, keep `scripts/verify.sh` in bash, and continue the prompt/completion migration work in zsh.
+- Decision: Use POSIX `sh` for deployment-critical bootstrap paths, `bash` for repo-local dev automation, and `zsh` as the interactive shell that receives ongoing UX investment. Concretely, keep `bootstrap.sh` POSIX `sh`, keep `test/verify.sh` in bash, and continue the prompt/completion migration work in zsh.
 - Rationale: The three use cases have different priorities. Deployment should optimize for portability, dev automation should optimize for boring/predictable command orchestration, and interactive shell config should optimize for completion, prompt, and daily ergonomics. Treating zsh as a universal scripting upgrade would not buy much for `verify.sh`, which is mostly assertions and subprocess calls.
 - Consequences / follow-ups: Shared runtime shell files under `home/.config/shell/` should stay POSIX-compatible unless there is a strong reason otherwise. New repo-local automation can default to bash unless portability pressure suggests `sh` or complexity suggests a higher-level language. Continue the next shell work in zsh without feeling pressure to port `verify.sh`.
 
@@ -47,7 +65,7 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-21 — Manage Ghostty Solarized Dark in the managed home tree
 - Decider: Anthony
-- Decision: Ship **`home/.config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`scripts/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.
+- Decision: Ship **`home/.config/ghostty/config`** so bootstrap symlinks **`~/.config/ghostty/config`**. Use canonical Solarized Dark hex (upstream Xresources ANSI mapping), **`alpha-blending = native`** (Display P3 compositing on macOS per Ghostty docs), **`palette-generate = true`** so indices 16–255 derive from the base-16 Solarized palette, and **`macos-titlebar-style = transparent`** so title chrome matches base03. Extend **`test/verify.sh`** with managed paths and a temp-home symlink assertion for Ghostty.
 - Rationale: No need to restore the **altercation/solarized** submodule for terminal chrome; Ghostty’s own options cover wide-gamut blending and a cohesive 256-color ramp. Document **`linear-corrected`** in-config as an optional tweak if fringe artifacts appear.
 - Consequences / follow-ups: Reload Ghostty after apply (**Cmd+Shift+,**). Linux gets **`native`** as sRGB per Ghostty (still explicit and consistent).
 
@@ -68,7 +86,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decision: Manage plugins with **vim-plug**: add `lib/vim-plug` as a **git submodule**, symlink `managed/vim/autoload/plug.vim` → `../../../lib/vim-plug/plug.vim`, and use `call plug#begin('~/.vim/plugged')` in `home/.vimrc`. Ignore `~/.vim/plugged/` in git. Remove the **Vundle** submodule (`managed/vim/bundle/vundle`). Apply the previously chosen **upgraded GitHub repos** (ctrlpvim, easymotion, vim-mundo, preservim NERD*) and **Mundo** mappings (`g:mundo_*`, `:MundoToggle`).
 - Rationale: Bare `pack/` + manual or submodule-per-plugin was heavier than wanted; vim-plug stays maintained, keeps SSH story to “submodules + bootstrap + `:PlugInstall`,” and avoids curling `plug.vim` on each machine when the submodule is present.
 - Alternatives considered: Only native packages; minpac—see prior discussion; deferred in favor of vim-plug ergonomics.
-- Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `scripts/verify.sh` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `scripts/verify.sh` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
+- Consequences / follow-ups: Old ignored clones under `~/.vim/bundle/` can be deleted locally; `test/verify.sh` and README must reference `PlugInstall` not `BundleInstall`. **Recorded 2026-04-21:** `test/verify.sh` run clean post-migration; README step documents `rm -rf ~/.vim/bundle` for leftover Vundle-era trees.
 
 ## 2026-04-20 — Abandon Vundle for Vim native packages; trim and upgrade plugins
 - Decider: Anthony

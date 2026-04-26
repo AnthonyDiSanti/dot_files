@@ -33,7 +33,7 @@ Maintenance:
 - Definition of done: Dotfiles updated in the literal `home/` target-tree form (plus `managed/` for whole-directory symlink cases), bootstrap/scripts run without errors on macOS, and `/context` is kept current.
 
 ## 2) Tech stack & constraints
-- Languages + versions: Shell (bash/sh, system), Vimscript (`home/.vimrc`), TOML (`home/.codex/config.toml`), plist/dict (`settings/OSXKeyBindings.dict`). Vendored C/etc lives under `lib/git/` (do not edit).
+- Languages + versions: Shell (bash/sh, system), Vimscript (`home/.vimrc`), TOML (`home/.codex/config.toml`), plist/dict (`settings/OSXKeyBindings.dict`).
 - Frameworks: None.
 - Package manager: None in-repo (system installs via Homebrew/RubyGems are assumed externally).
 - Storage/database: None.
@@ -44,13 +44,14 @@ Maintenance:
 - Key directories:
   - `home/` — literal `$HOME` target tree for managed dotfiles (shell, tmux, Codex/Claude config, symlink nodes such as `home/.vim`).
   - `home/.config/shell/` — POSIX-compatible shared shell baseline for `sh`, `bash`, and `zsh`.
-  - `home/.config/bash/` — bash-specific interactive setup (prompt, git helpers, WSL cursor tweak).
+  - `home/.config/bash/` — bash-specific interactive setup (prompt, system Git helper loading, WSL cursor tweak).
   - `home/.config/zsh/` — zsh-specific interactive setup.
   - `home/.local/bin/` — user CLI utilities installed to `~/.local/bin/`.
   - `managed/` — repo-owned directories exposed through symlink nodes from `home/` when a whole target tree should stay linked as a directory (currently `managed/vim` via `home/.vim`).
-  - `scripts/` — repo-local checks (`scripts/verify.sh`) and small tools (e.g. `print-ansi-colors.sh`); not added to `PATH`.
+  - `test/` — repo-local verification entrypoint (`test/verify.sh`) and test fixtures (`test/fixtures/`).
+  - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
-  - `lib/` — vendored dependencies (`lib/git` for prompt/completion; `lib/make-chrome-app`).
+  - `lib/` — vendored dependencies (`lib/vim-plug`, `lib/make-chrome-app`).
   - `context/` — shared working memory for humans and agents.
   - `code_template/` — template skeleton for new repos (AGENTS/context, etc.).
 - Where to add new:
@@ -64,11 +65,11 @@ Maintenance:
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
   - Vim plugins: [vim-plug](https://github.com/junegunn/vim-plug); loader symlinked from `lib/vim-plug` into `managed/vim/autoload/plug.vim`; `:PlugInstall` populates `~/.vim/plugged/` (ignored via `managed/vim/plugged/`). Keep `home/.vimrc` free of stale references when plugins are removed.
 - “Do not touch” paths (if any):
-  - `lib/git/`, `lib/vim-plug/`, and plugin installs under `home/.vim/plugged/` (ignored) follow normal submodule / `:PlugUpdate` workflows.
+  - `lib/vim-plug/`, `lib/make-chrome-app/`, and plugin installs under `home/.vim/plugged/` (ignored) follow normal submodule / `:PlugUpdate` workflows.
 
 ## 4) Commands
 Setup:
-- Install deps: `git` (required for `bootstrap.sh`), `zsh` (required for `scripts/verify.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`), `tiff2icns` if using `make-chrome-app`.
+- Install deps: `git` (required for `bootstrap.sh`), `zsh` (required for `test/verify.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`), `tiff2icns` if using `make-chrome-app`.
 - Env setup: `./bootstrap.sh` (POSIX `sh`; hydrates submodules and applies the repo-native symlink-backed home tree).
 
 Run:
@@ -79,7 +80,7 @@ Run:
 Verify (targeted first, full at end):
 - Fast checks (lint/typecheck/unit): `bash -n path/to/script.sh` for modified shell scripts; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
 - Run a single test: Manual smoke check of the changed script or config (e.g., open a new shell and ensure `.bash_profile` loads cleanly).
-- Full suite (final gate): `scripts/verify.sh`.
+- Full suite (final gate): `test/verify.sh`.
 - Build (final gate if applicable): Not applicable.
 
 ## 5) Engineering standards
@@ -87,7 +88,8 @@ Verify (targeted first, full at end):
 - Lint rules: None enforced; optional `shellcheck` or `bash -n` for shell edits.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; keep shared helpers in `home/.config/shell/functions.sh`.
-- Testing expectations: Run `scripts/verify.sh` for bootstrap/dotfile changes; it checks shell syntax, repo-native managed target mapping, temporary-home apply behavior, live-home convergence, and shell startup.
+- Shell data flow: Prefer explicit call-site data flow over string-encoded function names. When a helper consumes generated lines, make it read stdin and feed it with redirection/process substitution at the call site when shell semantics allow; document exceptions.
+- Testing expectations: Run `test/verify.sh` for bootstrap/dotfile changes; it checks shell syntax, repo-native managed target mapping, temporary-home apply behavior, live-home convergence, and shell startup.
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
 
