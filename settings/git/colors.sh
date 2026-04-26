@@ -7,7 +7,7 @@ GIT_COLOR_TEST_FORMAT=''
 MAX_COLOR_LENGTH=0
 
 for GIT_COLOR in "${GIT_COLORS[@]}"; do
-  if (( ${#GIT_COLOR} > MAX_COLOR_LENGTH )); then
+  if ((${#GIT_COLOR} > MAX_COLOR_LENGTH)); then
     MAX_COLOR_LENGTH=${#GIT_COLOR}
   fi
 

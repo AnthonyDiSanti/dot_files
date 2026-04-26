@@ -10,10 +10,17 @@ if ! command -v "$shellcheck_bin" >/dev/null 2>&1; then
 fi
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=()
 files=()
 repo_all=0
 status=0
+
+if [[ ! -r "$shell_files_helper" ]]; then
+  echo "shellcheck-dotfiles: missing required helper: $shell_files_helper" >&2
+  exit 1
+fi
+source "$shell_files_helper"
 
 run_shellcheck() {
   local shellcheck_args=()
@@ -26,61 +33,31 @@ run_shellcheck() {
   "$shellcheck_bin" "${shellcheck_args[@]}"
 }
 
-shell_for_file() {
-  local file="$1"
-  local rel_path="$2"
-  local first_line
-
-  case "$rel_path" in
-    home/.zprofile|home/.zshrc|home/.config/zsh/*.zsh|test/fixtures/verify/*.zsh)
-      return 1
-      ;;
-    bootstrap.sh|home/.profile|home/.shrc|home/.local/bin/make-chrome-app)
-      printf 'sh\n'
-      ;;
-    *.bash|home/.bash_profile|home/.bashrc)
-      printf 'bash\n'
-      ;;
-    *.sh)
-      first_line="$(sed -n '1p' "$file")"
-      case "$first_line" in
-        *bash*) printf 'bash\n' ;;
-        *) printf 'sh\n' ;;
-      esac
-      ;;
-    *)
-      return 2
-      ;;
-  esac
-}
-
 lint_file() {
   local file="$1"
   local abs_path rel_path shell
   local shell_status
   local extra_args=()
 
-  case "$file" in
-    /*) abs_path="$file" ;;
-    *) abs_path="$PWD/$file" ;;
-  esac
-
-  rel_path="${abs_path#"$repo_root"/}"
+  abs_path="$(dotfiles_shell_file_abs_path "$file")"
+  rel_path="$(dotfiles_shell_file_rel_path "$repo_root" "$abs_path")"
 
   shell_status=0
-  shell="$(shell_for_file "$abs_path" "$rel_path")" || shell_status=$?
+  shell="$(dotfiles_shell_file_dialect "$abs_path" "$rel_path")" || shell_status=$?
   if ((shell_status != 0)); then
-    case "$shell_status" in
-      1) return 0 ;;
-      *) run_shellcheck "$file"; return $? ;;
-    esac
+    run_shellcheck "$file"
+    return $?
+  fi
+
+  if [[ "$shell" == zsh ]]; then
+    return 0
   fi
 
   case "$rel_path" in
     home/.config/bash/prompt.bash)
       extra_args+=(--exclude=SC2016 --exclude=SC2034)
       ;;
-    scripts/print-ansi-colors.sh|settings/git/colors.sh)
+    scripts/print-ansi-colors.sh | settings/git/colors.sh)
       extra_args+=(--exclude=SC2016)
       ;;
     home/.config/bash/rc.bash)
@@ -88,6 +65,9 @@ lint_file() {
       ;;
     home/.config/shell/paths.sh)
       extra_args+=(--exclude=SC2034)
+      ;;
+    home/.config/shell/profile.sh)
+      extra_args+=(--exclude=SC3028)
       ;;
     test/verify.sh)
       extra_args+=(--exclude=SC2016)
@@ -101,25 +81,6 @@ lint_file() {
   fi
 }
 
-emit_repo_files() {
-  local abs_path
-  local rel_path
-  local shell_status
-
-  git -C "$repo_root" ls-files -z -- bootstrap.sh home scripts settings test |
-    while IFS= read -r -d '' rel_path; do
-      abs_path="$repo_root/$rel_path"
-      [[ -f "$abs_path" ]] || continue
-
-      # Keep --all scoped to files this wrapper knows how to classify or skip.
-      shell_status=0
-      shell_for_file "$abs_path" "$rel_path" >/dev/null || shell_status=$?
-      case "$shell_status" in
-        0|1) printf '%s\0' "$abs_path" ;;
-      esac
-    done
-}
-
 while (($#)); do
   case "$1" in
     --all)
@@ -131,7 +92,7 @@ while (($#)); do
       files+=("$@")
       break
       ;;
-    -s|--shell)
+    -s | --shell)
       shift
       [[ $# -gt 0 ]] && shift
       continue
@@ -140,12 +101,12 @@ while (($#)); do
       shift
       continue
       ;;
-    -f|-e|-S|-o|-P|--format|--exclude|--severity|--enable|--source-path)
+    -f | -e | -S | -o | -P | --format | --exclude | --severity | --enable | --source-path)
       args+=("$1")
       shift
       [[ $# -gt 0 ]] && args+=("$1") && shift
       ;;
-    --format=*|--exclude=*|--severity=*|--enable=*|--source-path=*)
+    --format=* | --exclude=* | --severity=* | --enable=* | --source-path=*)
       args+=("$1")
       shift
       ;;
@@ -163,7 +124,7 @@ done
 if ((repo_all)); then
   while IFS= read -r -d '' file; do
     files+=("$file")
-  done < <(emit_repo_files)
+  done < <(dotfiles_emit_tracked_shell_files "$repo_root")
 fi
 
 if ((${#files[@]} == 0)); then

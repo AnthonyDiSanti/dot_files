@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-repo_root="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture_root="$repo_root/test/fixtures/verify"
 tmp_paths=()
 
@@ -12,10 +12,16 @@ if [[ ! -r "$repo_root/scripts/home_tree_manifest.sh" ]]; then
 fi
 source "$repo_root/scripts/home_tree_manifest.sh"
 
+if [[ ! -r "$repo_root/scripts/shell_files.bash" ]]; then
+  echo "verify: missing required helper: $repo_root/scripts/shell_files.bash" >&2
+  exit 1
+fi
+source "$repo_root/scripts/shell_files.bash"
+
 cleanup() {
   local path
 
-  if (( ${#tmp_paths[@]} == 0 )); then
+  if ((${#tmp_paths[@]} == 0)); then
     return 0
   fi
 
@@ -26,8 +32,12 @@ cleanup() {
 
 trap cleanup EXIT
 
-log() {
+log_suite() {
   printf '==> %s\n' "$1"
+}
+
+log_check() {
+  printf '  - %s\n' "$1"
 }
 
 fail() {
@@ -73,42 +83,31 @@ assert_symlink() {
 check_shell_syntax() {
   local script_path
 
-  log "checking shell syntax"
+  log_check "shell syntax"
 
-  while IFS= read -r script_path; do
+  while IFS= read -r -d '' script_path; do
     check_shell_file_syntax "$script_path"
-  done < <(find "$repo_root"/home "$repo_root"/scripts "$repo_root"/settings "$repo_root"/test -type f -print | sort)
-
-  check_shell_file_syntax "$repo_root/bootstrap.sh"
+  done < <(dotfiles_emit_tracked_shell_files "$repo_root")
 }
 
 check_shell_file_syntax() {
   local script_path="$1"
-  local first_line
+  local rel_path
+  local shell
 
   [[ -f "$script_path" ]] || return 0
 
-  case "$script_path" in
-    *.bash)
+  rel_path="$(dotfiles_shell_file_rel_path "$repo_root" "$script_path")"
+  shell="$(dotfiles_shell_file_dialect "$script_path" "$rel_path")" || return 0
+
+  case "$shell" in
+    bash)
       bash -n "$script_path"
       ;;
-    *.zsh)
+    zsh)
       zsh -n "$script_path"
       ;;
-    *.sh)
-      first_line="$(sed -n '1p' "$script_path")"
-      case "$first_line" in
-        *bash*) bash -n "$script_path" ;;
-        *) sh -n "$script_path" ;;
-      esac
-      ;;
-    */.bash_profile|*/.bashrc)
-      bash -n "$script_path"
-      ;;
-    */.zprofile|*/.zshrc)
-      zsh -n "$script_path"
-      ;;
-    */.profile|*/.shrc|*/make-chrome-app)
+    sh)
       sh -n "$script_path"
       ;;
   esac
@@ -121,15 +120,20 @@ check_shell_file_syntax() {
 }
 
 check_shell_lint() {
-  log "checking shell static analysis"
+  log_check "shell static analysis"
   "$repo_root/scripts/shellcheck-dotfiles.bash" --all
+}
+
+check_shell_format() {
+  log_check "shell formatting"
+  "$repo_root/scripts/shfmt-dotfiles.bash" --all --check
 }
 
 check_managed_targets() {
   local expected
   local actual
 
-  log "checking managed target list"
+  log_check "managed target list"
   expected="$(make_temp_file)"
   actual="$(make_temp_file)"
 
@@ -145,7 +149,7 @@ check_temp_apply() {
   local rel_path
   local source_path
 
-  log "checking bootstrap in a temporary home"
+  log_check "bootstrap in a temporary home"
   tmp_home="$(make_temp_dir)"
   manifest_path="$(make_temp_file)"
 
@@ -171,7 +175,7 @@ check_temp_apply() {
 check_live_home_converged() {
   local diff_output
 
-  log "checking live home convergence"
+  log_check "live home convergence"
   diff_output="$(make_temp_file)"
   "$repo_root/bootstrap.sh" --dry-run --verbose >"$diff_output"
 
@@ -230,7 +234,7 @@ assert_zsh_rerunnable() {
 }
 
 check_shell_startup() {
-  log "checking shell startup smoke tests"
+  log_check "shell startup smoke tests"
   assert_sh_startup \
     -u XDG_CONFIG_HOME \
     -u XDG_CACHE_HOME \
@@ -318,6 +322,25 @@ check_shell_startup() {
     -u SAVEHIST
 }
 
+check_static_analysis_suite() {
+  log_suite "static analysis"
+  check_shell_syntax
+  check_shell_lint
+}
+
+check_linting_suite() {
+  log_suite "linting"
+  check_shell_format
+}
+
+check_functionality_suite() {
+  log_suite "functionality"
+  check_managed_targets
+  check_temp_apply
+  check_live_home_converged
+  check_shell_startup
+}
+
 main() {
   require_command awk
   require_command bash
@@ -326,19 +349,18 @@ main() {
   require_command git
   require_command readlink
   require_command shellcheck
+  require_command shfmt
   require_command sort
   require_command zsh
 
   cd "$repo_root"
 
-  check_shell_syntax
-  check_shell_lint
-  check_managed_targets
-  check_temp_apply
-  check_live_home_converged
-  check_shell_startup
+  # Keep verification grouped for scanability while retaining linear fail-fast execution.
+  check_static_analysis_suite
+  check_linting_suite
+  check_functionality_suite
 
-  log "all checks passed"
+  log_suite "all checks passed"
 }
 
 main "$@"
