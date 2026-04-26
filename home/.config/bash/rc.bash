@@ -31,6 +31,20 @@ export HISTFILESIZE="${HISTFILESIZE:-$HISTSIZE}"
 # Keep Bash history usable across concurrent shells without live event-number merging.
 shopt -s histappend cmdhist lithist
 
+__dotfiles_bash_configure_line_editor() {
+  # Search history by the typed prefix when pressing Up/Down.
+  bind '"\e[A": history-search-backward'
+  bind '"\eOA": history-search-backward'
+  bind '"\e[B": history-search-forward'
+  bind '"\eOB": history-search-forward'
+
+  # Match completions case-insensitively; enable Readline's related case mapper if present.
+  bind 'set completion-ignore-case on'
+  bind 'set completion-map-case on' 2>/dev/null || true
+}
+
+__dotfiles_bash_configure_line_editor
+
 if [[ -r "$dotfiles_bash_config_home/tool-support.bash" ]]; then
   source "$dotfiles_bash_config_home/tool-support.bash"
 fi
@@ -46,6 +60,7 @@ if command -v git >/dev/null 2>&1; then
 fi
 
 unset -f __dotfiles_bash_source_first_git_prompt_candidate
+unset -f __dotfiles_bash_configure_line_editor
 
 if [ -r "$dotfiles_bash_config_home/prompt.bash" ]; then
   source "$dotfiles_bash_config_home/prompt.bash"
