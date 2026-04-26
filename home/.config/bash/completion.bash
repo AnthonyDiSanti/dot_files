@@ -88,18 +88,34 @@ __dotfiles_bash_load_generated_completion() {
   eval -- "$("$@" 2>/dev/null)"
 }
 
+# Enable git-spice completion for the shared `gs` alias.
+__dotfiles_bash_configure_git_spice_alias_completion() {
+  local git_spice_path
+
+  command -v git-spice >/dev/null 2>&1 || return 0
+  [[ $(alias gs 2>/dev/null) == "alias gs='git-spice'" ]] || return 0
+  complete -p gs >/dev/null 2>&1 && return 0
+
+  git_spice_path=$(command -v git-spice) || return 0
+  complete -o default -C "$git_spice_path" gs
+}
+
 # Some snippets rely on bash-completion helper functions; avoid broad direct sourcing.
 __dotfiles_bash_load_completion_framework || true
 
 __dotfiles_bash_load_git_completion
 
 # Some tools ship completion generators instead of package-manager snippets.
+__dotfiles_bash_load_generated_completion codex codex completion bash
 __dotfiles_bash_load_generated_completion docker docker completion bash
 __dotfiles_bash_load_generated_completion gh gh completion -s bash
+__dotfiles_bash_load_generated_completion git-spice git-spice shell completion bash
+__dotfiles_bash_configure_git_spice_alias_completion
 __dotfiles_bash_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion bash
 
 unset -f __dotfiles_bash_source_if_readable
 unset -f __dotfiles_bash_load_completion_framework
 unset -f __dotfiles_bash_load_git_completion
 unset -f __dotfiles_bash_load_generated_completion
+unset -f __dotfiles_bash_configure_git_spice_alias_completion
 unset dotfiles_bash_completion_home

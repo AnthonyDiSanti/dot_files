@@ -25,11 +25,18 @@ if zstyle -s ":completion:*:*:git:*" script git_completion_script; then
   [[ -r "$git_completion_script" ]]
 fi
 autoload +X _git
+if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v codex >/dev/null 2>&1; then
+  (( ${+_comps[codex]} == 1 )) || exit 1
+fi
 if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v docker >/dev/null 2>&1; then
   (( ${+_comps[docker]} == 1 )) || exit 1
 fi
 if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v gh >/dev/null 2>&1; then
   (( ${+_comps[gh]} == 1 )) || exit 1
+fi
+if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] && command -v git-spice >/dev/null 2>&1; then
+  (( ${+_comps[git-spice]} == 1 )) || exit 1
+  [[ "${_comps[gs]-}" == "${_comps[git-spice]-}" ]] || exit 1
 fi
 if [[ -r "${dotfiles_zsh_config_home:-}/completion.zsh" ]] \
   && command -v kubectl >/dev/null 2>&1; then

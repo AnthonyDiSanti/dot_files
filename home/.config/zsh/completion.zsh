@@ -99,6 +99,15 @@ __dotfiles_zsh_load_generated_completion() {
   eval -- "$("$@" 2>/dev/null)"
 }
 
+# Enable git-spice completion for the shared `gs` alias.
+__dotfiles_zsh_configure_git_spice_alias_completion() {
+  emulate -L zsh
+
+  [[ ${aliases[gs]-} == git-spice ]] || return 0
+  (( ${+_comps[git-spice]} )) || return 0
+  compdef gs=git-spice
+}
+
 __dotfiles_zsh_init_completion() {
   emulate -L zsh
   local zcompdump_dir zcompdump_path
@@ -115,8 +124,11 @@ __dotfiles_zsh_init_completion() {
   compinit -d "$zcompdump_path"
 
   # Some tools ship completion generators instead of package-manager functions.
+  (( ${+_comps[codex]} )) || __dotfiles_zsh_load_generated_completion codex codex completion zsh
   (( ${+_comps[docker]} )) || __dotfiles_zsh_load_generated_completion docker docker completion zsh
   (( ${+_comps[gh]} )) || __dotfiles_zsh_load_generated_completion gh gh completion -s zsh
+  (( ${+_comps[git-spice]} )) || __dotfiles_zsh_load_generated_completion git-spice git-spice shell completion zsh
+  __dotfiles_zsh_configure_git_spice_alias_completion
   (( ${+_comps[kubectl]} )) || __dotfiles_zsh_load_generated_completion kubectl env KUBECONFIG=/dev/null kubectl completion zsh
 }
 
@@ -127,4 +139,5 @@ unset -f __dotfiles_zsh_add_homebrew_fpath
 unset -f __dotfiles_zsh_fpath_has_function
 unset -f __dotfiles_zsh_configure_git_completion
 unset -f __dotfiles_zsh_load_generated_completion
+unset -f __dotfiles_zsh_configure_git_spice_alias_completion
 unset -f __dotfiles_zsh_init_completion
