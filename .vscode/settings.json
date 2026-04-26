@@ -26,5 +26,7 @@
     "**/*.zshenv": false,
     "**/zshenv": false,
     "**/*.zsh-theme": false
-  }
+  },
+  "shellcheck.executablePath": "${workspaceFolder}/scripts/shellcheck-dotfiles.bash",
+  "shellcheck.useWorkspaceRootAsCwd": true
 }

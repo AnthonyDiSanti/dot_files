@@ -3,7 +3,6 @@
 
 set -euo pipefail
 
-# shellcheck disable=SC2016
 esc() { printf ' \e[90m\\e[%sm\e[0m' "$1"; }
 
 # Foreground: SGR in first column, then a sample, then the raw escape in gray.

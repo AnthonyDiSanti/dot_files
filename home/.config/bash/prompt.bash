@@ -82,7 +82,6 @@ __dotfiles_set_ps1() {
   if ((n >= 1)); then
     ps1_jobs=" ${PS_BRIGHT_MAGENTA}[${n}]${PS_OFF}"
   fi
-  # shellcheck disable=SC2016
   PS1="${PS_PURPLE}\u${PS_BLUE}@\h ${PS_GREEN}\w${PS_CYAN}\$(__dotfiles_git_prompt) ${PS_OFF}\!${ps1_jobs} ${PS_OFF}\$ "
   export PS1
 }

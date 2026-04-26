@@ -85,7 +85,7 @@ Verify (targeted first, full at end):
 
 ## 5) Engineering standards
 - Formatting: Match existing style; 2-space indentation in shell scripts, keep shebangs consistent (`/usr/bin/env bash` vs `sh`).
-- Lint rules: None enforced; optional `shellcheck` or `bash -n` for shell edits.
+- Lint rules: None enforced; optional `shellcheck` or `bash -n` for shell edits. VS Code ShellCheck uses `scripts/shellcheck-dotfiles.bash` to externalize shell dialect mapping and narrow path-specific suppressions.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; keep shared helpers in `home/.config/shell/functions.sh`.
 - Shell data flow: Prefer explicit call-site data flow over string-encoded function names. When a helper consumes generated lines, make it read stdin and feed it with redirection/process substitution at the call site when shell semantics allow; document exceptions.
