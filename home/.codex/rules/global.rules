@@ -1,2 +1,30 @@
 prefix_rule(pattern=["npm"], decision="allow")
-prefix_rule(pattern=["git"], decision="allow")
+prefix_rule(
+    pattern=["git", ["fetch", "log", "mv", "diff", "status"]],
+    decision="allow",
+    justification="Read-only Git inspection, remote ref refresh, and non-destructive operations are safe enough to run without prompting",
+    match=[
+        "git fetch origin",
+        "git log --oneline --graph",
+        "git mv oldfile newfile",
+        "git diff HEAD",
+        "git status --short",
+    ],
+    not_match=[
+        "git add .",
+        "git commit -m 'message'",
+        "git pull origin main",
+        "git push origin main",
+        "git rm file",
+        "git clean -fd",
+        "git reset --hard HEAD~1",
+        "git checkout -- .",
+        "git restore .",
+        "git revert HEAD",
+        "git switch branch",
+        "git merge branch",
+        "git rebase branch",
+        "git cherry-pick commit",
+        "git stash save 'message'",
+    ],
+)
