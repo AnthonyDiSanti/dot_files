@@ -1,0 +1,5 @@
+# These files are shell startup fragments, not standalone executables.
+disable=SC2148
+
+# Dotfiles source paths as they exist after bootstrap in $HOME.
+disable=SC1090,SC1091

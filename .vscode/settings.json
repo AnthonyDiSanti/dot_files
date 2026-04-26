@@ -1,0 +1,30 @@
+{
+  "shellcheck.ignorePatterns": {
+    "**/*.bash": false,
+    "**/*.bash_login": false,
+    "**/bash_login": false,
+    "**/*.bash_logout": false,
+    "**/bash_logout": false,
+    "**/*.bash_profile": false,
+    "**/bash_profile": false,
+    "**/*.bashrc": false,
+    "**/bashrc": false,
+    "**/*.profile": false,
+    "**/profile": false,
+    "**/*.sh": false,
+    "**/*.shrc": false,
+    "**/shrc": false,
+    "**/*.zsh": false,
+    "**/*.zshrc": false,
+    "**/zshrc": false,
+    "**/*.zprofile": false,
+    "**/zprofile": false,
+    "**/*.zlogin": false,
+    "**/zlogin": false,
+    "**/*.zlogout": false,
+    "**/zlogout": false,
+    "**/*.zshenv": false,
+    "**/zshenv": false,
+    "**/*.zsh-theme": false
+  }
+}

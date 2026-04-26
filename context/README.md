@@ -7,7 +7,7 @@ Agent-facing working memory for this repo. Committed to git for continuity.
 - Dotfile changes and bootstrap behavior
 - macOS defaults and system tweaks
 - Shell/Vim/tmux configuration updates
-- Vendored dependency updates (Git prompt/completion, vim-plug submodule / Vim `plugged/`); Solarized editor colors via vim-solarized8, not `settings/solarized`
+- Vendored dependency updates (vim-plug submodule / Vim `plugged/`; Git prompt/completion comes from the active system Git install); Solarized editor colors via vim-solarized8, not `settings/solarized`
 - Drafts, collaborative artifacts, experiments, and transient session files (under `/context/scratch`)
 
 ## Exclusions

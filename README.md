@@ -18,7 +18,7 @@ later bootstrap runs can clean up removed or reshaped managed targets.
 2. Run `./bootstrap.sh --list-managed`
 
 ### Verifying ###
-1. Run `scripts/verify.sh`
+1. Run `test/verify.sh`
 
 Vim
 ===
