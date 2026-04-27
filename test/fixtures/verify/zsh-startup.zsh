@@ -27,6 +27,12 @@ rm -f "$history_fixture_file" "$history_fixture_actual"
 unset history_fixture_actual history_fixture_dir history_fixture_expected history_fixture_file history_fixture_input
 [[ "$(bindkey -M emacs '^[[A')" == *up-line-or-beginning-search ]]
 [[ "$(bindkey -M emacs '^[[B')" == *down-line-or-beginning-search ]]
+if command -v fzf >/dev/null 2>&1 \
+  && fzf --zsh >/dev/null 2>&1; then
+  [[ "$(bindkey -M viins '^R')" == *fzf-history-widget ]]
+else
+  [[ "$(bindkey -M viins '^R')" == *history-incremental-search-backward ]]
+fi
 zstyle -a ':completion:*' matcher-list completion_matchers
 completion_matcher='m:{[:lower:][:upper:]-_}={[:upper:][:lower:]_-}'
 (( ${completion_matchers[(Ie)$completion_matcher]} > 0 ))
