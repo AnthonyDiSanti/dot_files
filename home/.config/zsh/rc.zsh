@@ -79,6 +79,132 @@ __dotfiles_zsh_select_entire_buffer() {
   fi
 }
 
+__dotfiles_zsh_clipboard_supported() {
+  emulate -L zsh
+
+  case ${__dotfiles_zsh_clipboard_status:-unknown} in
+    supported)
+      return 0
+      ;;
+    unsupported)
+      return 1
+      ;;
+  esac
+
+  if dotfiles_command_succeeds dotfiles-clipboard status; then
+    typeset -g __dotfiles_zsh_clipboard_status=supported
+    return 0
+  fi
+
+  typeset -g __dotfiles_zsh_clipboard_status=unsupported
+  return 1
+}
+
+__dotfiles_zsh_copy_cutbuffer_to_clipboard() {
+  emulate -L zsh
+
+  __dotfiles_zsh_clipboard_supported || return 1
+  # Clipboard sync must never make native zsh yank behavior noisy or fragile.
+  if printf '%s' "$CUTBUFFER" | dotfiles-clipboard copy >/dev/null 2>&1; then
+    return 0
+  fi
+
+  typeset -g __dotfiles_zsh_clipboard_status=unsupported
+  return 1
+}
+
+__dotfiles_zsh_load_clipboard_to_cutbuffer() {
+  emulate -L zsh
+  local clipboard
+
+  __dotfiles_zsh_clipboard_supported || return 1
+  # The NUL sentinel preserves trailing newlines from the clipboard payload.
+  if ! IFS= read -r -d '' clipboard < <(dotfiles-clipboard paste 2>/dev/null && printf '\0'); then
+    typeset -g __dotfiles_zsh_clipboard_status=unsupported
+    return 1
+  fi
+  zle copy-region-as-kill "$clipboard"
+}
+
+__dotfiles_zsh_run_cutbuffer_widget() {
+  emulate -L zsh
+  local native_widget="$1"
+  local widget_status
+
+  shift
+  zle ".$native_widget" "$@"
+  widget_status=$?
+  if (( widget_status == 0 )); then
+    __dotfiles_zsh_copy_cutbuffer_to_clipboard || true
+  fi
+  return "$widget_status"
+}
+
+__dotfiles_zsh_vi_yank_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-yank "$@"
+}
+
+__dotfiles_zsh_vi_yank_whole_line_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-yank-whole-line "$@"
+}
+
+__dotfiles_zsh_vi_yank_eol_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-yank-eol "$@"
+}
+
+__dotfiles_zsh_vi_delete_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-delete "$@"
+}
+
+__dotfiles_zsh_vi_change_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-change "$@"
+}
+
+__dotfiles_zsh_vi_change_eol_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-change-eol "$@"
+}
+
+__dotfiles_zsh_vi_change_whole_line_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-change-whole-line "$@"
+}
+
+__dotfiles_zsh_vi_kill_eol_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-kill-eol "$@"
+}
+
+__dotfiles_zsh_vi_substitute_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-substitute "$@"
+}
+
+__dotfiles_zsh_vi_delete_char_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-delete-char "$@"
+}
+
+__dotfiles_zsh_vi_backward_delete_char_clipboard() {
+  __dotfiles_zsh_run_cutbuffer_widget vi-backward-delete-char "$@"
+}
+
+__dotfiles_zsh_vi_put_before_clipboard() {
+  emulate -L zsh
+
+  __dotfiles_zsh_load_clipboard_to_cutbuffer || true
+  zle .vi-put-before "$@"
+}
+
+__dotfiles_zsh_vi_put_after_clipboard() {
+  emulate -L zsh
+
+  __dotfiles_zsh_load_clipboard_to_cutbuffer || true
+  zle .vi-put-after "$@"
+}
+
+__dotfiles_zsh_put_replace_selection_clipboard() {
+  emulate -L zsh
+
+  __dotfiles_zsh_load_clipboard_to_cutbuffer || true
+  zle .put-replace-selection "$@"
+}
+
 __dotfiles_zsh_configure_line_editor() {
   emulate -L zsh
   local key keymap
@@ -106,6 +232,20 @@ __dotfiles_zsh_configure_line_editor() {
   zle -N __dotfiles_zsh_set_cursor_for_keymap
   zle -N __dotfiles_zsh_reset_cursor
   zle -N select-entire-buffer __dotfiles_zsh_select_entire_buffer
+  zle -N vi-yank __dotfiles_zsh_vi_yank_clipboard
+  zle -N vi-yank-whole-line __dotfiles_zsh_vi_yank_whole_line_clipboard
+  zle -N vi-yank-eol __dotfiles_zsh_vi_yank_eol_clipboard
+  zle -N vi-delete __dotfiles_zsh_vi_delete_clipboard
+  zle -N vi-change __dotfiles_zsh_vi_change_clipboard
+  zle -N vi-change-eol __dotfiles_zsh_vi_change_eol_clipboard
+  zle -N vi-change-whole-line __dotfiles_zsh_vi_change_whole_line_clipboard
+  zle -N vi-kill-eol __dotfiles_zsh_vi_kill_eol_clipboard
+  zle -N vi-substitute __dotfiles_zsh_vi_substitute_clipboard
+  zle -N vi-delete-char __dotfiles_zsh_vi_delete_char_clipboard
+  zle -N vi-backward-delete-char __dotfiles_zsh_vi_backward_delete_char_clipboard
+  zle -N vi-put-before __dotfiles_zsh_vi_put_before_clipboard
+  zle -N vi-put-after __dotfiles_zsh_vi_put_after_clipboard
+  zle -N put-replace-selection __dotfiles_zsh_put_replace_selection_clipboard
   zmodload zsh/complist
 
   add-zle-hook-widget -d line-init __dotfiles_zsh_set_cursor_for_keymap 2>/dev/null || true

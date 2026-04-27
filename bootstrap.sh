@@ -147,11 +147,6 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
-if ! command -v git >/dev/null 2>&1; then
-  echo "git is required to bootstrap this repo" >&2
-  exit 1
-fi
-
 dotfiles_dir="$(
   unset CDPATH
   cd "$(dirname "$0")" || exit 1

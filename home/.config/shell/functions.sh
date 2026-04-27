@@ -6,6 +6,18 @@ exit_if_error() {
   return 0
 }
 
+dotfiles_have_command() {
+  # Hide command resolution output while preserving command lookup status.
+  command -v "$1" >/dev/null 2>&1
+}
+
+dotfiles_command_succeeds() {
+  # Capability probes execute commands; keep that side effect explicit in the name.
+  [ "$#" -gt 0 ] || return 1
+  dotfiles_have_command "$1" || return 1
+  "$@" >/dev/null 2>&1
+}
+
 dotfiles_codex_git() (
   dotfiles_repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
   dotfiles_git_common=$(git rev-parse --git-common-dir 2>/dev/null) || exit 1

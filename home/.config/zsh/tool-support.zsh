@@ -95,7 +95,7 @@ __dotfiles_zsh_load_generated_completion() {
   local command_name="$1" generated_completion
   shift
 
-  command -v "$command_name" >/dev/null 2>&1 || return 0
+  dotfiles_have_command "$command_name" || return 0
   generated_completion="$("$@" 2>/dev/null)" || return 0
   [[ -n $generated_completion ]] || return 0
   eval "$generated_completion"
@@ -114,7 +114,7 @@ __dotfiles_zsh_load_fzf_shell_support() {
   emulate -L zsh
   local fzf_shell_support
 
-  command -v fzf >/dev/null 2>&1 || return 0
+  dotfiles_have_command fzf || return 0
   fzf_shell_support="$(fzf --zsh 2>/dev/null)" || return 0
   [[ -n $fzf_shell_support ]] || return 0
   # fzf may try to restore zsh's immutable zle option; keep startup quiet while

@@ -2,14 +2,8 @@
 
 set -euo pipefail
 
-shellcheck_bin="${SHELLCHECK_BIN:-shellcheck}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-
-if ! command -v "$shellcheck_bin" >/dev/null 2>&1; then
-  echo "shellcheck-dotfiles: shellcheck not found" >&2
-  exit 127
-fi
 
 shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=()
@@ -22,6 +16,12 @@ if [[ ! -r "$shell_files_helper" ]]; then
   exit 1
 fi
 source "$shell_files_helper"
+
+shellcheck_bin="${SHELLCHECK_BIN:-shellcheck}"
+if ! dotfiles_have_command "$shellcheck_bin"; then
+  echo "shellcheck-dotfiles: shellcheck not found" >&2
+  exit 127
+fi
 
 run_shellcheck() {
   local shellcheck_args=()

@@ -56,7 +56,7 @@ if [[ -r "$dotfiles_bash_config_home/tool-support.bash" ]]; then
   source "$dotfiles_bash_config_home/tool-support.bash"
 fi
 
-if command -v git >/dev/null 2>&1; then
+if dotfiles_have_command git; then
   export GIT_PS1_SHOWDIRTYSTATE='auto'
   export GIT_PS1_SHOWUNTRACKEDFILES='auto'
   export GIT_PS1_SHOWUPSTREAM='auto'

@@ -1,6 +1,5 @@
-# vim-plug installs plugins here (not committed)
+# vim-plug may leave an upgrade backup next to the tracked loader snapshot.
 /home/.vim/autoload/plug.vim.old
-/home/.vim/plugged/
 
 # Agents
 AGENTS.local.md

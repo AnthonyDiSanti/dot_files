@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-27 — Clipboard integrations must degrade quietly
+- Decider: Anthony
+- Decision: Wire zsh and tmux clipboard behavior through `dotfiles-clipboard` opportunistically, without breaking native app-local buffers or printing provider errors on unsupported systems. Zsh paste-time clipboard refresh requires all vi-mode CUTBUFFER producers to sync too, including delete/change/substitute widgets, otherwise native delete-then-put workflows degrade.
+- Rationale: Clipboard unification should improve macOS and WSL workflows, but dotfiles still need to stay usable on hosts without a supported platform clipboard.
+- Consequences / follow-ups: zsh caches unsupported clipboard status as a no-op for the shell session, keeps native `CUTBUFFER` behavior when copy/paste sync fails, and suppresses provider stderr. Wrapped zsh widgets now include yanks, deletes, changes, substitutes, single-character deletes, and visual selection paste. tmux copy-mode still copies selections into the tmux paste buffer and drains stdin even when no system clipboard provider is available. WSL support should be added by implementing the wrapper provider, not by adding WSL-specific logic to zsh or tmux config.
+
+## 2026-04-27 — Keep bootstrap independent of Git runtime
+- Decider: Anthony
+- Decision: Remove the remaining Git runtime dependency from `bootstrap.sh`; derive managed-home paths from the checked-out `home/` filesystem tree instead of `git ls-files`.
+- Rationale: After removing submodule hydration, bootstrap no longer needs Git to apply an already-present checkout or source archive. Requiring Git just to symlink local files is unnecessary.
+- Consequences / follow-ups: `scripts/home_tree_manifest.sh` uses `git check-ignore` opportunistically when bootstrap runs inside a Git checkout, so `.gitignore` stays the source of truth for generated repo-local files such as `home/.vim/autoload/plug.vim.old`. If Git is unavailable or the files come from a source archive, bootstrap falls back to the checked-out `home/` filesystem tree. Local plugin clones under `~/.vim/plugged/` are outside the repo and do not need manifest pruning. `test/verify.sh` still requires Git for developer tooling that discovers tracked shell files, but it does not assert specific runtime dependencies are absent from bootstrap.
+
+## 2026-04-27 — Scope clipboard v1 to macOS and WSL
+- Decider: Anthony
+- Decision: Build clipboard unification around a small repo-owned text wrapper targeting macOS and WSL/Windows first. Defer Linux desktop providers and OSC 52 until there is a local test environment or a concrete v2 need.
+- Rationale: Clipboard behavior is platform- and terminal-sensitive. macOS and Ubuntu under WSL are the environments Anthony can test directly, so they are safer targets than blind support for X11, Wayland, or terminal escape-sequence clipboard paths.
+- Consequences / follow-ups: `dotfiles-clipboard copy|paste|status` is the shared integration point. macOS uses `pbcopy` / `pbpaste`; WSL should prefer a clean Windows clipboard bridge such as third-party `win32yank.exe` if installed, with Microsoft-provided PowerShell/Windows commands considered as fallback. OSC 52 remains a copy-only v2 idea, especially for SSH/tmux workflows.
+
 ## 2026-04-27 — Avoid git submodules by default
 - Decider: Anthony
 - Decision: Keep the repo free of git submodules unless a future dependency has a clear, explicit reason to reintroduce them.
@@ -113,9 +131,9 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-24 — Replace chezmoi with a repo-native home tree
 - Decider: Anthony
-- Decision: Remove chezmoi entirely. Keep `home/` as a literal `$HOME` mirror, use the tracked `home/` tree itself as the deployment manifest, and let `bootstrap.sh` compute managed directories/leaves directly from Git-tracked paths via `scripts/home_tree_manifest.sh`. Use real symlink nodes in the repo where needed: vendored helpers now live at paths such as `home/.config/bash/git-prompt.sh`, and the whole-directory Vim case is represented as `home/.vim` -> `../managed/vim`.
+- Decision: Remove chezmoi entirely. Keep `home/` as a literal `$HOME` mirror, use the `home/` tree itself as the deployment manifest, and let `bootstrap.sh` compute managed directories/leaves via `scripts/home_tree_manifest.sh`. Use real symlink nodes in the repo where needed.
 - Rationale: The repo already wanted live-update symlink semantics, and chezmoi’s source-state encoding (`dot_`, `private_`, `symlink_*.tmpl`, `.chezmoiroot`) had become more indirection than value. A literal home tree is easier to read, easier to reason about, and keeps the repo layout aligned with the deployed filesystem shape.
-- Consequences / follow-ups: `bootstrap.sh` now requires `git`, keeps a managed-path state file under `~/.local/state/dotfiles/managed-paths`, and uses that to clean up stale targets after deployment-shape changes. `test/verify.sh` now validates the repo-native managed-path list instead of chezmoi state. Prefer real symlink nodes and the `managed/` directory over reintroducing template-based target indirection unless a concrete new need appears.
+- Consequences / follow-ups: `bootstrap.sh` keeps a managed-path state file under `~/.local/state/dotfiles/managed-paths`, and uses that to clean up stale targets after deployment-shape changes. As of 2026-04-27, bootstrap no longer requires Git at runtime. `test/verify.sh` validates the repo-native managed-path list instead of chezmoi state. Prefer real symlink nodes over reintroducing template-based target indirection unless a concrete new need appears.
 
 ## 2026-04-23 — Default shell internals to XDG config/state paths
 - Decider: Anthony

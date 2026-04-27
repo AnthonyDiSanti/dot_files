@@ -5,4 +5,6 @@
 [ "${XDG_STATE_HOME:-}" = "$HOME/.local/state" ]
 [ "${dotfiles_config_home:-}" = "$HOME/.config" ]
 [ "${dotfiles_shell_config_home:-}" = "$HOME/.config/shell" ]
-command -v brew >/dev/null 2>&1 || { [ ! -x /opt/homebrew/bin/brew ] && [ ! -x /usr/local/bin/brew ]; }
+type dotfiles_have_command >/dev/null 2>&1
+type dotfiles_command_succeeds >/dev/null 2>&1
+dotfiles_have_command brew || { [ ! -x /opt/homebrew/bin/brew ] && [ ! -x /usr/local/bin/brew ]; }

@@ -46,7 +46,7 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 || fail "$1 is required"
+  dotfiles_have_command "$1" || fail "$1 is required"
 }
 
 make_temp_file() {

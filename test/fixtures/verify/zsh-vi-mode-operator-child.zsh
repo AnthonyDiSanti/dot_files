@@ -13,5 +13,17 @@ __dotfiles_verify_dump_buffer() {
   zle accept-line
 }
 
+__dotfiles_verify_load_clipboard_and_dump() {
+  emulate -L zsh
+
+  # Exercise the paste-time clipboard refresh without relying on terminal keys.
+  __dotfiles_zsh_load_clipboard_to_cutbuffer || true
+  __dotfiles_verify_dump_buffer
+}
+
 zle -N dotfiles-verify-dump-buffer __dotfiles_verify_dump_buffer
+zle -N dotfiles-verify-load-clipboard-and-dump __dotfiles_verify_load_clipboard_and_dump
 bindkey -M vicmd Q dotfiles-verify-dump-buffer
+bindkey -M main '^G' dotfiles-verify-load-clipboard-and-dump
+bindkey -M emacs '^G' dotfiles-verify-load-clipboard-and-dump
+bindkey -M viins '^G' dotfiles-verify-load-clipboard-and-dump
