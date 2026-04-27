@@ -1,0 +1,97 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+  cat <<'EOF'
+Usage: dotfiles-clipboard copy
+       dotfiles-clipboard paste
+       dotfiles-clipboard status
+
+Commands:
+  copy    Reads text from stdin and writes it to the platform clipboard.
+  paste   Writes platform clipboard text to stdout.
+  status  Prints the detected clipboard provider.
+EOF
+}
+
+die() {
+  printf 'dotfiles-clipboard: %s\n' "$*" >&2
+  exit 1
+}
+
+dotfiles_have_command() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+detect_provider() {
+  os="$(uname -s 2>/dev/null || printf unknown)"
+
+  # Start with macOS because it is the only provider currently wired and tested.
+  if [ "$os" = Darwin ] && dotfiles_have_command pbcopy && dotfiles_have_command pbpaste; then
+    printf '%s\n' macos
+    return 0
+  fi
+
+  return 1
+}
+
+require_provider() {
+  provider="$(detect_provider)" || die "no supported clipboard provider found"
+  printf '%s\n' "$provider"
+}
+
+copy_clipboard() {
+  provider="$(require_provider)"
+
+  case "$provider" in
+    macos)
+      pbcopy || die "pbcopy failed"
+      ;;
+    *)
+      die "unsupported provider: $provider"
+      ;;
+  esac
+}
+
+paste_clipboard() {
+  provider="$(require_provider)"
+
+  case "$provider" in
+    macos)
+      pbpaste || die "pbpaste failed"
+      ;;
+    *)
+      die "unsupported provider: $provider"
+      ;;
+  esac
+}
+
+status_clipboard() {
+  provider="$(detect_provider)" || die "no supported clipboard provider found"
+  printf '%s\n' "$provider"
+}
+
+if [ "$#" -ne 1 ]; then
+  usage >&2
+  exit 2
+fi
+
+case "$1" in
+  copy)
+    copy_clipboard
+    ;;
+  paste)
+    paste_clipboard
+    ;;
+  status)
+    status_clipboard
+    ;;
+  --help | -h)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

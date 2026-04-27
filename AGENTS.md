@@ -28,7 +28,7 @@ Maintenance:
 
 ## 1) Project overview
 - What this project is: Personal dotfiles and setup scripts for shell, Vim, tmux, Git, and agent configs, primarily on macOS.
-- Key user-facing behavior: `./bootstrap.sh` interprets the tracked `home/` tree as a literal `$HOME` mirror and symlinks managed targets into place; shell startup reads shared config from `~/.config/shell/` and shell-specific config from `~/.config/bash/` or `~/.config/zsh/`; `settings/*.sh` apply macOS defaults and Git config.
+- Key user-facing behavior: `./bootstrap.sh` interprets the checked-out `home/` tree as a literal `$HOME` mirror and symlinks managed targets into place without requiring Git at runtime; shell startup reads shared config from `~/.config/shell/` and shell-specific config from `~/.config/bash/` or `~/.config/zsh/`; `settings/*.sh` apply macOS defaults and Git config.
 - Non-goals / out of scope: Not a general-purpose app/library; not cross-platform; no CI/test harness; avoid ad-hoc edits inside vendored directories.
 - Definition of done: Dotfiles updated in the literal `home/` target-tree form, bootstrap/scripts run without errors on macOS, and `/.context` is kept current.
 
@@ -66,7 +66,7 @@ Maintenance:
 
 ## 4) Commands
 Setup:
-- Install deps: `git` (required for `bootstrap.sh`), `zsh`, `shellcheck`, and `shfmt` (required for `test/verify.sh`), Vim 8+ with `git` (for `:PlugInstall`), Python 3 linked to Vim if using vim-mundo (`:version` should show `+python3`).
+- Install deps: `zsh`, `shellcheck`, `shfmt`, and `git` (required for `test/verify.sh` and Vim `:PlugInstall`, but not for `bootstrap.sh` itself), Vim 8+ with Python 3 linked if using vim-mundo (`:version` should show `+python3`).
 - Env setup: `./bootstrap.sh` (POSIX `sh`; applies the repo-native symlink-backed home tree).
 
 Run:

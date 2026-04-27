@@ -30,7 +30,7 @@ __dotfiles_bash_load_completion_framework() {
 
   [[ -n ${BASH_COMPLETION_VERSINFO:-} ]] && return 0
 
-  if command -v brew >/dev/null 2>&1; then
+  if dotfiles_have_command brew; then
     for formula in bash-completion@2 bash-completion; do
       prefix=$(brew --prefix "$formula" 2>/dev/null) || continue
       for candidate in \
@@ -41,7 +41,7 @@ __dotfiles_bash_load_completion_framework() {
     done
   fi
 
-  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists bash-completion 2>/dev/null; then
+  if dotfiles_have_command pkg-config && pkg-config --exists bash-completion 2>/dev/null; then
     sysconfdir=$(pkg-config --variable=sysconfdir bash-completion 2>/dev/null)
     datadir=$(pkg-config --variable=datadir bash-completion 2>/dev/null)
     for candidate in \
@@ -68,7 +68,7 @@ __dotfiles_bash_load_completion_framework() {
 
 __dotfiles_bash_load_git_completion() {
   complete -p git >/dev/null 2>&1 && return 0
-  command -v git >/dev/null 2>&1 || return 0
+  dotfiles_have_command git || return 0
 
   local candidate
   while IFS= read -r candidate; do
@@ -84,7 +84,7 @@ __dotfiles_bash_load_generated_completion() {
   local generated_completion
   shift
 
-  command -v "$command_name" >/dev/null 2>&1 || return 0
+  dotfiles_have_command "$command_name" || return 0
   complete -p "$command_name" >/dev/null 2>&1 && return 0
   generated_completion="$("$@" 2>/dev/null)" || return 0
   [[ -n $generated_completion ]] || return 0
@@ -95,7 +95,7 @@ __dotfiles_bash_load_generated_completion() {
 __dotfiles_bash_configure_git_spice_alias_completion() {
   local git_spice_path
 
-  command -v git-spice >/dev/null 2>&1 || return 0
+  dotfiles_have_command git-spice || return 0
   [[ $(alias gs 2>/dev/null) == "alias gs='git-spice'" ]] || return 0
   complete -p gs >/dev/null 2>&1 && return 0
 
@@ -106,7 +106,7 @@ __dotfiles_bash_configure_git_spice_alias_completion() {
 __dotfiles_bash_load_fzf_shell_support() {
   local fzf_shell_support
 
-  command -v fzf >/dev/null 2>&1 || return 0
+  dotfiles_have_command fzf || return 0
   fzf_shell_support="$(fzf --bash 2>/dev/null)" || return 0
   [[ -n $fzf_shell_support ]] || return 0
   eval "$fzf_shell_support"

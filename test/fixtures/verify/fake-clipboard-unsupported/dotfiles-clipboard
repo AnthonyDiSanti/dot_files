@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case "${1:-}" in
+  copy | paste | status)
+    printf '%s\n' "fake clipboard provider unavailable" >&2
+    exit 1
+    ;;
+  *)
+    exit 2
+    ;;
+esac

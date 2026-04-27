@@ -37,6 +37,22 @@ unset history_fixture_actual history_fixture_dir history_fixture_expected histor
 (( ${+widgets[__dotfiles_zsh_set_cursor_for_keymap]} == 1 ))
 (( ${+widgets[__dotfiles_zsh_reset_cursor]} == 1 ))
 (( ${+widgets[select-entire-buffer]} == 1 ))
+[[ "${widgets[vi-yank]-}" == user:__dotfiles_zsh_vi_yank_clipboard ]]
+[[ "${widgets[vi-yank-whole-line]-}" == user:__dotfiles_zsh_vi_yank_whole_line_clipboard ]]
+[[ "${widgets[vi-yank-eol]-}" == user:__dotfiles_zsh_vi_yank_eol_clipboard ]]
+[[ "${widgets[vi-delete]-}" == user:__dotfiles_zsh_vi_delete_clipboard ]]
+[[ "${widgets[vi-change]-}" == user:__dotfiles_zsh_vi_change_clipboard ]]
+[[ "${widgets[vi-change-eol]-}" == user:__dotfiles_zsh_vi_change_eol_clipboard ]]
+[[ "${widgets[vi-change-whole-line]-}" == user:__dotfiles_zsh_vi_change_whole_line_clipboard ]]
+[[ "${widgets[vi-kill-eol]-}" == user:__dotfiles_zsh_vi_kill_eol_clipboard ]]
+[[ "${widgets[vi-substitute]-}" == user:__dotfiles_zsh_vi_substitute_clipboard ]]
+[[ "${widgets[vi-delete-char]-}" == user:__dotfiles_zsh_vi_delete_char_clipboard ]]
+[[ "${widgets[vi-backward-delete-char]-}" == user:__dotfiles_zsh_vi_backward_delete_char_clipboard ]]
+[[ "${widgets[vi-put-before]-}" == user:__dotfiles_zsh_vi_put_before_clipboard ]]
+[[ "${widgets[vi-put-after]-}" == user:__dotfiles_zsh_vi_put_after_clipboard ]]
+[[ "${widgets[put-replace-selection]-}" == user:__dotfiles_zsh_put_replace_selection_clipboard ]]
+(( ${+functions[dotfiles_have_command]} == 1 ))
+(( ${+functions[dotfiles_command_succeeds]} == 1 ))
 zstyle -a zle-line-init widgets zle_line_init_widgets
 zstyle -a zle-keymap-select widgets zle_keymap_select_widgets
 zstyle -a zle-line-finish widgets zle_line_finish_widgets
@@ -71,8 +87,7 @@ quoted_inner_single="i'"
 [[ "$(bindkey -M vicmd ds)" == *delete-surround ]]
 [[ "$(bindkey -M vicmd ys)" == *add-surround ]]
 [[ "$(bindkey -M visual S)" == *add-surround ]]
-if command -v fzf >/dev/null 2>&1 \
-  && fzf --zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds fzf --zsh; then
   [[ "$(bindkey -M viins '^R')" == *fzf-history-widget ]]
   [[ "$(bindkey -M emacs '\ec')" == *fzf-cd-widget ]]
   [[ "$(bindkey -M viins '\ec' 2>/dev/null || true)" != *fzf-cd-widget ]]
@@ -116,29 +131,23 @@ if zstyle -s ":completion:*:*:git:*" script git_completion_script; then
   [[ -r "$git_completion_script" ]]
 fi
 autoload +X _git
-if command -v codex >/dev/null 2>&1 \
-  && codex completion zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds codex completion zsh; then
   (( ${+_comps[codex]} == 1 )) || exit 1
 fi
-if command -v docker >/dev/null 2>&1 \
-  && docker completion zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds docker completion zsh; then
   (( ${+_comps[docker]} == 1 )) || exit 1
 fi
-if command -v gh >/dev/null 2>&1 \
-  && gh completion -s zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds gh completion -s zsh; then
   (( ${+_comps[gh]} == 1 )) || exit 1
 fi
-if command -v git-spice >/dev/null 2>&1 \
-  && git-spice shell completion zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds git-spice shell completion zsh; then
   (( ${+_comps[git-spice]} == 1 )) || exit 1
   [[ "${_comps[gs]-}" == "${_comps[git-spice]-}" ]] || exit 1
 fi
-if command -v kubectl >/dev/null 2>&1 \
-  && env KUBECONFIG=/dev/null kubectl completion zsh >/dev/null 2>&1; then
+if KUBECONFIG=/dev/null dotfiles_command_succeeds kubectl completion zsh; then
   (( ${+_comps[kubectl]} == 1 )) || exit 1
 fi
-if command -v fzf >/dev/null 2>&1 \
-  && fzf --zsh >/dev/null 2>&1; then
+if dotfiles_command_succeeds fzf --zsh; then
   (( ${+functions[fzf-file-widget]} == 1 )) || exit 1
   (( ${+functions[fzf-history-widget]} == 1 )) || exit 1
   (( ${+functions[fzf-completion]} == 1 )) || exit 1

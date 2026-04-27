@@ -2,14 +2,8 @@
 
 set -euo pipefail
 
-shfmt_bin="${SHFMT_BIN:-shfmt}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-
-if ! command -v "$shfmt_bin" >/dev/null 2>&1; then
-  echo "shfmt-dotfiles: shfmt not found" >&2
-  exit 127
-fi
 
 shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=(-i 2 -ci -bn)
@@ -23,6 +17,12 @@ if [[ ! -r "$shell_files_helper" ]]; then
   exit 1
 fi
 source "$shell_files_helper"
+
+shfmt_bin="${SHFMT_BIN:-shfmt}"
+if ! dotfiles_have_command "$shfmt_bin"; then
+  echo "shfmt-dotfiles: shfmt not found" >&2
+  exit 127
+fi
 
 usage() {
   cat <<'EOF'

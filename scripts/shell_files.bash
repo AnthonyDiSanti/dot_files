@@ -12,6 +12,11 @@ dotfiles_shell_file_abs_path() {
   esac
 }
 
+dotfiles_have_command() {
+  # Hide command resolution output while preserving command lookup status.
+  command -v "$1" >/dev/null 2>&1
+}
+
 dotfiles_shell_file_rel_path() {
   local repo_root="$1"
   local abs_path="$2"
@@ -40,8 +45,23 @@ dotfiles_shell_file_dialect() {
     test/fixtures/verify/fake-generated-completion-no-support/docker)
       printf 'sh\n'
       ;;
+    test/fixtures/verify/fake-clipboard-supported/dotfiles-clipboard)
+      printf 'sh\n'
+      ;;
+    test/fixtures/verify/fake-clipboard-unsupported/dotfiles-clipboard)
+      printf 'sh\n'
+      ;;
     home/.config/shell/*.sh)
       printf 'sh\n'
+      ;;
+    home/.local/bin/*)
+      first_line="$(sed -n '1p' "$file")"
+      case "$first_line" in
+        *bash*) printf 'bash\n' ;;
+        *zsh*) printf 'zsh\n' ;;
+        '#!'*) printf 'sh\n' ;;
+        *) return 1 ;;
+      esac
       ;;
     *.bash | home/.bash_profile | home/.bashrc)
       printf 'bash\n'

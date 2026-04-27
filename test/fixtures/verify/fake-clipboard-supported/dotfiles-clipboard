@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -eu
+
+: "${DOTFILES_FAKE_CLIPBOARD_FILE:?missing fake clipboard file path}"
+
+case "${1:-}" in
+  copy)
+    cat >"$DOTFILES_FAKE_CLIPBOARD_FILE"
+    ;;
+  paste)
+    [ -r "$DOTFILES_FAKE_CLIPBOARD_FILE" ] || exit 1
+    cat "$DOTFILES_FAKE_CLIPBOARD_FILE"
+    ;;
+  status)
+    printf '%s\n' fake
+    ;;
+  *)
+    exit 2
+    ;;
+esac

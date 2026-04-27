@@ -17,6 +17,8 @@ bind -m vi-command -q vi-edit-and-execute-command | grep -q 'vi-edit-and-execute
 bind -q history-search-backward | grep -q 'history-search-backward can be invoked'
 bind -q history-search-forward | grep -q 'history-search-forward can be invoked'
 bind -v | grep -q '^set completion-ignore-case on$'
+declare -F dotfiles_have_command >/dev/null 2>&1
+declare -F dotfiles_command_succeeds >/dev/null 2>&1
 if bind -v | grep -q '^set completion-map-case '; then
   bind -v | grep -q '^set completion-map-case on$'
 fi
@@ -31,29 +33,23 @@ fi
 
 declare -F __git_ps1 >/dev/null 2>&1
 complete -p git >/dev/null 2>&1
-if command -v codex >/dev/null 2>&1 \
-  && codex completion bash >/dev/null 2>&1; then
+if dotfiles_command_succeeds codex completion bash; then
   complete -p codex >/dev/null 2>&1 || exit 1
 fi
-if command -v docker >/dev/null 2>&1 \
-  && docker completion bash >/dev/null 2>&1; then
+if dotfiles_command_succeeds docker completion bash; then
   complete -p docker >/dev/null 2>&1 || exit 1
 fi
-if command -v gh >/dev/null 2>&1 \
-  && gh completion -s bash >/dev/null 2>&1; then
+if dotfiles_command_succeeds gh completion -s bash; then
   complete -p gh >/dev/null 2>&1 || exit 1
 fi
-if command -v git-spice >/dev/null 2>&1 \
-  && git-spice shell completion bash >/dev/null 2>&1; then
+if dotfiles_command_succeeds git-spice shell completion bash; then
   complete -p git-spice >/dev/null 2>&1 || exit 1
   complete -p gs >/dev/null 2>&1 || exit 1
 fi
-if command -v kubectl >/dev/null 2>&1 \
-  && env KUBECONFIG=/dev/null kubectl completion bash >/dev/null 2>&1; then
+if KUBECONFIG=/dev/null dotfiles_command_succeeds kubectl completion bash; then
   complete -p kubectl >/dev/null 2>&1 || exit 1
 fi
-if command -v fzf >/dev/null 2>&1 \
-  && fzf --bash >/dev/null 2>&1; then
+if dotfiles_command_succeeds fzf --bash; then
   declare -F fzf-file-widget >/dev/null 2>&1 || exit 1
   declare -F __fzf_history__ >/dev/null 2>&1 || exit 1
   complete -p fzf >/dev/null 2>&1 || exit 1
