@@ -75,9 +75,9 @@ __dotfiles_zsh_configure_line_editor() {
   zstyle ':completion:*' verbose yes
   zstyle ':completion:*' group-name ''
   zstyle ':completion:*' list-colors ''
-  zstyle ':completion:*:descriptions' format '%d'
-  zstyle ':completion:*:messages' format '%d'
-  zstyle ':completion:*:warnings' format 'no matches: %d'
+  zstyle ':completion:*:descriptions' format '%F{yellow}%d%f'
+  zstyle ':completion:*:messages' format '%F{cyan}%d%f'
+  zstyle ':completion:*:warnings' format '%F{red}no matches: %d%f'
   zstyle ':completion:*' list-dirs-first true
   zstyle ':completion:*' menu select=2
 }

@@ -3,7 +3,7 @@
 Task IDs are ULIDs; keep titles short and human-readable.
 
 ## Active
-- id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: active — last update: 2026-04-26 — note: POSIX baseline + bootstrap simplification checkpoint reached; zsh now has a native prompt/tool-support layer, fzf integration guarded by shell-generator capability, line-editor/history defaults, shared timestamp history policy, and a zsh/complist completion-presentation trial. The next slice is zsh vi-mode review, including `Esc` then `v` command-line editing.
+- id: 01KPNZ3YBAKB9N4ZJEXW4P2EHP — title: Migrate shell infrastructure to zsh — owner: Anthony/Codex — status: active — last update: 2026-04-26 — note: POSIX baseline + bootstrap simplification checkpoint reached; zsh now has a native prompt/tool-support layer, fzf integration guarded by shell-generator capability, line-editor/history defaults, shared timestamp history policy, and selected zsh/complist completion presentation. The next slice is zsh vi-mode review, including `Esc` then `v` command-line editing and menu-selection bindings.
 
 ## Paused / Blocked
 - id: 01KPZR91C2GZB5GKM9Z9GQP8EK — title: Evaluate selective Bash ergonomics from Oh My Bash — owner: Anthony/Codex — status: planned — last update: 2026-04-26 — note: Mostly complete: history defaults, timestamped history, Bash `checkwinsize`, system-first Bash/zsh tool support, fzf shell support, prefix history search, and case-/hyphen-insensitive completion matching have all been selected. Still consider small explicit directory navigation helpers as standalone follow-ups. Do not adopt Oh My Bash wholesale; zoxide and `HISTCONTROL=ignoredups` are explicitly declined.
