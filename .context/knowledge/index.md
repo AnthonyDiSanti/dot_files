@@ -18,7 +18,7 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 - [Oh My Bash comparison](oh-my-bash.md) — selective Bash ergonomics worth considering without adopting the framework.
 - [Clipboard integration](clipboard.md) — Vim/zsh/tmux clipboard plan and provider stance.
 - [Zsh vi mode](zsh-vi-mode.md) — native ZLE vi-mode widgets, text objects, surround, and plugin inspiration.
-- [Vim plugins (vim-plug)](vim.md) — submodule loader, `plugged/`, Solarized 8 / truecolor, Mundo/python3.
+- [Vim plugins (vim-plug)](vim.md) — tracked loader snapshot, local `plugged/`, Solarized 8 / truecolor, Mundo/python3.
 - [Solarized assets](solarized.md) — no vendored `settings/solarized`; where Vim vs other apps get colors.
 - [macOS defaults scripts](macos-defaults.md) — system UI defaults via `defaults`.
 - [macOS keybindings](macos-keybindings.md) — Cocoa text field navigation bindings.

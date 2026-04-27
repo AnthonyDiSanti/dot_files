@@ -172,13 +172,6 @@ if [ "$list_managed" -eq 1 ]; then
   exit 0
 fi
 
-# If this is a real git checkout, hydrate submodules before linking dotfiles.
-# Skip quietly for manually copied subsets where .git/.gitmodules are absent.
-if [ -r "$dotfiles_dir/.gitmodules" ] \
-  && git -C "$dotfiles_dir" rev-parse --show-toplevel >/dev/null 2>&1; then
-  git -C "$dotfiles_dir" submodule update --init --recursive
-fi
-
 current_manifest=$(make_temp_file)
 current_state=$(make_temp_file)
 stale_manifest=$(make_temp_file)
