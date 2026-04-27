@@ -52,6 +52,10 @@ __dotfiles_zsh_configure_line_editor() {
   zle -N up-line-or-beginning-search
   zle -N down-line-or-beginning-search
 
+  # Keep Ctrl-R useful when fzf integration is unavailable; fzf can override it later.
+  bindkey -M emacs '^R' history-incremental-search-backward
+  bindkey -M viins '^R' history-incremental-search-backward
+
   for key in '^[[A' '^[OA'; do
     bindkey -M emacs "$key" up-line-or-beginning-search
     bindkey -M viins "$key" up-line-or-beginning-search
