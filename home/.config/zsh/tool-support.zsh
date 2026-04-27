@@ -92,11 +92,13 @@ __dotfiles_zsh_configure_git_completion() {
 # Use command-provided generators only when no native zsh function is available.
 __dotfiles_zsh_load_generated_completion() {
   emulate -L zsh
-  local command_name="$1"
+  local command_name="$1" generated_completion
   shift
 
   command -v "$command_name" >/dev/null 2>&1 || return 0
-  eval -- "$("$@" 2>/dev/null)"
+  generated_completion="$("$@" 2>/dev/null)" || return 0
+  [[ -n $generated_completion ]] || return 0
+  eval "$generated_completion"
 }
 
 # Enable git-spice completion for the shared `gs` alias.
@@ -110,11 +112,14 @@ __dotfiles_zsh_configure_git_spice_alias_completion() {
 
 __dotfiles_zsh_load_fzf_shell_support() {
   emulate -L zsh
+  local fzf_shell_support
 
   command -v fzf >/dev/null 2>&1 || return 0
+  fzf_shell_support="$(fzf --zsh 2>/dev/null)" || return 0
+  [[ -n $fzf_shell_support ]] || return 0
   # fzf may try to restore zsh's immutable zle option; keep startup quiet while
   # passing through any other upstream integration errors.
-  eval "$(fzf --zsh)" 2> >(
+  eval "$fzf_shell_support" 2> >(
     while IFS= read -r line; do
       [[ "$line" == "(eval):1: can't change option: zle" ]] && continue
       print -r -- "$line" >&2

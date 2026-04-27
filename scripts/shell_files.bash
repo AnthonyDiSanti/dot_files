@@ -34,6 +34,12 @@ dotfiles_shell_file_dialect() {
     bootstrap.sh | home/.profile | home/.shrc | home/.local/bin/make-chrome-app)
       printf 'sh\n'
       ;;
+    test/fixtures/verify/fake-fzf-no-shell-support/fzf)
+      printf 'sh\n'
+      ;;
+    test/fixtures/verify/fake-generated-completion-no-support/docker)
+      printf 'sh\n'
+      ;;
     home/.config/shell/*.sh)
       printf 'sh\n'
       ;;

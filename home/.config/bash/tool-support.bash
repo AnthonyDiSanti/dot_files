@@ -81,11 +81,14 @@ __dotfiles_bash_load_git_completion() {
 # Use command-provided generators only for tools that lack reliable static snippets.
 __dotfiles_bash_load_generated_completion() {
   local command_name="$1"
+  local generated_completion
   shift
 
   command -v "$command_name" >/dev/null 2>&1 || return 0
   complete -p "$command_name" >/dev/null 2>&1 && return 0
-  eval -- "$("$@" 2>/dev/null)"
+  generated_completion="$("$@" 2>/dev/null)" || return 0
+  [[ -n $generated_completion ]] || return 0
+  eval "$generated_completion"
 }
 
 # Enable git-spice completion for the shared `gs` alias.
@@ -101,8 +104,12 @@ __dotfiles_bash_configure_git_spice_alias_completion() {
 }
 
 __dotfiles_bash_load_fzf_shell_support() {
+  local fzf_shell_support
+
   command -v fzf >/dev/null 2>&1 || return 0
-  eval "$(fzf --bash)"
+  fzf_shell_support="$(fzf --bash 2>/dev/null)" || return 0
+  [[ -n $fzf_shell_support ]] || return 0
+  eval "$fzf_shell_support"
 }
 
 # Some snippets rely on bash-completion helper functions; avoid broad direct sourcing.
