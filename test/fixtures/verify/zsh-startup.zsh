@@ -154,7 +154,6 @@ _git >/dev/null 2>"$git_completion_error" || true
 ! grep -q "no such file or directory\\|command not found: __git_aliased_command" "$git_completion_error"
 rm -f "$git_completion_error"
 
-command -v make-chrome-app >/dev/null
 count=0
 for fn in $precmd_functions; do
   [[ $fn == __dotfiles_zsh_precmd ]] && (( count += 1 ))

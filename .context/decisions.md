@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-27 — Remove make-chrome-app completely
+- Decider: Anthony
+- Decision: Remove the `lib/make-chrome-app` submodule and the managed `~/.local/bin/make-chrome-app` command.
+- Rationale: The command had not been used in years, the upstream gist/submodule has been stale since 2015, and Chrome now has built-in desktop web-app/PWA install and management flows for the normal wrapper use case. The live command had already diverged into a tiny local fork, so the submodule no longer provided meaningful update value.
+- Consequences / follow-ups: `tiff2icns` is no longer a dotfiles dependency, startup verification should not expect `make-chrome-app`, and the next submodule discussion is specifically about keeping vim-plug functionality while deciding whether `lib/vim-plug` should remain a submodule.
+
 ## 2026-04-27 — Split clipboard/register unification from core vi mode
 - Decider: Anthony
 - Decision: Treat the non-clipboard Bash/zsh vi-mode work as complete on `feature/vimode`, and handle clipboard/register unification on a follow-up branch.
