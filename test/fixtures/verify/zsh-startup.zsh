@@ -43,11 +43,11 @@ zstyle -s ':completion:*' group-name completion_group_name
 zstyle -s ':completion:*' list-colors completion_list_colors
 [[ -z "$completion_list_colors" ]]
 zstyle -s ':completion:*:descriptions' format completion_descriptions_format
-[[ "$completion_descriptions_format" == '%d' ]]
+[[ "$completion_descriptions_format" == '%F{yellow}%d%f' ]]
 zstyle -s ':completion:*:messages' format completion_messages_format
-[[ "$completion_messages_format" == '%d' ]]
+[[ "$completion_messages_format" == '%F{cyan}%d%f' ]]
 zstyle -s ':completion:*:warnings' format completion_warnings_format
-[[ "$completion_warnings_format" == 'no matches: %d' ]]
+[[ "$completion_warnings_format" == '%F{red}no matches: %d%f' ]]
 zstyle -t ':completion:*' list-dirs-first
 zstyle -a ':completion:*' menu completion_menu
 (( ${completion_menu[(Ie)select=2]} > 0 ))
