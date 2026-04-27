@@ -1,8 +1,6 @@
-# netrw's history file (vim plugin)
-/managed/vim/.netrwhist
-
 # vim-plug installs plugins here (not committed)
-/managed/vim/plugged/
+/home/.vim/autoload/plug.vim.old
+/home/.vim/plugged/
 
 # Agents
 AGENTS.local.md

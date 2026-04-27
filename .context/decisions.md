@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-27 — Avoid git submodules by default
+- Decider: Anthony
+- Decision: Keep the repo free of git submodules unless a future dependency has a clear, explicit reason to reintroduce them.
+- Rationale: The remaining submodules were either obsolete (`make-chrome-app`) or better represented by a small tracked artifact (`vim-plug`). Removing submodules simplifies clone/bootstrap behavior and avoids stale pointer management.
+- Consequences / follow-ups: Prefer app-native integrations, system-installed tools, small tracked snapshots, or simple repo-owned scripts before considering a submodule. The clipboard follow-up should preserve this bias and avoid submodule-backed dependencies.
+
+## 2026-04-27 — Track vim-plug as a single loader snapshot
+- Decider: Anthony
+- Decision: Remove the `lib/vim-plug` submodule and track `home/.vim/autoload/plug.vim` as a normal repo file.
+- Rationale: The repo needs vim-plug as a plugin manager, but not as a submodule. A single tracked loader file keeps bootstrap deterministic and simple, and `:PlugUpgrade` can update that file in place through the managed symlink so upgrades flow naturally into the repo.
+- Consequences / follow-ups: The repo no longer has git submodules, and `bootstrap.sh` no longer hydrates submodules. `:PlugInstall` / `:PlugUpdate` still manage plugin clones under local `~/.vim/plugged/`; `:PlugUpgrade` may leave `plug.vim.old`, which is ignored.
+
+## 2026-04-27 — Reify the local Vim directory
+- Decider: Anthony
+- Decision: Stop exposing the whole Vim runtime directory as a repo-managed symlink. Keep `~/.vim` as a real local directory and symlink only repo-owned files inside it, starting with `~/.vim/autoload/plug.vim`.
+- Rationale: Plugin clones under `~/.vim/plugged/` are generated state owned by vim-plug, not dotfile source. Managing the whole `.vim` directory forced the otherwise-unused `managed/` layer and placed local plugin clones under the repo checkout.
+- Consequences / follow-ups: Existing plugin clones should be moved from the old ignored `managed/vim/plugged/` location into local `~/.vim/plugged/` during the live bootstrap transition.
+
 ## 2026-04-27 — Remove make-chrome-app completely
 - Decider: Anthony
 - Decision: Remove the `lib/make-chrome-app` submodule and the managed `~/.local/bin/make-chrome-app` command.

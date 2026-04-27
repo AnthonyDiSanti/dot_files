@@ -9,6 +9,7 @@ When to consult: changing Vim clipboard settings, zsh ZLE yank/paste widgets, tm
 - Smaller zsh delete/change sync from `d` / `c` motions is optional final polish only after explicit yanks and paste-time refresh work. Do not copy every delete/change by default without an explicit decision.
 - tmux copy-mode `y` should ideally copy the selection into both the tmux paste buffer and the system clipboard.
 - Prefer app-native clipboard options where they cover the use case. Add a small internal provider only if needed for shared macOS plus Ubuntu-under-WSL behavior.
+- Avoid submodule-backed clipboard dependencies; prefer built-in app options, system clipboard commands, or small repo-owned helpers.
 
 ## Provider stance
 - macOS provider: `pbcopy` / `pbpaste`.
