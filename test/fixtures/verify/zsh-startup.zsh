@@ -25,11 +25,58 @@ diff -u "$history_fixture_expected" "$history_fixture_actual"
 fc -P
 rm -f "$history_fixture_file" "$history_fixture_actual"
 unset history_fixture_actual history_fixture_dir history_fixture_expected history_fixture_file history_fixture_input
+(( ${+widgets[edit-command-line]} == 1 ))
+(( ${+widgets[history-beginning-search-menu]} == 1 ))
+(( ${+widgets[up-line-or-beginning-search]} == 1 ))
+(( ${+widgets[down-line-or-beginning-search]} == 1 ))
+(( ${+widgets[select-bracketed]} == 1 ))
+(( ${+widgets[select-quoted]} == 1 ))
+(( ${+widgets[add-surround]} == 1 ))
+(( ${+widgets[change-surround]} == 1 ))
+(( ${+widgets[delete-surround]} == 1 ))
+(( ${+widgets[__dotfiles_zsh_set_cursor_for_keymap]} == 1 ))
+(( ${+widgets[__dotfiles_zsh_reset_cursor]} == 1 ))
+(( ${+widgets[select-entire-buffer]} == 1 ))
+zstyle -a zle-line-init widgets zle_line_init_widgets
+zstyle -a zle-keymap-select widgets zle_keymap_select_widgets
+zstyle -a zle-line-finish widgets zle_line_finish_widgets
+quoted_outer_double=$'a"'
+quoted_inner_double=$'i"'
+quoted_outer_single="a'"
+quoted_inner_single="i'"
+(( ${zle_line_init_widgets[(I)*:__dotfiles_zsh_set_cursor_for_keymap]} > 0 ))
+(( ${zle_keymap_select_widgets[(I)*:__dotfiles_zsh_set_cursor_for_keymap]} > 0 ))
+(( ${zle_line_finish_widgets[(I)*:__dotfiles_zsh_reset_cursor]} > 0 ))
+[[ "$(bindkey -M viins '^E')" == *edit-command-line ]]
+[[ "$(bindkey -M vicmd '^E')" == *edit-command-line ]]
 [[ "$(bindkey -M emacs '^[[A')" == *up-line-or-beginning-search ]]
 [[ "$(bindkey -M emacs '^[[B')" == *down-line-or-beginning-search ]]
+[[ "$(bindkey -M menuselect h)" == *vi-backward-char ]]
+[[ "$(bindkey -M menuselect j)" == *vi-down-line-or-history ]]
+[[ "$(bindkey -M menuselect k)" == *vi-up-line-or-history ]]
+[[ "$(bindkey -M menuselect l)" == *vi-forward-char ]]
+[[ "$(bindkey -M viopp ae)" == *select-entire-buffer ]]
+[[ "$(bindkey -M viopp "$quoted_outer_double")" == *select-quoted ]]
+[[ "$(bindkey -M viopp "$quoted_outer_single")" == *select-quoted ]]
+[[ "$(bindkey -M viopp 'a`')" == *select-quoted ]]
+[[ "$(bindkey -M viopp 'a(')" == *select-bracketed ]]
+[[ "$(bindkey -M viopp 'ab')" == *select-bracketed ]]
+[[ "$(bindkey -M visual "$quoted_inner_double")" == *select-quoted ]]
+[[ "$(bindkey -M visual ae)" == *select-entire-buffer ]]
+[[ "$(bindkey -M visual "$quoted_inner_single")" == *select-quoted ]]
+[[ "$(bindkey -M visual 'i`')" == *select-quoted ]]
+[[ "$(bindkey -M visual 'i[')" == *select-bracketed ]]
+[[ "$(bindkey -M visual 'iB')" == *select-bracketed ]]
+[[ "$(bindkey -M vicmd cs)" == *change-surround ]]
+[[ "$(bindkey -M vicmd ds)" == *delete-surround ]]
+[[ "$(bindkey -M vicmd ys)" == *add-surround ]]
+[[ "$(bindkey -M visual S)" == *add-surround ]]
 if command -v fzf >/dev/null 2>&1 \
   && fzf --zsh >/dev/null 2>&1; then
   [[ "$(bindkey -M viins '^R')" == *fzf-history-widget ]]
+  [[ "$(bindkey -M emacs '\ec')" == *fzf-cd-widget ]]
+  [[ "$(bindkey -M viins '\ec' 2>/dev/null || true)" != *fzf-cd-widget ]]
+  [[ "$(bindkey -M vicmd '\ec' 2>/dev/null || true)" != *fzf-cd-widget ]]
 else
   [[ "$(bindkey -M viins '^R')" == *history-incremental-search-backward ]]
 fi
@@ -53,6 +100,8 @@ zstyle -a ':completion:*' menu completion_menu
 (( ${completion_menu[(Ie)select=2]} > 0 ))
 unset completion_descriptions_format completion_group_name completion_list_colors completion_matcher completion_matchers
 unset completion_menu completion_messages_format completion_warnings_format
+unset quoted_inner_double quoted_inner_single quoted_outer_double quoted_outer_single
+unset zle_keymap_select_widgets zle_line_finish_widgets zle_line_init_widgets
 
 if [[ -x /opt/homebrew/bin/brew ]]; then
   [[ "$(command -v brew 2>/dev/null)" == "/opt/homebrew/bin/brew" ]]

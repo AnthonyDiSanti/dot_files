@@ -12,6 +12,8 @@
 [[ "${HISTFILESIZE:-}" == 50000 ]]
 [[ "${HISTTIMEFORMAT:-}" == "%F %T " ]]
 shopt -q checkwinsize histappend cmdhist lithist
+bind -m vi-insert -q edit-and-execute-command | grep -q 'edit-and-execute-command can be invoked via "\\C-e"'
+bind -m vi-command -q vi-edit-and-execute-command | grep -q 'vi-edit-and-execute-command can be invoked via "\\C-e"'
 bind -q history-search-backward | grep -q 'history-search-backward can be invoked'
 bind -q history-search-forward | grep -q 'history-search-forward can be invoked'
 bind -v | grep -q '^set completion-ignore-case on$'

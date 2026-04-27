@@ -35,6 +35,10 @@ shopt -s histappend cmdhist lithist
 shopt -s checkwinsize
 
 __dotfiles_bash_configure_line_editor() {
+  # Open the current command in $EDITOR from vi insert or command mode.
+  bind -m vi-insert '"\C-e": edit-and-execute-command'
+  bind -m vi-command '"\C-e": vi-edit-and-execute-command'
+
   # Search history by the typed prefix when pressing Up/Down.
   bind '"\e[A": history-search-backward'
   bind '"\eOA": history-search-backward'

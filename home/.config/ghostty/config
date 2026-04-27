@@ -39,3 +39,6 @@ palette = 15=#fdf6e3
 
 # Blend the macOS title bar with base03 instead of a separate system chrome color.
 macos-titlebar-style = transparent
+
+# Preserve the traditional vi/readline chord: Ctrl-[ sends the same byte as Escape.
+keybind = ctrl+bracket_left=text:\x1b
