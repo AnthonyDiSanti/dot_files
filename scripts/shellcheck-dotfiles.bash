@@ -3,13 +3,14 @@
 set -euo pipefail
 
 shellcheck_bin="${SHELLCHECK_BIN:-shellcheck}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
 
 if ! command -v "$shellcheck_bin" >/dev/null 2>&1; then
   echo "shellcheck-dotfiles: shellcheck not found" >&2
   exit 127
 fi
 
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=()
 files=()

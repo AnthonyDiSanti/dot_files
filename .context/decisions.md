@@ -3,6 +3,36 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-27 — Split clipboard/register unification from core vi mode
+- Decider: Anthony
+- Decision: Treat the non-clipboard Bash/zsh vi-mode work as complete on `feature/vimode`, and handle clipboard/register unification on a follow-up branch.
+- Rationale: Core vi mode now covers editor handoff, zsh cursor feedback, menu `hjkl`, text objects, whole-buffer `ae`, surround, and fzf keymap conflict handling. Clipboard behavior has different risk because deletes, yanks, Vim's anonymous register, zsh's `CUTBUFFER`, and the system clipboard can surprise users if synchronized too broadly.
+- Consequences / follow-ups: The clipboard branch should first design the desired register model across Vim and zsh prompt yanks. Prefer linking explicit yanks to the anonymous/system clipboard path if feasible, and avoid automatically copying every delete/change unless Anthony explicitly opts in.
+
+## 2026-04-27 — Keep fzf Alt-C out of zsh vi keymaps
+- Decider: Codex (model: gpt-5.2-codex)
+- Decision: After loading `fzf --zsh`, remove its `Alt-C` (`Esc-c`) binding from zsh `viins` and `vicmd` keymaps while leaving the emacs binding intact.
+- Rationale: In zsh vi mode, `Esc` followed by `c` is the normal path into change operators such as `caw` and `cae`. fzf encodes `Alt-C` as the same `Esc-c` sequence, which can steal those operator flows.
+- Consequences / follow-ups: `Ctrl-R` and fzf file selection remain available. Revisit a different vi-mode-safe binding for `fzf-cd-widget` only if the directory picker becomes important.
+
+## 2026-04-27 — Extend zsh vi mode with native ZLE helpers
+- Decider: Anthony
+- Decision: Keep Bash vi mode conservative, and invest deeper vi-mode behavior in zsh using native ZLE helpers: cursor shape hooks for insert vs command/visual/operator-pending modes, `hjkl` in `zsh/complist` menu selection, quote/bracket text objects through `select-quoted` and `select-bracketed`, an `ae` text object for the entire edit buffer, and zsh's shipped `surround` helper with `cs`/`ds`/`ys`/visual `S` bindings.
+- Rationale: zsh ships a richer ZLE widget ecosystem than Bash/Readline and can support Vim-like editing without adopting a large plugin framework. Cursor indication and menu `hjkl` improve daily feedback/navigation, while quote/bracket objects and surround align with familiar Vim operator workflows.
+- Consequences / follow-ups: Clipboard integration stays a separate decision because automatic system clipboard synchronization can be surprising. `select-word-match` remains unbound for now because zsh already provides default `aw`/`iw`/`aW`/`iW`/`aa`/`ia` text objects; revisit only if custom word-style text objects become useful.
+
+## 2026-04-26 — Use Ctrl-E for command-line editor handoff
+- Decider: Anthony
+- Decision: Bind `Ctrl-E` in Bash and zsh vi insert/command keymaps to open the current command line in `$EDITOR` (`edit-and-execute-command` / `vi-edit-and-execute-command` in Bash, `edit-command-line` in zsh).
+- Rationale: zsh's default `Esc` then `v` enters visual mode and should remain intact; a dedicated `Ctrl-E` chord gives both shells a consistent editor handoff without overriding zsh visual mode.
+- Consequences / follow-ups: Bash's native command editor runs the edited command after the editor exits. zsh's `edit-command-line` keeps zsh's native behavior. Revisit only if `Ctrl-E` becomes important for a different vi-mode workflow.
+
+## 2026-04-26 — Preserve legacy Ctrl-[ behavior in Ghostty
+- Decider: Anthony
+- Decision: Configure Ghostty so `Ctrl-[` sends a literal Escape byte (`0x1b`) instead of Ghostty's CSI-u/fixterms-style modified-key sequence. Keep this in the managed Ghostty config with `keybind = ctrl+bracket_left=text:\x1b`.
+- Rationale: `Ctrl-[` as Escape is core vi/readline muscle memory. Ghostty's richer modified-key encoding is useful for programs that opt into it, but zsh/ZLE treats byte sequences directly and does not provide a general CSI-u/fixterms compatibility layer. Terminal-side legacy behavior is simpler and applies consistently to shells and TUIs.
+- Consequences / follow-ups: Reload or restart Ghostty after pulling this change. If a future Ghostty version adds an easy global legacy-compatibility option, prefer that over individual key remaps.
+
 ## 2026-04-26 — Timestamp shell history and keep Bash window size current
 - Decider: Anthony
 - Decision: Set Bash `HISTTIMEFORMAT='%F %T '` so `history` shows `YYYY-MM-DD HH:MM:SS` timestamps and newly written Bash history entries preserve timestamps. Enable zsh `EXTENDED_HISTORY` so zsh history stores timestamps and elapsed command duration, and wrap zsh `history` around `fc -l -D -t '%F %T'` so plain `history` displays the timestamp plus elapsed duration. Since zsh stores whole seconds, show `0` seconds as `<1s`, `1`-`9` seconds as `Ns`, and keep zsh's native `M:SS` display for 10 seconds and above. Also set Bash `checkwinsize` so Readline gets fresh terminal dimensions after resizes. Keep `HISTCONTROL` unset, including no `ignoredups`.

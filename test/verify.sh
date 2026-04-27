@@ -129,6 +129,12 @@ check_shell_format() {
   "$repo_root/scripts/shfmt-dotfiles.bash" --all --check
 }
 
+check_dev_tool_wrappers() {
+  log_check "dev tool wrappers"
+  # VS Code probes ShellCheck with -V and may not use the workspace as cwd.
+  (cd / && "$repo_root/scripts/shellcheck-dotfiles.bash" -V >/dev/null)
+}
+
 check_managed_targets() {
   local expected
   local actual
@@ -231,6 +237,21 @@ assert_zsh_startup() {
 
 assert_zsh_rerunnable() {
   run_zsh_fixture zsh-rerunnable.zsh "$@"
+}
+
+check_zsh_vi_mode_operators() {
+  local tmp_home
+
+  log_check "zsh vi-mode operator smoke test"
+  tmp_home="$(make_temp_dir)"
+
+  HOME="$tmp_home" \
+    XDG_CONFIG_HOME="$tmp_home/.config" \
+    XDG_STATE_HOME="$tmp_home/.local/state" \
+    XDG_CACHE_HOME="$tmp_home/.cache" \
+    "$repo_root/bootstrap.sh" >/dev/null
+
+  zsh "$fixture_root/zsh-vi-mode-operators.zsh" "$tmp_home"
 }
 
 assert_unsupported_fzf_shell_generators_are_quiet() {
@@ -422,10 +443,12 @@ check_linting_suite() {
 
 check_functionality_suite() {
   log_suite "functionality"
+  check_dev_tool_wrappers
   check_managed_targets
   check_temp_apply
   check_live_home_converged
   check_shell_startup
+  check_zsh_vi_mode_operators
 }
 
 main() {

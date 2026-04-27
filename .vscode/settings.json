@@ -28,5 +28,8 @@
     "**/*.zsh-theme": false
   },
   "shellcheck.executablePath": "${workspaceFolder}/scripts/shellcheck-dotfiles.bash",
-  "shellcheck.useWorkspaceRootAsCwd": true
+  "shellcheck.useWorkspaceRootAsCwd": true,
+  "files.associations": {
+    "**/ghostty/config": "properties"
+  }
 }

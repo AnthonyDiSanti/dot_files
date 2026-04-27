@@ -125,6 +125,9 @@ __dotfiles_zsh_load_fzf_shell_support() {
       print -r -- "$line" >&2
     done
   )
+  # fzf's Alt-C is encoded as Esc-c, which steals vi `c` operators after Esc.
+  bindkey -M viins -r '\ec' 2>/dev/null || true
+  bindkey -M vicmd -r '\ec' 2>/dev/null || true
 }
 
 __dotfiles_zsh_init_tool_support() {

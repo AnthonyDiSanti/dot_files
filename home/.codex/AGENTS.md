@@ -137,6 +137,7 @@ When you consult external/internal docs and find something repeatedly useful or 
 - Omit routine supporting-maintenance bullets from commit messages when they only align with code or behavior changes; docs/context updates and test updates are assumed. Mention them explicitly only when they are the primary change or the main user-facing value.
 - If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.
 - Do not stage, commit, or amend normal follow-up edits unless explicitly asked. Exception: when the user asks you to perform a Git operation that inherently requires staging, such as resolving rebase or merge conflicts, you may stage/commit only the files needed to complete that requested operation.
+- Do not unstage files unless explicitly asked. The user may stage files while reviewing your work; treat staged state as intentional and leave index management to the user.
 
 ## Communication cadence
 - Default: one plan up front, one final summary.

@@ -3,13 +3,14 @@
 set -euo pipefail
 
 shfmt_bin="${SHFMT_BIN:-shfmt}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
 
 if ! command -v "$shfmt_bin" >/dev/null 2>&1; then
   echo "shfmt-dotfiles: shfmt not found" >&2
   exit 127
 fi
 
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=(-i 2 -ci -bn)
 files=()
