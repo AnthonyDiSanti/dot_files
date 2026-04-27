@@ -7,26 +7,30 @@
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. After `feature/vimode` is committed and merged, start the clipboard/register branch. Design Vim anonymous-register behavior and zsh prompt yank behavior together before wiring system clipboard sync.
-2. Treat the OMB/OMZ inspiration pass as mostly complete; remaining shell items should be explicit standalone workstreams such as small directory helpers.
-3. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
-4. Continue planned reviews of `settings/`, remaining submodules / `~/.local/bin` utilities, tmux, and optional Neovim evaluation as separate workstreams in `.context/tasks.md`.
+1. Commit the `make-chrome-app` removal, then discuss `vim-plug` separately. Keep vim-plug functionality; the open question is submodule vs baseline snapshot/self-update vs bootstrap-managed clone.
+2. After vim-plug review, return to clipboard/register unification: Vim anonymous-register behavior appears correct; zsh should start with explicit yanks syncing to clipboard and paste-time clipboard refresh into `CUTBUFFER`; tmux copy-mode `y` should copy to both tmux buffer and system clipboard. Smaller zsh `d`/`c` sync is optional final polish only.
+3. Treat the OMB/OMZ inspiration pass as mostly complete; remaining shell items should be explicit standalone workstreams such as small directory helpers.
+4. Write a fuller repo documentation pass once the bootstrap, shell, and editor setup have a more permanent shape.
+5. Continue planned reviews of `settings/`, remaining submodules / `~/.local/bin` utilities, tmux, and optional Neovim evaluation as separate workstreams in `.context/tasks.md`.
 
 Reminder: if another already-bootstrapped machine has host-local rc overrides named `.sh_local`, `.bash_local`, or `.zsh_local`, rename them to `.shrc_local`, `.bashrc_local`, or `.zshrc_local` after pulling this commit.
 
 ## Active Tasks
-- `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; non-clipboard vi mode is ready to commit/merge, and the next planned slice is clipboard/register unification.
+- `01KPR9WB7K84CJXMSM8HD9VQRX` — submodule/CLI utility review is active on `feature/submodules-removal`; `make-chrome-app` has been removed, and `vim-plug` is next after committing.
+- `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; non-clipboard vi mode is merged, and clipboard/register unification is deferred until after submodule review.
 
 ## Working Tree
-- Current branch: `feature/vimode`; uncommitted changes extend zsh vi mode, add Bash/zsh `Ctrl-E` editor handoff, restore Ghostty `Ctrl-[`, fix dev-tool wrapper cwd handling, assert startup behavior, protect vi `c` operators from fzf `Alt-C`, tune VS Code ShellCheck paths, and update `.context` notes.
-- Last successful verification: `test/verify.sh` passed after fixing whole-buffer `ae` operator behavior and adding a pty-backed zsh vi-mode smoke test for `dae`, `yae`, and `cae`. Fake unsupported `fzf` and `docker` fixtures still cover the special fzf path and generic generated-completion path.
+- Current branch: `feature/submodules-removal`; uncommitted changes remove `make-chrome-app` and preserve the deferred clipboard plan notes.
+- Last successful verification: `test/verify.sh` passed on the prior vi-mode branch after fixing whole-buffer `ae` operator behavior and adding a pty-backed zsh vi-mode smoke test for `dae`, `yae`, and `cae`. Run the full gate again after submodule changes.
 
 ## Quick Verify
 - Fast checks: `bash -n` on edited Bash scripts, `sh -n` for POSIX scripts, `scripts/shellcheck-dotfiles.bash path/to/file`, and `scripts/shfmt-dotfiles.bash --check path/to/file` for modified shell files; `./bootstrap.sh --dry-run --verbose` for dotfile target-state review.
 - Full gate: `test/verify.sh`; it requires `shellcheck` and `shfmt`, then reports checks under static-analysis, linting, and functionality suite headers. It runs `scripts/shfmt-dotfiles.bash --all --check` and `scripts/shellcheck-dotfiles.bash --all` before managed-target and startup checks. Multi-line startup probes live under `test/fixtures/verify/`. Add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-04-27 — **make-chrome-app removed:** the stale `lib/make-chrome-app` submodule and managed `~/.local/bin/make-chrome-app` command were removed. Chrome's current web-app/PWA install flow covers the normal use case; `vim-plug` remains for separate discussion.
 - 2026-04-27 — **Zsh `ae` operators fixed:** the custom whole-buffer text object now follows zsh's text-object endpoint pattern so `dae`, `yae`, `cae`, and `vae` work, and fzf's `Alt-C` binding is removed from zsh vi keymaps so `Esc` then `c...` operators are not stolen. Verification now includes a pty-backed zsh vi operator fixture.
+- 2026-04-27 — **Clipboard plan captured:** Vim anonymous-register behavior appears good. Future clipboard work should start with zsh explicit yanks syncing `CUTBUFFER` to clipboard, zsh paste-time clipboard refresh into `CUTBUFFER`, and tmux copy-mode `y` copying to both tmux buffer and system clipboard. Smaller zsh delete/change sync can be considered only after that works.
 - 2026-04-27 — **Core vi mode wrapped:** Anthony confirmed the non-clipboard vi-mode behavior works well. Clipboard/register unification is intentionally split to the next branch so Vim anonymous-register behavior and zsh `CUTBUFFER`/yank behavior can be designed together.
 - 2026-04-27 — **Zsh vi-mode helpers extended:** zsh now uses cursor-shape hooks for mode feedback, `hjkl` inside `zsh/complist` menu selection, whole-buffer `ae`, quote/bracket text objects via `select-quoted` / `select-bracketed`, and zsh's shipped `surround` helper with `cs`/`ds`/`ys`/visual `S`.
 - 2026-04-26 — **Ctrl-E editor handoff added:** Bash vi insert/command maps now bind `Ctrl-E` to Readline's command editor, and zsh vi insert/command maps bind `Ctrl-E` to `edit-command-line`, leaving zsh `Esc` then `v` visual mode intact.

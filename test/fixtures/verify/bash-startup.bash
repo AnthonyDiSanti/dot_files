@@ -29,7 +29,6 @@ elif [[ -x /usr/local/bin/brew ]]; then
   [[ "${HOMEBREW_PREFIX:-}" == "/usr/local" ]]
 fi
 
-command -v make-chrome-app >/dev/null
 declare -F __git_ps1 >/dev/null 2>&1
 complete -p git >/dev/null 2>&1
 if command -v codex >/dev/null 2>&1 \

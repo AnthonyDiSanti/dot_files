@@ -17,7 +17,6 @@
 - Line-editor policy: Bash uses Readline bindings/settings directly in `rc.bash`; zsh uses native ZLE widgets and completion matcher/presentation styles in `rc.zsh`. Both bind Up/Down to typed-prefix history search and use case-/hyphen-insensitive completion matching where native support exists. Zsh binds `Ctrl-R` in insert mode to native reverse incremental history search before fzf can optionally replace it, and also loads `zsh/complist` with `menu select=2` so ambiguous completions can be selected from a menu.
 - History policy: Bash uses `HISTTIMEFORMAT='%F %T '` for `YYYY-MM-DD HH:MM:SS` history output and timestamp storage for newly written entries. Zsh uses `EXTENDED_HISTORY` for timestamp/duration storage and wraps `history` around `fc -l -D -t '%F %T'` for timestamp plus elapsed-duration display: `<1s`, `1s`-`9s`, then native `M:SS` for 10 seconds and above. `HISTCONTROL` stays unset by default.
 - Prompt/interactive boundary: keep shared policy/helpers in `shell/`, but keep shell-native prompt, completion, and hook internals in `bash/` and `zsh/` rather than building a shared abstraction over them.
-- User tools: `make-chrome-app` lives in `~/.local/bin/`.
 
 ## Gotchas
 

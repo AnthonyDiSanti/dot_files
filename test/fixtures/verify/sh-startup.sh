@@ -6,4 +6,3 @@
 [ "${dotfiles_config_home:-}" = "$HOME/.config" ]
 [ "${dotfiles_shell_config_home:-}" = "$HOME/.config/shell" ]
 command -v brew >/dev/null 2>&1 || { [ ! -x /opt/homebrew/bin/brew ] && [ ! -x /usr/local/bin/brew ]; }
-command -v make-chrome-app >/dev/null 2>&1

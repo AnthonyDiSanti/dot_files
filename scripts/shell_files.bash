@@ -31,7 +31,7 @@ dotfiles_shell_file_dialect() {
     home/.zprofile | home/.zshrc | home/.config/zsh/*.zsh | test/fixtures/verify/*.zsh | *.zsh)
       printf 'zsh\n'
       ;;
-    bootstrap.sh | home/.profile | home/.shrc | home/.local/bin/make-chrome-app)
+    bootstrap.sh | home/.profile | home/.shrc)
       printf 'sh\n'
       ;;
     test/fixtures/verify/fake-fzf-no-shell-support/fzf)
