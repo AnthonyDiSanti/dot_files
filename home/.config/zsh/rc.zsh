@@ -66,6 +66,16 @@ __dotfiles_zsh_configure_line_editor() {
 
   # Native completion matching: case-insensitive, with - and _ treated alike.
   zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]-_}={[:upper:][:lower:]_-}'
+  zmodload zsh/complist
+  # Keep zsh completion readable while limiting menu selection to ambiguous matches.
+  zstyle ':completion:*' verbose yes
+  zstyle ':completion:*' group-name ''
+  zstyle ':completion:*' list-colors ''
+  zstyle ':completion:*:descriptions' format '%d'
+  zstyle ':completion:*:messages' format '%d'
+  zstyle ':completion:*:warnings' format 'no matches: %d'
+  zstyle ':completion:*' list-dirs-first true
+  zstyle ':completion:*' menu select=2
 }
 
 __dotfiles_zsh_configure_line_editor

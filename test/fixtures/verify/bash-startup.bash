@@ -30,23 +30,29 @@ fi
 command -v make-chrome-app >/dev/null
 declare -F __git_ps1 >/dev/null 2>&1
 complete -p git >/dev/null 2>&1
-if command -v codex >/dev/null 2>&1; then
+if command -v codex >/dev/null 2>&1 \
+  && codex completion bash >/dev/null 2>&1; then
   complete -p codex >/dev/null 2>&1 || exit 1
 fi
-if command -v docker >/dev/null 2>&1; then
+if command -v docker >/dev/null 2>&1 \
+  && docker completion bash >/dev/null 2>&1; then
   complete -p docker >/dev/null 2>&1 || exit 1
 fi
-if command -v gh >/dev/null 2>&1; then
+if command -v gh >/dev/null 2>&1 \
+  && gh completion -s bash >/dev/null 2>&1; then
   complete -p gh >/dev/null 2>&1 || exit 1
 fi
-if command -v git-spice >/dev/null 2>&1; then
+if command -v git-spice >/dev/null 2>&1 \
+  && git-spice shell completion bash >/dev/null 2>&1; then
   complete -p git-spice >/dev/null 2>&1 || exit 1
   complete -p gs >/dev/null 2>&1 || exit 1
 fi
-if command -v kubectl >/dev/null 2>&1; then
+if command -v kubectl >/dev/null 2>&1 \
+  && env KUBECONFIG=/dev/null kubectl completion bash >/dev/null 2>&1; then
   complete -p kubectl >/dev/null 2>&1 || exit 1
 fi
-if command -v fzf >/dev/null 2>&1; then
+if command -v fzf >/dev/null 2>&1 \
+  && fzf --bash >/dev/null 2>&1; then
   declare -F fzf-file-widget >/dev/null 2>&1 || exit 1
   declare -F __fzf_history__ >/dev/null 2>&1 || exit 1
   complete -p fzf >/dev/null 2>&1 || exit 1

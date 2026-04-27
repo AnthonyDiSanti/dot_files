@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+case "${1:-}" in
+  completion)
+    printf 'unknown command: completion\n' >&2
+    exit 2
+    ;;
+esac
+
+exit 0

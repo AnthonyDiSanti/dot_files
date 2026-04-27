@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+case "${1:-}" in
+  --bash | --zsh)
+    printf 'unknown option: %s\n' "$1" >&2
+    exit 2
+    ;;
+esac
+
+exit 0

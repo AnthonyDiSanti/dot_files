@@ -233,6 +233,90 @@ assert_zsh_rerunnable() {
   run_zsh_fixture zsh-rerunnable.zsh "$@"
 }
 
+assert_unsupported_fzf_shell_generators_are_quiet() {
+  local startup_stderr
+  local tmp_home
+
+  tmp_home="$(make_temp_dir)"
+  startup_stderr="$(make_temp_file)"
+
+  HOME="$tmp_home" \
+    XDG_CONFIG_HOME="$tmp_home/.config" \
+    XDG_STATE_HOME="$tmp_home/.local/state" \
+    "$repo_root/bootstrap.sh" >/dev/null
+
+  assert_bash_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE \
+    HOME="$tmp_home" \
+    PATH="$fixture_root/fake-fzf-no-shell-support:${PATH:-}" \
+    2>"$startup_stderr"
+
+  assert_zsh_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u SAVEHIST \
+    HOME="$tmp_home" \
+    PATH="$fixture_root/fake-fzf-no-shell-support:${PATH:-}" \
+    2>>"$startup_stderr"
+
+  if grep -q "unknown option: --\\(bash\\|zsh\\)" "$startup_stderr"; then
+    cat "$startup_stderr" >&2
+    fail "unsupported fzf shell generators should not print startup errors"
+  fi
+}
+
+assert_unsupported_completion_generators_are_quiet() {
+  local startup_stderr
+  local tmp_home
+
+  tmp_home="$(make_temp_dir)"
+  startup_stderr="$(make_temp_file)"
+
+  HOME="$tmp_home" \
+    XDG_CONFIG_HOME="$tmp_home/.config" \
+    XDG_STATE_HOME="$tmp_home/.local/state" \
+    "$repo_root/bootstrap.sh" >/dev/null
+
+  assert_bash_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u HISTFILESIZE \
+    HOME="$tmp_home" \
+    PATH="$fixture_root/fake-generated-completion-no-support:${PATH:-}" \
+    2>"$startup_stderr"
+
+  assert_zsh_startup \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    -u HISTFILE \
+    -u HISTSIZE \
+    -u SAVEHIST \
+    HOME="$tmp_home" \
+    PATH="$fixture_root/fake-generated-completion-no-support:${PATH:-}" \
+    2>>"$startup_stderr"
+
+  if grep -q "unknown command: completion" "$startup_stderr"; then
+    cat "$startup_stderr" >&2
+    fail "unsupported generated completions should not print startup errors"
+  fi
+}
+
 check_shell_startup() {
   log_check "shell startup smoke tests"
   assert_sh_startup \
@@ -320,6 +404,9 @@ check_shell_startup() {
     -u HISTFILE \
     -u HISTSIZE \
     -u SAVEHIST
+
+  assert_unsupported_fzf_shell_generators_are_quiet
+  assert_unsupported_completion_generators_are_quiet
 }
 
 check_static_analysis_suite() {
