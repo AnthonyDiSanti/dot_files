@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+  printf '%s\n' \
+    'Usage: dotfiles-tmux-control-mode-options' \
+    '' \
+    'Synchronizes tmux options that need different values under control mode.'
+}
+
+dotfiles_has_control_mode_client() {
+  # These options are server/window scoped, so one control-mode client wins.
+  tmux list-clients -F '#{client_control_mode}' | grep -qx '1'
+}
+
+if [ "$#" -ne 0 ]; then
+  usage >&2
+  exit 2
+fi
+
+if dotfiles_has_control_mode_client; then
+  tmux set-option -g focus-events off
+  tmux set-window-option -g aggressive-resize off
+else
+  tmux set-option -g focus-events on
+  tmux set-window-option -g aggressive-resize on
+fi
