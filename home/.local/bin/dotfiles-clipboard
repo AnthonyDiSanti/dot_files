@@ -24,12 +24,27 @@ dotfiles_have_command() {
   command -v "$1" >/dev/null 2>&1
 }
 
+dotfiles_running_under_wsl() {
+  if [ -n "${WSL_DISTRO_NAME:-}" ] || [ -n "${WSL_INTEROP:-}" ]; then
+    return 0
+  fi
+
+  [ -r /proc/version ] || return 1
+  grep -qi microsoft /proc/version || grep -qi wsl /proc/version
+}
+
 detect_provider() {
   os="$(uname -s 2>/dev/null || printf unknown)"
 
-  # Start with macOS because it is the only provider currently wired and tested.
   if [ "$os" = Darwin ] && dotfiles_have_command pbcopy && dotfiles_have_command pbpaste; then
     printf '%s\n' macos
+    return 0
+  fi
+
+  if dotfiles_running_under_wsl \
+    && dotfiles_have_command clip.exe \
+    && dotfiles_have_command powershell.exe; then
+    printf '%s\n' wsl
     return 0
   fi
 
@@ -48,6 +63,9 @@ copy_clipboard() {
     macos)
       pbcopy || die "pbcopy failed"
       ;;
+    wsl)
+      clip.exe || die "clip.exe failed"
+      ;;
     *)
       die "unsupported provider: $provider"
       ;;
@@ -60,6 +78,16 @@ paste_clipboard() {
   case "$provider" in
     macos)
       pbpaste || die "pbpaste failed"
+      ;;
+    wsl)
+      # PowerShell variables must reach powershell.exe literally.
+      # shellcheck disable=SC2016
+      powershell.exe \
+        -NoLogo \
+        -NoProfile \
+        -NonInteractive \
+        -Command '$clip = Get-Clipboard -Raw; if ($null -ne $clip) { [Console]::Out.Write($clip.ToString().Replace("`r", "")) }' \
+        || die "powershell.exe Get-Clipboard failed"
       ;;
     *)
       die "unsupported provider: $provider"

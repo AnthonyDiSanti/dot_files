@@ -37,6 +37,10 @@ log_suite() {
   printf '==> %s\n' "$1"
 }
 
+log_success() {
+  printf '==> all checks passed (total: %s)\n' "$1"
+}
+
 log_check() {
   printf '  - %s' "$1"
 }
@@ -187,6 +191,45 @@ check_shell_format() {
 check_dev_tool_wrappers() {
   # VS Code probes ShellCheck with -V and may not use the workspace as cwd.
   (cd / && "$repo_root/scripts/shellcheck-dotfiles.bash" -V >/dev/null)
+}
+
+check_clipboard_wrapper() {
+  local actual
+  local expected
+  local fake_clipboard
+  local fixture_path
+  local payload
+
+  actual="$(make_temp_file)"
+  expected="$(make_temp_file)"
+  fake_clipboard="$(make_temp_file)"
+  fixture_path="$fixture_root/fake-wsl-clipboard:${PATH:-}"
+  payload="$(make_temp_file)"
+
+  env \
+    PATH="$fixture_path" \
+    WSL_DISTRO_NAME=Ubuntu \
+    DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE="$fake_clipboard" \
+    "$repo_root/home/.local/bin/dotfiles-clipboard" status >"$actual"
+  printf '%s\n' wsl >"$expected"
+  diff -u "$expected" "$actual"
+
+  printf 'alpha\nbeta' >"$payload"
+  env \
+    PATH="$fixture_path" \
+    WSL_DISTRO_NAME=Ubuntu \
+    DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE="$fake_clipboard" \
+    "$repo_root/home/.local/bin/dotfiles-clipboard" copy <"$payload"
+  cmp "$payload" "$fake_clipboard"
+
+  printf 'alpha\r\nbeta' >"$fake_clipboard"
+  env \
+    PATH="$fixture_path" \
+    WSL_DISTRO_NAME=Ubuntu \
+    DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE="$fake_clipboard" \
+    "$repo_root/home/.local/bin/dotfiles-clipboard" paste >"$actual"
+  printf 'alpha\nbeta' >"$expected"
+  cmp "$expected" "$actual"
 }
 
 check_managed_targets() {
@@ -538,6 +581,7 @@ check_linting_suite() {
 check_functionality_suite() {
   log_suite "functionality"
   run_timed_check "dev tool wrappers" check_dev_tool_wrappers
+  run_timed_check "clipboard wrapper" check_clipboard_wrapper
   run_timed_check "managed target list" check_managed_targets
   run_timed_check "bootstrap in a temporary home" check_temp_apply
   run_timed_check "live home convergence" check_live_home_converged
@@ -546,6 +590,11 @@ check_functionality_suite() {
 }
 
 main() {
+  local suite_start
+  local suite_total
+
+  suite_start="$SECONDS"
+
   require_command awk
   require_command bash
   require_command comm
@@ -564,7 +613,8 @@ main() {
   check_linting_suite
   check_functionality_suite
 
-  log_suite "all checks passed"
+  suite_total=$((SECONDS - suite_start))
+  log_success "$(format_duration "$suite_total")"
 }
 
 main "$@"
