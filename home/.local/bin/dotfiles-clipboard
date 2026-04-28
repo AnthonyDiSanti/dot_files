@@ -80,13 +80,12 @@ paste_clipboard() {
       pbpaste || die "pbpaste failed"
       ;;
     wsl)
-      # PowerShell variables must reach powershell.exe literally.
-      # shellcheck disable=SC2016
+      # Cast null clipboard text to empty string, then normalize CRLF from Windows.
       powershell.exe \
         -NoLogo \
         -NoProfile \
         -NonInteractive \
-        -Command '$clip = Get-Clipboard -Raw; if ($null -ne $clip) { [Console]::Out.Write($clip.ToString().Replace("`r", "")) }' \
+        -Command '[Console]::Out.Write(([string](Get-Clipboard -Raw)).Replace("`r", ""))' \
         || die "powershell.exe Get-Clipboard failed"
       ;;
     *)

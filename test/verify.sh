@@ -316,14 +316,9 @@ run_bash_fixtures() {
   shift
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" bash -lic '
-    set -e
-    for fixture_name do
-      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
-      export DOTFILES_VERIFY_FIXTURE
-      source "$DOTFILES_VERIFY_FIXTURE"
-    done
-  ' bash "${fixture_names[@]}"
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" \
+    bash -lic "source ${fixture_root@Q}/bash-fixture-runner.bash" \
+    bash "${fixture_names[@]}"
 }
 
 run_sh_fixtures() {
@@ -336,14 +331,9 @@ run_sh_fixtures() {
   shift
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" sh -lic '
-    set -e
-    for fixture_name do
-      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
-      export DOTFILES_VERIFY_FIXTURE
-      . "$DOTFILES_VERIFY_FIXTURE"
-    done
-  ' sh "${fixture_names[@]}"
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" \
+    sh -lic ". ${fixture_root@Q}/sh-fixture-runner.sh" \
+    sh "${fixture_names[@]}"
 }
 
 run_zsh_fixtures() {
@@ -366,14 +356,9 @@ run_zsh_fixtures() {
   done
 
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" ZDOTDIR="$zdotdir" zsh -lic '
-    setopt ERR_EXIT
-    for fixture_name do
-      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
-      export DOTFILES_VERIFY_FIXTURE
-      source "$DOTFILES_VERIFY_FIXTURE"
-    done
-  ' zsh "${fixture_names[@]}"
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" ZDOTDIR="$zdotdir" \
+    zsh -lic "source ${fixture_root@Q}/zsh-fixture-runner.zsh" \
+    zsh "${fixture_names[@]}"
 }
 
 assert_bash_startup() {
