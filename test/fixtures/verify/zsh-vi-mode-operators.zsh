@@ -160,6 +160,86 @@ run_clipboard_cut_case() {
     || fail "$name copied ${(qqq)copied}, expected ${(qqq)expected_clipboard}"
 }
 
+run_insert_backspace_case() {
+  local copied dump_line
+
+  clipboard_fixture_dir="$fixture_dir/fake-clipboard-supported"
+  print -rn -- 'STALE' >"$fake_clipboard_file"
+  print -r -- "CASE insert-backspace" >>"$log_path"
+  start_child_shell
+  zpty -w -n "$zpty_name" 'abc'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\177'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e'
+  sleep 0.1
+  zpty -w -n "$zpty_name" Q
+  wait_for_dump_line "insert backspace"
+  finish_child_shell
+
+  [[ $dump_line == *'BUFFER="ab"'* ]] \
+    || fail "insert backspace expected BUFFER=\"ab\", got ${dump_line:-<no dump>}"
+  copied="$(<"$fake_clipboard_file")"
+  [[ $copied == STALE ]] \
+    || fail "insert backspace copied ${(qqq)copied}, expected STALE"
+}
+
+run_mid_command_insert_backspace_case() {
+  local copied dump_line
+
+  clipboard_fixture_dir="$fixture_dir/fake-clipboard-supported"
+  print -rn -- 'STALE' >"$fake_clipboard_file"
+  print -r -- "CASE mid-command-insert-backspace" >>"$log_path"
+  start_child_shell
+  zpty -w -n "$zpty_name" 'abc'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e'
+  sleep 0.1
+  zpty -w -n "$zpty_name" hi
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\177'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e'
+  sleep 0.1
+  zpty -w -n "$zpty_name" Q
+  wait_for_dump_line "mid-command insert backspace"
+  finish_child_shell
+
+  [[ $dump_line == *'BUFFER="bc"'* ]] \
+    || fail "mid-command insert backspace expected BUFFER=\"bc\", got ${dump_line:-<no dump>}"
+  copied="$(<"$fake_clipboard_file")"
+  [[ $copied == STALE ]] \
+    || fail "mid-command insert backspace copied ${(qqq)copied}, expected STALE"
+}
+
+run_mid_command_insert_delete_case() {
+  local copied dump_line
+
+  clipboard_fixture_dir="$fixture_dir/fake-clipboard-supported"
+  print -rn -- 'STALE' >"$fake_clipboard_file"
+  print -r -- "CASE mid-command-insert-delete" >>"$log_path"
+  start_child_shell
+  zpty -w -n "$zpty_name" 'abc'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e'
+  sleep 0.1
+  zpty -w -n "$zpty_name" hi
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e[3~'
+  sleep 0.1
+  zpty -w -n "$zpty_name" $'\e'
+  sleep 0.1
+  zpty -w -n "$zpty_name" Q
+  wait_for_dump_line "mid-command insert delete"
+  finish_child_shell
+
+  [[ $dump_line == *'BUFFER="ac"'* ]] \
+    || fail "mid-command insert delete expected BUFFER=\"ac\", got ${dump_line:-<no dump>}"
+  copied="$(<"$fake_clipboard_file")"
+  [[ $copied == STALE ]] \
+    || fail "mid-command insert delete copied ${(qqq)copied}, expected STALE"
+}
+
 run_clipboard_load_case() {
   local dump_line
 
@@ -186,4 +266,7 @@ run_clipboard_cut_case clipboard-delete dae 'echo abc' 'BUFFER="" CUT="echo abc"
 run_clipboard_cut_case clipboard-delete-char x c 'CUT="c"'
 run_clipboard_cut_case clipboard-change $'cae\e' 'echo abc' 'BUFFER="" CUT="echo abc"'
 run_clipboard_cut_case clipboard-substitute $'sX\e' c 'CUT="c"'
+run_insert_backspace_case
+run_mid_command_insert_backspace_case
+run_mid_command_insert_delete_case
 run_clipboard_load_case

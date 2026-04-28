@@ -46,8 +46,10 @@ unset history_fixture_actual history_fixture_dir history_fixture_expected histor
 [[ "${widgets[vi-change-whole-line]-}" == user:__dotfiles_zsh_vi_change_whole_line_clipboard ]]
 [[ "${widgets[vi-kill-eol]-}" == user:__dotfiles_zsh_vi_kill_eol_clipboard ]]
 [[ "${widgets[vi-substitute]-}" == user:__dotfiles_zsh_vi_substitute_clipboard ]]
-[[ "${widgets[vi-delete-char]-}" == user:__dotfiles_zsh_vi_delete_char_clipboard ]]
-[[ "${widgets[vi-backward-delete-char]-}" == user:__dotfiles_zsh_vi_backward_delete_char_clipboard ]]
+[[ "${widgets[vi-delete-char]-}" != user:__dotfiles_zsh_vi_delete_char_clipboard ]]
+[[ "${widgets[vi-backward-delete-char]-}" != user:__dotfiles_zsh_vi_backward_delete_char_clipboard ]]
+[[ "${widgets[__dotfiles_zsh_vi_delete_char_clipboard]-}" == user:__dotfiles_zsh_vi_delete_char_clipboard ]]
+[[ "${widgets[__dotfiles_zsh_vi_backward_delete_char_clipboard]-}" == user:__dotfiles_zsh_vi_backward_delete_char_clipboard ]]
 [[ "${widgets[vi-put-before]-}" == user:__dotfiles_zsh_vi_put_before_clipboard ]]
 [[ "${widgets[vi-put-after]-}" == user:__dotfiles_zsh_vi_put_after_clipboard ]]
 [[ "${widgets[put-replace-selection]-}" == user:__dotfiles_zsh_put_replace_selection_clipboard ]]
@@ -56,6 +58,7 @@ unset history_fixture_actual history_fixture_dir history_fixture_expected histor
 zstyle -a zle-line-init widgets zle_line_init_widgets
 zstyle -a zle-keymap-select widgets zle_keymap_select_widgets
 zstyle -a zle-line-finish widgets zle_line_finish_widgets
+[[ " ${zle_highlight[*]} " == *" paste:none "* ]]
 quoted_outer_double=$'a"'
 quoted_inner_double=$'i"'
 quoted_outer_single="a'"
@@ -65,6 +68,9 @@ quoted_inner_single="i'"
 (( ${zle_line_finish_widgets[(I)*:__dotfiles_zsh_reset_cursor]} > 0 ))
 [[ "$(bindkey -M viins '^E')" == *edit-command-line ]]
 [[ "$(bindkey -M vicmd '^E')" == *edit-command-line ]]
+[[ "$(bindkey -M viins '^?')" == *backward-delete-char ]]
+[[ "$(bindkey -M viins '^H')" == *backward-delete-char ]]
+[[ "$(bindkey -M viins '^[[3~')" == *delete-char ]]
 [[ "$(bindkey -M emacs '^[[A')" == *up-line-or-beginning-search ]]
 [[ "$(bindkey -M emacs '^[[B')" == *down-line-or-beginning-search ]]
 [[ "$(bindkey -M menuselect h)" == *vi-backward-char ]]
@@ -86,6 +92,8 @@ quoted_inner_single="i'"
 [[ "$(bindkey -M vicmd cs)" == *change-surround ]]
 [[ "$(bindkey -M vicmd ds)" == *delete-surround ]]
 [[ "$(bindkey -M vicmd ys)" == *add-surround ]]
+[[ "$(bindkey -M vicmd x)" == *__dotfiles_zsh_vi_delete_char_clipboard ]]
+[[ "$(bindkey -M vicmd X)" == *__dotfiles_zsh_vi_backward_delete_char_clipboard ]]
 [[ "$(bindkey -M visual S)" == *add-surround ]]
 if dotfiles_command_succeeds fzf --zsh; then
   [[ "$(bindkey -M viins '^R')" == *fzf-history-widget ]]

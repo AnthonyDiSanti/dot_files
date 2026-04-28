@@ -17,6 +17,10 @@ bind -m vi-command -q vi-edit-and-execute-command | grep -q 'vi-edit-and-execute
 bind -q history-search-backward | grep -q 'history-search-backward can be invoked'
 bind -q history-search-forward | grep -q 'history-search-forward can be invoked'
 bind -v | grep -q '^set completion-ignore-case on$'
+bind -v | grep -q '^set enable-active-region off$'
+bind -v | grep -q '^set show-mode-in-prompt on$'
+bind -v | grep -Fqx $'set vi-ins-mode-string \001\e[6 q\002'
+bind -v | grep -Fqx $'set vi-cmd-mode-string \001\e[2 q\002'
 declare -F dotfiles_have_command >/dev/null 2>&1
 declare -F dotfiles_command_succeeds >/dev/null 2>&1
 if bind -v | grep -q '^set completion-map-case '; then
