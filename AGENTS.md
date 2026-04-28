@@ -47,6 +47,7 @@ Maintenance:
   - `home/.config/bash/` — bash-specific interactive setup (prompt, system Git helper loading, WSL cursor tweak).
   - `home/.config/zsh/` — zsh-specific interactive setup.
   - `home/.local/bin/` — optional user CLI utilities installed to `~/.local/bin/` when present.
+  - `agents/skills/` — canonical shared agent skill sources; expose them to each harness through symlink nodes in `home/` such as `home/.codex/skills/<skill>`.
   - `test/` — repo-local verification entrypoint (`test/verify.sh`) and test fixtures (`test/fixtures/`).
   - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `shell_files.bash`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
@@ -57,6 +58,7 @@ Maintenance:
   - Bash-only shell setup: `home/.config/bash/`.
   - Zsh-only shell setup: `home/.config/zsh/`.
   - CLI utilities: `home/.local/bin/`.
+  - Shared agent skills: `agents/skills/<skill>/`, then add a real symlink node at the harness path under `home/`.
   - Dotfiles: `home/` using literal target names and real symlink nodes where appropriate.
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).

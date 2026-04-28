@@ -14,6 +14,8 @@ dotfiles_emit_home_sources() {
     use_git_ignore=1
   fi
 
+  # Do not follow symlinks: a symlinked directory in `home/` is itself the
+  # managed leaf, preserving the literal target-tree shape.
   find "$home_root" \
     ! -type d -print \
     | while IFS= read -r source_path; do

@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-28 — Manage shared agent skills outside the home mirror
+- Decider: Anthony
+- Decision: Keep canonical shared agent skills under `agents/skills/<skill>/` and expose them to Codex through symlink nodes in the literal home mirror, such as `home/.codex/skills/<skill> -> ../../../agents/skills/<skill>`.
+- Rationale: Agent skills may need to be deployed to multiple harness-specific locations over time, while sharing the same canonical source. Keeping the deployment path as a symlink node under `home/` preserves the readable `$HOME` mirror and lets bootstrap use its general symlink-to-symlink behavior instead of hardcoding Codex-specific directory logic.
+- Consequences / follow-ups: Codex discovers the two-hop layout `~/.codex/skills/<skill> -> repo/home/.codex/skills/<skill> -> repo/agents/skills/<skill>`, but did not discover the skill when only leaf files such as `SKILL.md` were symlinked. Restart Codex sessions after changing skill metadata.
+
 ## 2026-04-28 — Manage iTerm2 Solarized Dark through a dynamic profile
 - Decider: Anthony
 - Decision: Add a repo-managed iTerm2 dynamic profile at `home/Library/Application Support/iTerm2/DynamicProfiles/solarized-dark.json`, instead of managing iTerm2's entire preferences plist. Add `settings/iterm2.sh` to set iTerm2's `Default Bookmark Guid` to the managed profile when applying machine settings.
