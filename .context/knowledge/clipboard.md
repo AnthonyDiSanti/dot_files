@@ -8,7 +8,13 @@ When to consult: changing Vim clipboard settings, zsh ZLE yank/paste widgets, tm
 - Vim's anonymous register behavior appears correct with the current `.vimrc`; do not change it unless a specific mismatch appears.
 - zsh vi-mode wraps CUTBUFFER-producing widgets: explicit yanks plus delete/change/substitute paths (`d`, `c`, `C`, `D`, `S`, `s`, `x`, `X`) copy `CUTBUFFER` to the system clipboard when `dotfiles-clipboard status` succeeds.
 - zsh paste integration refreshes `CUTBUFFER` from the system clipboard immediately before `vi-put-before` / `vi-put-after`, and before visual `put-replace-selection`. This is intentionally paste-time only; avoid background real-time watchers unless a clear need appears.
-- tmux copy-mode `y` uses `copy-pipe-and-cancel`, so the selection remains in the tmux paste buffer while a supported `dotfiles-clipboard copy` provider receives stdin. Unsupported providers drain stdin and return quietly.
+- tmux copy-mode `y` and `Enter` use `copy-pipe-and-cancel`, so the selection remains in the tmux paste buffer while a supported `dotfiles-clipboard copy` provider receives stdin. Unsupported providers drain stdin and return quietly.
+- tmux prefix `]` refreshes the newest automatic tmux paste buffer from `dotfiles-clipboard paste`, then pastes it with native bracketed-paste behavior. If the provider is missing or unsupported, it falls back to native `paste-buffer -p`.
+- tmux prefix `C-y` imports `dotfiles-clipboard paste` into the newest automatic tmux paste buffer without pasting. If unsupported, it leaves the existing tmux buffer alone.
+- tmux prefix `p` remains the stock `previous-window` binding; do not reuse it for clipboard import.
+- `home/.local/bin/dotfiles-clipboard-tmux` owns tmux-specific clipboard glue (`copy`, `import`, `paste`), including unsupported clipboard-provider fallbacks and `mktemp` buffer import handling. It requires `tmux`; keep graceful degradation scoped to missing platform clipboard support. Keep `.tmux.conf` focused on bindings.
+- Tmux clipboard integration is complete for v1. Further tmux clipboard work should be a deliberate v2 item, such as OSC 52, broader mouse-copy handling, or named-buffer policy changes.
+- Do not enable tmux `set-clipboard` in clipboard v1. It uses OSC 52-style terminal clipboard integration, which is useful later but would introduce a second clipboard path before the macOS/WSL wrapper is stable.
 - Prefer app-native clipboard options where they cover the use case. Add a small internal provider only if needed for shared macOS plus Ubuntu-under-WSL behavior.
 - Avoid submodule-backed clipboard dependencies; prefer built-in app options, system clipboard commands, or small repo-owned helpers.
 

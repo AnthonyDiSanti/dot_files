@@ -1,0 +1,108 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+  printf '%s\n' \
+    'Usage: dotfiles-clipboard-tmux copy' \
+    '       dotfiles-clipboard-tmux import' \
+    '       dotfiles-clipboard-tmux paste' \
+    '' \
+    'Commands:' \
+    '  copy    Reads stdin and copies it to the platform clipboard when available.' \
+    '  import  Loads the platform clipboard into the newest tmux buffer.' \
+    '  paste   Imports the platform clipboard, then pastes the newest tmux buffer.'
+}
+
+dotfiles_have_command() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+dotfiles_require_command() {
+  if ! dotfiles_have_command "$1"; then
+    printf 'dotfiles-clipboard-tmux: missing required command: %s\n' "$1" >&2
+    exit 127
+  fi
+}
+
+dotfiles_clipboard_supported() {
+  dotfiles_have_command dotfiles-clipboard \
+    && dotfiles-clipboard status >/dev/null 2>&1
+}
+
+dotfiles_drain_stdin() {
+  cat >/dev/null || true
+}
+
+dotfiles_make_temp_file() {
+  # mktemp replaces the literal Xs with random characters for a unique path.
+  mktemp "${TMPDIR:-/tmp}/dotfiles-clipboard-tmux.XXXXXX"
+}
+
+dotfiles_cleanup_temp_file() {
+  if [ -n "${dotfiles_tmux_clipboard_temp_file:-}" ]; then
+    rm -f "$dotfiles_tmux_clipboard_temp_file"
+  fi
+}
+
+dotfiles_copy_clipboard() {
+  if dotfiles_clipboard_supported \
+    && dotfiles-clipboard copy >/dev/null 2>&1; then
+    return 0
+  fi
+
+  # Keep tmux copy-pipe quiet on hosts without a supported platform clipboard.
+  dotfiles_drain_stdin
+}
+
+dotfiles_try_import_clipboard() {
+  dotfiles_clipboard_supported || return 1
+
+  dotfiles_tmux_clipboard_temp_file="$(dotfiles_make_temp_file)" || return 1
+  trap dotfiles_cleanup_temp_file EXIT HUP INT TERM
+
+  dotfiles-clipboard paste >"$dotfiles_tmux_clipboard_temp_file" 2>/dev/null \
+    || return 1
+
+  tmux load-buffer "$dotfiles_tmux_clipboard_temp_file" >/dev/null 2>&1 \
+    || return 1
+}
+
+dotfiles_import_clipboard() {
+  # The user-facing import command is intentionally quiet when unsupported.
+  dotfiles_try_import_clipboard || true
+}
+
+dotfiles_paste_clipboard() {
+  dotfiles_try_import_clipboard || true
+
+  # Paste the newest tmux buffer, refreshed from the platform clipboard when available.
+  tmux paste-buffer -p
+}
+
+if [ "$#" -ne 1 ]; then
+  usage >&2
+  exit 2
+fi
+
+case "$1" in
+  copy)
+    dotfiles_require_command tmux
+    dotfiles_copy_clipboard
+    ;;
+  import)
+    dotfiles_require_command tmux
+    dotfiles_import_clipboard
+    ;;
+  paste)
+    dotfiles_require_command tmux
+    dotfiles_paste_clipboard
+    ;;
+  --help | -h)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
