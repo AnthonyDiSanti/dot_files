@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-28 — Manage iTerm2 Solarized Dark through a dynamic profile
+- Decider: Anthony
+- Decision: Add a repo-managed iTerm2 dynamic profile at `home/Library/Application Support/iTerm2/DynamicProfiles/solarized-dark.json`, instead of managing iTerm2's entire preferences plist. Add `settings/iterm2.sh` to set iTerm2's `Default Bookmark Guid` to the managed profile when applying machine settings.
+- Rationale: iTerm2 watches the DynamicProfiles folder and reloads valid profile property lists, so a single symlink-backed profile keeps terminal chrome/palette settings under dotfiles control without taking ownership of unrelated local iTerm preferences. The profile inlines canonical Solarized Dark colors, disables bright-bold color substitution, and leaves minimum contrast at zero so iTerm2 does not shift Solarized colors. iTerm2 imports dynamic profiles into the normal profile list with a `Dynamic` tag; `Dynamic Profile Parent Name` only controls inherited settings. Dynamic profiles cannot reliably make themselves the default, so default selection is handled as an explicit macOS preference write rather than through an AutoLaunch Python script.
+- Consequences / follow-ups: Bootstrap now needs tab-separated manifest/state records because `Library/Application Support` contains spaces. After bootstrap, run `settings/iterm2.sh` once to point new iTerm2 windows at `Solarized Dark (dotfiles)`.
+
 ## 2026-04-28 — Use Microsoft-native WSL clipboard bridge
 - Decider: Anthony
 - Decision: Implement WSL clipboard support through Microsoft-provided `clip.exe` for copy and PowerShell `Get-Clipboard` for paste, rather than through `win32yank.exe`.

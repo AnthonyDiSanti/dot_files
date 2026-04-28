@@ -99,15 +99,16 @@ ensure_leaf_symlink() {
 
 remove_stale_paths() {
   stale_manifest=$1
+  manifest_ifs=$(printf '\t')
 
-  while IFS=' ' read -r kind rel_path; do
+  while IFS=$manifest_ifs read -r kind rel_path; do
     [ "$kind" = "leaf" ] || continue
     remove_path "$rel_path"
   done <"$stale_manifest"
 
-  awk '$1 == "dir" { print length($2), $2 }' "$stale_manifest" \
+  awk -F '\t' '$1 == "dir" { printf "%d\t%s\n", length($2), $2 }' "$stale_manifest" \
     | LC_ALL=C sort -rn \
-    | while IFS=' ' read -r _depth rel_path; do
+    | while IFS=$manifest_ifs read -r _depth rel_path; do
       [ -n "${rel_path:-}" ] || continue
       remove_dir_if_empty "$rel_path"
     done
@@ -170,6 +171,7 @@ fi
 current_manifest=$(make_temp_file)
 current_state=$(make_temp_file)
 stale_manifest=$(make_temp_file)
+manifest_ifs=$(printf '\t')
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 state_file="$state_dir/managed-paths"
 
@@ -184,12 +186,12 @@ fi
 
 remove_stale_paths "$stale_manifest"
 
-while IFS=' ' read -r kind rel_path source_path; do
+while IFS=$manifest_ifs read -r kind rel_path source_path; do
   [ "$kind" = "dir" ] || continue
   ensure_directory "$rel_path"
 done <"$current_manifest"
 
-while IFS=' ' read -r kind rel_path source_path; do
+while IFS=$manifest_ifs read -r kind rel_path source_path; do
   [ "$kind" = "leaf" ] || continue
   ensure_leaf_symlink "$rel_path" "$source_path"
 done <"$current_manifest"

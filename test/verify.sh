@@ -355,6 +355,7 @@ check_managed_targets() {
 
 check_temp_apply() {
   local manifest_path
+  local manifest_ifs
   local tmp_home
   local kind
   local rel_path
@@ -362,6 +363,7 @@ check_temp_apply() {
 
   tmp_home="$(make_temp_dir)"
   manifest_path="$(make_temp_file)"
+  manifest_ifs=$'\t'
 
   HOME="$tmp_home" \
     XDG_CONFIG_HOME="$tmp_home/.config" \
@@ -370,7 +372,7 @@ check_temp_apply() {
 
   dotfiles_emit_manifest "$repo_root" >"$manifest_path"
 
-  while read -r kind rel_path source_path; do
+  while IFS="$manifest_ifs" read -r kind rel_path source_path; do
     case "$kind" in
       dir)
         assert_directory "$tmp_home/$rel_path"

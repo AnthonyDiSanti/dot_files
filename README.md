@@ -71,3 +71,12 @@ the new version recorded.
 1. Add a `Plug 'owner/repo'` line in `home/.vimrc` inside the `plug#begin` /
    `plug#end` block.
 2. Run `:PlugInstall`.
+
+## Terminal Colors
+
+Ghostty and iTerm2 Solarized Dark settings are managed under `home/` and linked
+by `./bootstrap.sh`. iTerm2 gets a dynamic profile named
+`Solarized Dark (dotfiles)` under
+`~/Library/Application Support/iTerm2/DynamicProfiles/`. Run
+`settings/iterm2.sh` to make that profile the default for new iTerm2 windows
+and let `tmux -CC` sessions inherit the connecting session profile.
