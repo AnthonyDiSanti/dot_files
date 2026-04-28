@@ -20,13 +20,30 @@ dotfiles_command_succeeds() {
 
 if command tmux -V >/dev/null 2>&1; then
   tmux() {
+    dotfiles_tmux_control_mode=
+    for dotfiles_tmux_arg; do
+      if [ "$dotfiles_tmux_arg" = -CC ]; then
+        dotfiles_tmux_control_mode=1
+        break
+      fi
+    done
+
     # Make plain `tmux` converge on a stable workspace while preserving tmux subcommands.
     if [ "$#" -eq 0 ]; then
       command tmux new-session -A -s default
+      unset dotfiles_tmux_arg dotfiles_tmux_control_mode
       return
     fi
 
-    command tmux "$@"
+    if [ -n "$dotfiles_tmux_control_mode" ]; then
+      # Existing servers need to be safe before iTerm2 attaches a control-mode client.
+      command tmux set-option -g focus-events off >/dev/null 2>&1 || :
+      command tmux set-window-option -g aggressive-resize off >/dev/null 2>&1 || :
+      DOTFILES_TMUX_CONTROL_MODE=1 command tmux "$@"
+    else
+      command tmux "$@"
+    fi
+    unset dotfiles_tmux_arg dotfiles_tmux_control_mode
   }
 fi
 

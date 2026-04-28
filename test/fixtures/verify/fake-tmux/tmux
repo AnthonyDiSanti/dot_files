@@ -10,4 +10,14 @@ if [ -z "${DOTFILES_FAKE_TMUX_LOG:-}" ]; then
   exit 1
 fi
 
-printf '%s\n' "$*" >>"$DOTFILES_FAKE_TMUX_LOG"
+case "${1:-}" in
+  list-clients)
+    printf '%b' "${DOTFILES_FAKE_TMUX_CLIENT_CONTROL_MODES:-}"
+    ;;
+  set-option | set-window-option)
+    printf '%s\n' "$*" >>"$DOTFILES_FAKE_TMUX_LOG"
+    ;;
+  *)
+    printf '%s\n' "$*" >>"$DOTFILES_FAKE_TMUX_LOG"
+    ;;
+esac

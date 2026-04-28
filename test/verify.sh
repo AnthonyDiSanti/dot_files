@@ -193,6 +193,115 @@ check_dev_tool_wrappers() {
   (cd / && "$repo_root/scripts/shellcheck-dotfiles.bash" -V >/dev/null)
 }
 
+check_tmux_config() {
+  local aggressive_resize
+  local control_aggressive_resize
+  local control_focus_events
+  local control_tmux_config_output
+  local bell_action
+  local focus_events
+  local monitor_bell
+  local socket_name
+  local socket_name_control
+  local status
+  local tmux_config_output
+
+  dotfiles_have_command tmux || return 0
+
+  socket_name="dotfiles-verify-${BASHPID:-$$}"
+
+  set +e
+  tmux_config_output="$(
+    tmux -L "$socket_name" -f /dev/null \
+      new-session -d -s dotfiles-verify 'sleep 60' \; \
+      source-file "$repo_root/home/.tmux.conf" \; \
+      show-window-options -gv aggressive-resize \; \
+      show-options -gv focus-events \; \
+      show-options -gv bell-action \; \
+      show-window-options -gv monitor-bell 2>&1
+  )"
+  status=$?
+  tmux -L "$socket_name" kill-server >/dev/null 2>&1 || true
+  set -e
+
+  if ((status != 0)); then
+    printf '%s\n' "$tmux_config_output"
+    fail "tmux config failed to load"
+  fi
+
+  aggressive_resize="$(sed -n '1p' <<<"$tmux_config_output")"
+  focus_events="$(sed -n '2p' <<<"$tmux_config_output")"
+  bell_action="$(sed -n '3p' <<<"$tmux_config_output")"
+  monitor_bell="$(sed -n '4p' <<<"$tmux_config_output")"
+
+  [[ "$aggressive_resize" == on ]] \
+    || fail "tmux normal startup aggressive-resize should be on, got ${aggressive_resize:-<empty>}"
+  [[ "$focus_events" == on ]] \
+    || fail "tmux normal startup focus-events should be on, got ${focus_events:-<empty>}"
+  [[ "$bell_action" == any ]] \
+    || fail "tmux bell-action should be any, got ${bell_action:-<empty>}"
+  [[ "$monitor_bell" == on ]] \
+    || fail "tmux monitor-bell should be on, got ${monitor_bell:-<empty>}"
+
+  socket_name_control="dotfiles-verify-cc-${BASHPID:-$$}"
+
+  set +e
+  control_tmux_config_output="$(
+    DOTFILES_TMUX_CONTROL_MODE=1 \
+      tmux -L "$socket_name_control" -f "$repo_root/home/.tmux.conf" \
+      new-session -d -s dotfiles-verify-cc 'sleep 60' \; \
+      show-window-options -gv aggressive-resize \; \
+      show-options -gv focus-events 2>&1
+  )"
+  status=$?
+  tmux -L "$socket_name_control" kill-server >/dev/null 2>&1 || true
+  set -e
+
+  if ((status != 0)); then
+    printf '%s\n' "$control_tmux_config_output"
+    fail "tmux control-mode config failed to load"
+  fi
+
+  control_aggressive_resize="$(sed -n '1p' <<<"$control_tmux_config_output")"
+  control_focus_events="$(sed -n '2p' <<<"$control_tmux_config_output")"
+
+  [[ "$control_aggressive_resize" == off ]] \
+    || fail "tmux control-mode startup aggressive-resize should be off, got ${control_aggressive_resize:-<empty>}"
+  [[ "$control_focus_events" == off ]] \
+    || fail "tmux control-mode startup focus-events should be off, got ${control_focus_events:-<empty>}"
+}
+
+check_tmux_control_mode_options() {
+  local actual
+  local expected
+  local fixture_path
+
+  actual="$(make_temp_file)"
+  expected="$(make_temp_file)"
+  fixture_path="$fixture_root/fake-tmux:${PATH:-}"
+
+  env \
+    PATH="$fixture_path" \
+    DOTFILES_FAKE_TMUX_LOG="$actual" \
+    DOTFILES_FAKE_TMUX_CLIENT_CONTROL_MODES='0\n' \
+    "$repo_root/home/.local/bin/dotfiles-tmux-control-mode-options"
+  printf '%s\n' \
+    'set-option -g focus-events on' \
+    'set-window-option -g aggressive-resize on' >"$expected"
+  diff -u "$expected" "$actual"
+
+  : >"$actual"
+  env \
+    PATH="$fixture_path" \
+    DOTFILES_FAKE_TMUX_LOG="$actual" \
+    DOTFILES_FAKE_TMUX_CLIENT_CONTROL_MODES='0\n1\n' \
+    "$repo_root/home/.local/bin/dotfiles-tmux-control-mode-options"
+  printf '%s\n' \
+    'set-option -g focus-events off' \
+    'set-window-option -g aggressive-resize off' >"$expected"
+  diff -u "$expected" "$actual"
+}
+
 check_clipboard_wrapper() {
   local actual
   local expected
@@ -566,6 +675,8 @@ check_linting_suite() {
 check_functionality_suite() {
   log_suite "functionality"
   run_timed_check "dev tool wrappers" check_dev_tool_wrappers
+  run_timed_check "tmux config" check_tmux_config
+  run_timed_check "tmux control-mode options" check_tmux_control_mode_options
   run_timed_check "clipboard wrapper" check_clipboard_wrapper
   run_timed_check "managed target list" check_managed_targets
   run_timed_check "bootstrap in a temporary home" check_temp_apply
