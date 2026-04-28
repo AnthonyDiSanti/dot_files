@@ -12,6 +12,7 @@ shell_tool = true
 undo = true
 multi_agent = true
 js_repl = true
+runtime_metrics = true
 
 [profiles.system]
 model = "gpt-5.4"
@@ -22,6 +23,19 @@ approval_policy = "never"
 [mcp_servers.MCP_DOCKER]
 command = 'docker'
 args = ['mcp', 'gateway', 'run']
+
+[tui]
+status_line = [
+  "context-used",
+  "context-remaining",
+  "used-tokens",
+  "total-input-tokens",
+  "total-output-tokens",
+  "context-window-size",
+]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 2
 
 [notice]
 [notice.model_migrations]
@@ -63,6 +77,3 @@ network_access = true
 
 [plugins."github@openai-curated"]
 enabled = true
-
-[tui.model_availability_nux]
-"gpt-5.5" = 2

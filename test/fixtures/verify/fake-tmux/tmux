@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ "${1:-}" = "-V" ]; then
+  printf 'tmux 999.0\n'
+  exit 0
+fi
+
+if [ -z "${DOTFILES_FAKE_TMUX_LOG:-}" ]; then
+  printf 'fake tmux: DOTFILES_FAKE_TMUX_LOG is required\n' >&2
+  exit 1
+fi
+
+printf '%s\n' "$*" >>"$DOTFILES_FAKE_TMUX_LOG"
