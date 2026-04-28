@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -eu
+
+: "${DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE:?missing fake Windows clipboard file path}"
+
+# Model clip.exe's stdin-oriented write shape without depending on Windows.
+cat >"$DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE"

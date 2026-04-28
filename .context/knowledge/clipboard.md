@@ -4,7 +4,7 @@ When to consult: changing Vim clipboard settings, zsh ZLE yank/paste widgets, tm
 
 ## Current plan
 - Clipboard v1 is scoped to macOS plus Ubuntu under WSL / Windows. Do not add untested Linux desktop providers or OSC 52 behavior in this pass.
-- `home/.local/bin/dotfiles-clipboard` is the repo-owned wrapper API. It currently supports macOS via `pbcopy` / `pbpaste`.
+- `home/.local/bin/dotfiles-clipboard` is the repo-owned wrapper API. It supports macOS via `pbcopy` / `pbpaste` and WSL via `clip.exe` / PowerShell.
 - Vim's anonymous register behavior appears correct with the current `.vimrc`; do not change it unless a specific mismatch appears.
 - zsh vi-mode wraps CUTBUFFER-producing widgets: explicit yanks plus delete/change/substitute paths (`d`, `c`, `C`, `D`, `S`, `s`, `x`, `X`) copy `CUTBUFFER` to the system clipboard when `dotfiles-clipboard status` succeeds.
 - Do not globally replace shared ZLE delete widgets such as `vi-delete-char` or `vi-backward-delete-char`; insert-mode Backspace also uses those widget names and must not copy single-character edits to the system clipboard. Bind private clipboard-aware wrappers only in `vicmd` for `x` / `X`.
@@ -24,11 +24,12 @@ When to consult: changing Vim clipboard settings, zsh ZLE yank/paste widgets, tm
 
 ## Provider stance
 - macOS provider: `pbcopy` / `pbpaste`.
-- WSL provider: Windows clipboard bridge. `win32yank.exe` is third-party and should be preferred if installed because it has symmetric copy/paste behavior; Microsoft-provided options include `clip.exe` for copy and PowerShell `Get-Clipboard` / `Set-Clipboard` where reliable.
+- WSL provider: Microsoft-native Windows clipboard bridge. Use `clip.exe` for copy and `powershell.exe` / `Get-Clipboard -Raw` for paste, with CR stripping centralized in `dotfiles-clipboard`.
 - Linux desktop providers (`wl-copy` / `wl-paste`, `xclip`, `xsel`) are out of scope for v1 because they are not available for local testing in this workflow.
 - Avoid a heavy third-party clipboard dependency unless the internal adapter grows beyond a small, auditable script.
 - Do not expose public shell helper commands such as `copyfile` / `copypath` unless they naturally fall out of the provider and are wanted as user-facing commands.
 - Integrations must degrade quietly when `dotfiles-clipboard` is missing or no provider is supported. Native app-local behavior should still work: zsh keeps normal `CUTBUFFER` yanks/pastes, and tmux keeps its paste buffer.
+- `win32yank` was considered and rejected as the default WSL provider. The Microsoft-native path is preferred because copy is just `clip.exe`, paste is a single PowerShell `Get-Clipboard -Raw` call, and the repo wrapper can handle CR stripping directly. Revisit `win32yank` only if real WSL testing proves the first-party bridge insufficient.
 
 ## Clipboard model
 - Bash/readline and zsh/ZLE expose shell-local kill rings/registers, not an OS clipboard. Bash's Readline kill ring is mostly opaque; zsh exposes `CUTBUFFER`, `killring`, and vi registers directly.
@@ -43,11 +44,11 @@ When to consult: changing Vim clipboard settings, zsh ZLE yank/paste widgets, tm
   - `dotfiles-clipboard status` prints the detected provider and exits nonzero when no provider is usable.
 - Preserve bytes/text as faithfully as the provider permits: do not add a trailing newline, trim content, or normalize line endings unless a provider requires it. If WSL needs CRLF/LF normalization, keep it inside that provider branch.
 - Defer MIME/data-type variants until a real need appears. zsh and tmux integrations need `text/plain`; image/file/rich-text clipboard formats would add provider complexity without current value.
-- Provider priority should target macOS and WSL/Windows first: `pbcopy`/`pbpaste` on macOS; `win32yank.exe` if installed on WSL, otherwise PowerShell/Windows clipboard commands where reliable.
+- Provider priority should target macOS and WSL/Windows first: `pbcopy`/`pbpaste` on macOS; `clip.exe` plus PowerShell clipboard commands on WSL.
 - Keep OSC 52 as a copy-only terminal path to evaluate separately from the core provider wrapper; it is useful across SSH but is not a symmetric paste API.
 
 ## External inspiration
 - `clipboard-cli` / `clipboardy`: useful precedent for a tiny cross-platform copy/paste surface; also confirms headless Linux lacks a system clipboard.
 - `tmux-yank`: useful precedent for tmux integration using a provider command that accepts stdin, with macOS, Linux, Cygwin, and WSL provider detection.
 - `wl-clipboard`, `xclip`, and `xsel`: useful precedent for pipe-oriented Linux desktop provider behavior and the `CLIPBOARD` vs `PRIMARY` distinction.
-- `win32yank`: useful precedent for WSL/Windows Vim-style clipboard bridging, especially copy/paste symmetry and CRLF/LF handling.
+- `win32yank`: rejected as the repo's default WSL provider, but useful as a precedent for a tiny WSL/Windows text bridge and for CRLF/LF behavior to test against.

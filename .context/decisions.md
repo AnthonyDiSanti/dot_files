@@ -3,6 +3,12 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-28 — Use Microsoft-native WSL clipboard bridge
+- Decider: Anthony
+- Decision: Implement WSL clipboard support through Microsoft-provided `clip.exe` for copy and PowerShell `Get-Clipboard` for paste, rather than through `win32yank.exe`.
+- Rationale: The direct system integration is simple enough to be the preferred design, not just a fallback. Copy is a straightforward `clip.exe` pipe, paste is one PowerShell `Get-Clipboard -Raw` call, and the repo wrapper owns newline normalization. `win32yank` is small and convenient, but it adds a third-party binary/dependency chain without enough benefit to justify it.
+- Consequences / follow-ups: `dotfiles-clipboard` owns the quoting/newline normalization so zsh and tmux do not need WSL-specific logic. Copy uses `clip.exe`; paste uses PowerShell `Get-Clipboard -Raw` and strips carriage returns. Treat `win32yank` as rejected for this repo by default, not merely deferred, unless the Microsoft-native path proves insufficient in real WSL testing.
+
 ## 2026-04-28 — Treat tmux line-selection switching as an upstream bug
 - Decider: Anthony
 - Decision: Keep the current `home/.tmux.conf` Vim-style selection bindings as the correct local configuration, with fresh `V` using `select-line` as a workaround and mid-selection switches to `V` still using `rectangle-off ; selection-mode line`. Save the detailed upstream bug draft for later work against tmux itself.
@@ -31,7 +37,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decider: Anthony
 - Decision: Build clipboard unification around a small repo-owned text wrapper targeting macOS and WSL/Windows first. Defer Linux desktop providers and OSC 52 until there is a local test environment or a concrete v2 need.
 - Rationale: Clipboard behavior is platform- and terminal-sensitive. macOS and Ubuntu under WSL are the environments Anthony can test directly, so they are safer targets than blind support for X11, Wayland, or terminal escape-sequence clipboard paths.
-- Consequences / follow-ups: `dotfiles-clipboard copy|paste|status` is the shared integration point. macOS uses `pbcopy` / `pbpaste`; WSL should prefer a clean Windows clipboard bridge such as third-party `win32yank.exe` if installed, with Microsoft-provided PowerShell/Windows commands considered as fallback. OSC 52 remains a copy-only v2 idea, especially for SSH/tmux workflows.
+- Consequences / follow-ups: `dotfiles-clipboard copy|paste|status` is the shared integration point. macOS uses `pbcopy` / `pbpaste`; WSL uses Microsoft-native `clip.exe` plus PowerShell clipboard commands. OSC 52 remains a copy-only v2 idea, especially for SSH/tmux workflows.
 
 ## 2026-04-27 — Avoid git submodules by default
 - Decider: Anthony

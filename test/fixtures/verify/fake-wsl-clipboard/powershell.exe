@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -eu
+
+: "${DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE:?missing fake Windows clipboard file path}"
+
+seen_command=0
+for arg; do
+  if [ "$arg" = "-Command" ]; then
+    seen_command=1
+    break
+  fi
+done
+
+if [ "$seen_command" -ne 1 ]; then
+  printf '%s\n' "fake powershell.exe only implements -Command" >&2
+  exit 2
+fi
+
+# The dotfiles provider strips CR from Windows clipboard text on paste.
+[ -r "$DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE" ] || exit 0
+tr -d '\r' <"$DOTFILES_FAKE_WINDOWS_CLIPBOARD_FILE"

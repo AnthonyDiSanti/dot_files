@@ -32,49 +32,24 @@ dotfiles_shell_file_dialect() {
   local rel_path="$2"
   local first_line
 
+  first_line="$(sed -n '1p' "$file")"
+
+  # Trust explicit shell shebangs first; path conventions cover sourced fragments.
+  case "$first_line" in
+    '#!'*bash*) printf 'bash\n' && return 0 ;;
+    '#!'*zsh*) printf 'zsh\n' && return 0 ;;
+    '#!'*sh*) printf 'sh\n' && return 0 ;;
+  esac
+
   case "$rel_path" in
-    home/.zprofile | home/.zshrc | home/.config/zsh/*.zsh | test/fixtures/verify/*.zsh | *.zsh)
+    home/.zprofile | home/.zshrc | *.zsh)
       printf 'zsh\n'
       ;;
-    bootstrap.sh | home/.profile | home/.shrc)
-      printf 'sh\n'
-      ;;
-    test/fixtures/verify/fake-fzf-no-shell-support/fzf)
-      printf 'sh\n'
-      ;;
-    test/fixtures/verify/fake-generated-completion-no-support/docker)
-      printf 'sh\n'
-      ;;
-    test/fixtures/verify/fake-tmux/tmux)
-      printf 'sh\n'
-      ;;
-    test/fixtures/verify/fake-clipboard-supported/dotfiles-clipboard)
-      printf 'sh\n'
-      ;;
-    test/fixtures/verify/fake-clipboard-unsupported/dotfiles-clipboard)
-      printf 'sh\n'
-      ;;
-    home/.config/shell/*.sh)
-      printf 'sh\n'
-      ;;
-    home/.local/bin/*)
-      first_line="$(sed -n '1p' "$file")"
-      case "$first_line" in
-        *bash*) printf 'bash\n' ;;
-        *zsh*) printf 'zsh\n' ;;
-        '#!'*) printf 'sh\n' ;;
-        *) return 1 ;;
-      esac
-      ;;
-    *.bash | home/.bash_profile | home/.bashrc)
+    *.bash)
       printf 'bash\n'
       ;;
-    *.sh)
-      first_line="$(sed -n '1p' "$file")"
-      case "$first_line" in
-        *bash*) printf 'bash\n' ;;
-        *) printf 'sh\n' ;;
-      esac
+    home/.profile | home/.shrc | *.sh)
+      printf 'sh\n'
       ;;
     *)
       return 1
