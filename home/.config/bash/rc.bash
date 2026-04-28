@@ -35,6 +35,8 @@ shopt -s histappend cmdhist lithist
 shopt -s checkwinsize
 
 __dotfiles_bash_configure_line_editor() {
+  local command_cursor insert_cursor
+
   # Open the current command in $EDITOR from vi insert or command mode.
   bind -m vi-insert '"\C-e": edit-and-execute-command'
   bind -m vi-command '"\C-e": vi-edit-and-execute-command'
@@ -48,6 +50,18 @@ __dotfiles_bash_configure_line_editor() {
   # Match completions case-insensitively; enable Readline's related case mapper if present.
   bind 'set completion-ignore-case on'
   bind 'set completion-map-case on' 2>/dev/null || true
+
+  # Keep bracketed paste without showing pasted text as a temporary active region.
+  bind 'set enable-active-region off'
+
+  # Match zsh's vi cursor policy: beam in insert mode, block in command mode.
+  # \001/\002 mark these escape sequences as nonprinting for prompt width.
+  insert_cursor=$'\001\e[6 q\002'
+  command_cursor=$'\001\e[2 q\002'
+  if bind "set vi-ins-mode-string $insert_cursor" 2>/dev/null \
+    && bind "set vi-cmd-mode-string $command_cursor" 2>/dev/null; then
+    bind 'set show-mode-in-prompt on' 2>/dev/null || true
+  fi
 }
 
 __dotfiles_bash_configure_line_editor
@@ -71,11 +85,6 @@ unset -f __dotfiles_bash_configure_line_editor
 
 if [ -r "$dotfiles_bash_config_home/prompt.bash" ]; then
   source "$dotfiles_bash_config_home/prompt.bash"
-fi
-
-# Filled block cursor on WSL only (avoids grep noise on macOS where /proc/version is absent).
-if [[ -r /proc/version ]] && grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null; then
-  echo -ne '\e[2 q'
 fi
 
 if [[ ${DOTFILES_USE_BUILTIN_PS1:-1} != 0 ]] && declare -F __dotfiles_set_ps1 >/dev/null 2>&1; then

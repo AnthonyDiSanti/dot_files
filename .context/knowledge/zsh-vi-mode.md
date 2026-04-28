@@ -16,3 +16,4 @@ When to consult: changing `home/.config/zsh/rc.zsh` line-editor bindings, ZLE wi
 - Non-clipboard vi mode is intentionally conservative now. Future clipboard work should reason about Vim's anonymous register and zsh's `CUTBUFFER` together rather than adding a broad copy-on-every-delete hook.
 - `select-word-match` is a customizable word-style text object, not Vim `*` search. Leave it unbound unless a custom word style such as camel/subword matching becomes useful.
 - `zsh/complist` menu selection uses the `menuselect` keymap. Bind `h`/`j`/`k`/`l` there rather than stealing terminal control chords like `Ctrl-H`, `Ctrl-J`, `Ctrl-K`, and `Ctrl-L`.
+- Cursor strategy is aligned across Bash and zsh: insert/default mode uses a steady beam (`ESC [6 q`), while command/operator/visual mode uses a steady block (`ESC [2 q`). zsh drives this through ZLE keymap hooks; Bash drives it through Readline `vi-ins-mode-string` / `vi-cmd-mode-string` with nonprinting markers.

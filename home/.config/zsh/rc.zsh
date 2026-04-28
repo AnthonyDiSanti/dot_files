@@ -241,8 +241,8 @@ __dotfiles_zsh_configure_line_editor() {
   zle -N vi-change-whole-line __dotfiles_zsh_vi_change_whole_line_clipboard
   zle -N vi-kill-eol __dotfiles_zsh_vi_kill_eol_clipboard
   zle -N vi-substitute __dotfiles_zsh_vi_substitute_clipboard
-  zle -N vi-delete-char __dotfiles_zsh_vi_delete_char_clipboard
-  zle -N vi-backward-delete-char __dotfiles_zsh_vi_backward_delete_char_clipboard
+  zle -N __dotfiles_zsh_vi_delete_char_clipboard
+  zle -N __dotfiles_zsh_vi_backward_delete_char_clipboard
   zle -N vi-put-before __dotfiles_zsh_vi_put_before_clipboard
   zle -N vi-put-after __dotfiles_zsh_vi_put_after_clipboard
   zle -N put-replace-selection __dotfiles_zsh_put_replace_selection_clipboard
@@ -255,9 +255,17 @@ __dotfiles_zsh_configure_line_editor() {
   add-zle-hook-widget keymap-select __dotfiles_zsh_set_cursor_for_keymap
   add-zle-hook-widget line-finish __dotfiles_zsh_reset_cursor
 
+  # Disable zsh's temporary standout highlight for bracketed paste text.
+  zle_highlight=("${(@)zle_highlight:#paste:*}" paste:none)
+
   # Open the current command in $EDITOR from vi insert or command mode.
   bindkey -M viins '^E' edit-command-line
   bindkey -M vicmd '^E' edit-command-line
+
+  # Keep Backspace/Delete useful after returning to insert mode mid-command.
+  bindkey -M viins '^?' backward-delete-char
+  bindkey -M viins '^H' backward-delete-char
+  bindkey -M viins '^[[3~' delete-char
 
   # Keep Ctrl-R useful when fzf integration is unavailable; fzf can override it later.
   bindkey -M emacs '^R' history-incremental-search-backward
@@ -301,6 +309,8 @@ __dotfiles_zsh_configure_line_editor() {
   bindkey -M vicmd cs change-surround
   bindkey -M vicmd ds delete-surround
   bindkey -M vicmd ys add-surround
+  bindkey -M vicmd x __dotfiles_zsh_vi_delete_char_clipboard
+  bindkey -M vicmd X __dotfiles_zsh_vi_backward_delete_char_clipboard
   bindkey -M visual S add-surround
 
   # Native completion matching: case-insensitive, with - and _ treated alike.
