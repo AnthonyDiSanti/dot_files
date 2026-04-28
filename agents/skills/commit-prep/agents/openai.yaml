@@ -1,0 +1,6 @@
+interface:
+  display_name: "Commit Prep"
+  short_description: "Update docs/context/handoff and draft a commit message."
+  default_prompt: "Prepare the current work for commit: update durable docs/context/handoff as needed and draft a commit message."
+policy:
+  allow_implicit_invocation: true

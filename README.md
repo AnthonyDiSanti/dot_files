@@ -14,9 +14,10 @@ This repo uses a repo-native bootstrap to symlink dotfiles into `$HOME`.
 3. Run `./bootstrap.sh`.
 
 `bootstrap.sh` interprets the checked-out `home/` tree as a literal `$HOME`
-mirror and symlinks each managed leaf back into the repo. It keeps a small state
-file under `XDG_STATE_HOME` / `~/.local/state/dotfiles/` so later bootstrap runs
-can clean up removed or reshaped managed targets.
+mirror and symlinks each managed leaf back into the repo. Real symlink nodes in
+`home/` are preserved as managed leaves, including symlinked directories. It
+keeps a small state file under `XDG_STATE_HOME` / `~/.local/state/dotfiles/` so
+later bootstrap runs can clean up removed or reshaped managed targets.
 
 ### Previewing Changes
 
@@ -80,3 +81,9 @@ by `./bootstrap.sh`. iTerm2 gets a dynamic profile named
 `~/Library/Application Support/iTerm2/DynamicProfiles/`. Run
 `settings/iterm2.sh` to make that profile the default for new iTerm2 windows
 and let `tmux -CC` sessions inherit the connecting session profile.
+
+## Agent Skills
+
+Shared agent skill sources live under `agents/skills/`. Per-harness deployment
+paths live in `home/` as symlink nodes, such as
+`home/.codex/skills/commit-prep -> ../../../agents/skills/commit-prep`.
