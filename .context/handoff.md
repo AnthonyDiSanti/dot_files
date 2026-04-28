@@ -7,11 +7,14 @@
 - What’s broken / flaky: No known issues.
 
 ## Next Steps (ordered)
-1. On the Windows/WSL machine, pull the branch, run `./bootstrap.sh`, and verify `dotfiles-clipboard status` prints `wsl`.
-2. Smoke-test direct wrapper copy/paste plus zsh vi-mode yank/paste and tmux copy/import/paste behavior under WSL.
-3. Treat the OMB/OMZ inspiration pass as mostly complete; remaining shell items should be explicit standalone workstreams such as small directory helpers.
-4. After Neovim evaluation, revisit tmux TPM/plugins as a separate workstream, especially `tmux-resurrect` and `tmux-continuum`.
-5. At the very end after tmux plugin evaluation, address the upstream tmux `selection-mode line` bug using the saved issue draft in `.context/scratch/20260428-tmux-selection-mode-line-bug/report.md`.
+1. On the Windows/WSL machine, pull `feature/clipboard` and inspect the live Windows Terminal `settings.json` before deciding whether to track a full file or merge a small repo-owned fragment.
+2. Add Solarized Dark support for Windows Terminal, preferably by adding a named scheme and applying it through `profiles.defaults.colorScheme` if that does not disturb existing profile-specific choices. Preserve local profile GUIDs, WSL distro profiles, launch behavior, and any generated Windows Terminal state.
+3. On the Windows/WSL machine, run `./bootstrap.sh`, verify `dotfiles-clipboard status` prints `wsl`, and debug the known Windows copy/paste issues there.
+4. Smoke-test direct wrapper copy/paste plus zsh vi-mode yank/paste and tmux copy/import/paste behavior under WSL.
+5. Return to this macOS machine, pull the Windows changes, and rerun `test/verify.sh` plus quick macOS manual checks for iTerm2/Ghostty colors and macOS clipboard behavior.
+6. Treat the OMB/OMZ inspiration pass as mostly complete; remaining shell items should be explicit standalone workstreams such as small directory helpers.
+7. After Neovim evaluation, revisit tmux TPM/plugins as a separate workstream, especially `tmux-resurrect` and `tmux-continuum`.
+8. At the very end after tmux plugin evaluation, address the upstream tmux `selection-mode line` bug using the saved issue draft in `.context/scratch/20260428-tmux-selection-mode-line-bug/report.md`.
 
 Reminder: if another already-bootstrapped machine has host-local rc overrides named `.sh_local`, `.bash_local`, or `.zsh_local`, rename them to `.shrc_local`, `.bashrc_local`, or `.zshrc_local` after pulling this commit.
 
@@ -20,8 +23,17 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 - `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; non-clipboard vi mode is merged, and clipboard/register unification is now active as a focused follow-up.
 
 ## Working Tree
-- Current branch: `feature/clipboard`; uncommitted changes add an iTerm2 Solarized Dark dynamic profile/default settings script, tab-safe bootstrap manifests for managed paths with spaces, and updated notes.
+- Current branch: `feature/clipboard`; macOS-side iTerm2 Solarized dynamic-profile work was committed. This handoff update records the next Windows/WSL pass.
 - Last successful verification: `test/verify.sh` passed on 2026-04-28 after adding the iTerm2 `TmuxUsesDedicatedProfile=false` setting; Anthony confirmed `tmux -CC` now preserves the Solarized dynamic profile colors.
+
+## Windows Terminal Solarized Plan
+- Work will continue on a Windows/WSL machine in a fresh session on `feature/clipboard`, then return to macOS for final verification.
+- Use the default open-source Windows Terminal, not a third-party terminal. First inspect the actual settings location/version on that machine; likely candidates include the Store package path under `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`, the Preview package path, or an unpackaged `settings.json`.
+- Do not blindly replace the whole Windows Terminal `settings.json`. It commonly contains local profiles, generated GUIDs, WSL distro entries, launch behavior, keybindings, and machine-local state. Prefer the narrowest durable approach after inspection.
+- Preferred first design: add a Solarized Dark color scheme to the `schemes` array and set `profiles.defaults.colorScheme` to that scheme. Only override individual profiles if existing profile-specific choices require it.
+- If the live `settings.json` is clean and stable enough to track as a full dotfile, document why before doing so. Otherwise, implement a small merge/apply helper or documented manual fragment instead of owning the entire file.
+- Use canonical Solarized Dark values consistent with Ghostty/iTerm2 already in this repo. Avoid reintroducing the old `settings/solarized` submodule.
+- Coordinate this with the active WSL clipboard work: Windows changes may include larger fixes to `dotfiles-clipboard` provider behavior. After the Windows pass, return to macOS and confirm macOS wrapper behavior and terminal colors still work.
 
 ## WSL Clipboard Smoke Plan
 - Run `dotfiles-clipboard status`; expected output is `wsl`.
