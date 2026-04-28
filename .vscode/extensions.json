@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "mads-hartmann.bash-ide-vscode",
+    "DavidAnson.vscode-markdownlint",
+    "timonwong.shellcheck",
+    "malmaud.tmux"
+  ]
+}

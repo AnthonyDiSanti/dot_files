@@ -21,6 +21,11 @@ cleanup() {
   rm -f "$log_path" "$fake_clipboard_file"
 }
 
+settle_zle() {
+  # Test shells lower KEYTIMEOUT, so short pauses are enough for Esc and ZLE input.
+  sleep 0.03
+}
+
 trap cleanup EXIT
 
 read_until() {
@@ -77,6 +82,7 @@ start_child_shell() {
 
   setup_command='source '"${(q)test_home}/.zshrc"'; '\
 'DOTFILES_ZSH_VI_MODE_LOG='"${(q)log_path}"'; '\
+'KEYTIMEOUT=1; '\
 'source '"${(q)child_fixture}"'; '\
 'PROMPT="PROMPT> "; '\
 'echo READY'
@@ -98,11 +104,11 @@ run_operator_case() {
   print -r -- "CASE $name" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'echo abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.5
+  settle_zle
   zpty -w -n "$zpty_name" "$keys"
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "$name"
   finish_child_shell
@@ -119,11 +125,11 @@ run_clipboard_yank_case() {
   print -r -- "CASE clipboard-yank" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'echo abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.5
+  settle_zle
   zpty -w -n "$zpty_name" yae
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "clipboard yank"
   finish_child_shell
@@ -144,11 +150,11 @@ run_clipboard_cut_case() {
   print -r -- "CASE $name" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'echo abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.5
+  settle_zle
   zpty -w -n "$zpty_name" "$keys"
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "$name"
   finish_child_shell
@@ -168,11 +174,11 @@ run_insert_backspace_case() {
   print -r -- "CASE insert-backspace" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\177'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "insert backspace"
   finish_child_shell
@@ -192,15 +198,15 @@ run_mid_command_insert_backspace_case() {
   print -r -- "CASE mid-command-insert-backspace" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" hi
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\177'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "mid-command insert backspace"
   finish_child_shell
@@ -220,15 +226,15 @@ run_mid_command_insert_delete_case() {
   print -r -- "CASE mid-command-insert-delete" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" hi
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e[3~'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\e'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" Q
   wait_for_dump_line "mid-command insert delete"
   finish_child_shell
@@ -248,9 +254,9 @@ run_clipboard_load_case() {
   print -r -- "CASE clipboard-load" >>"$log_path"
   start_child_shell
   zpty -w -n "$zpty_name" 'echo abc'
-  sleep 0.1
+  settle_zle
   zpty -w -n "$zpty_name" $'\a'
-  sleep 0.1
+  settle_zle
   wait_for_dump_line "clipboard load"
   finish_child_shell
 

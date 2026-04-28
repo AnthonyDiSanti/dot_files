@@ -18,6 +18,18 @@ dotfiles_command_succeeds() {
   "$@" >/dev/null 2>&1
 }
 
+if command tmux -V >/dev/null 2>&1; then
+  tmux() {
+    # Make plain `tmux` converge on a stable workspace while preserving tmux subcommands.
+    if [ "$#" -eq 0 ]; then
+      command tmux new-session -A -s default
+      return
+    fi
+
+    command tmux "$@"
+  }
+fi
+
 dotfiles_codex_git() (
   dotfiles_repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
   dotfiles_git_common=$(git rev-parse --git-common-dir 2>/dev/null) || exit 1

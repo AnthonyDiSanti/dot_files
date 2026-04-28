@@ -4,7 +4,8 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture_root="$repo_root/test/fixtures/verify"
-tmp_paths=()
+tmp_root="$(mktemp -d)"
+tmp_paths=("$tmp_root")
 
 if [[ ! -r "$repo_root/scripts/home_tree_manifest.sh" ]]; then
   echo "verify: missing required helper: $repo_root/scripts/home_tree_manifest.sh" >&2
@@ -37,7 +38,67 @@ log_suite() {
 }
 
 log_check() {
-  printf '  - %s\n' "$1"
+  printf '  - %s' "$1"
+}
+
+format_duration() {
+  local seconds="$1"
+
+  awk -v seconds="$seconds" '
+    BEGIN {
+      if (seconds < 1) {
+        milliseconds = int((seconds * 1000) + 0.5)
+        if (milliseconds < 1) {
+          print "<1ms"
+        } else {
+          printf "%dms\n", milliseconds
+        }
+      } else if (seconds < 10) {
+        printf "%.2fs\n", seconds
+      } else {
+        printf "%.1fs\n", seconds
+      }
+    }
+  '
+}
+
+run_timed_check() {
+  local check_name="$1"
+  local elapsed_file
+  local elapsed_seconds
+  local output_file
+  local status
+  local TIMEFORMAT="%3R"
+
+  shift
+  elapsed_file="$(make_temp_file)"
+  output_file="$(make_temp_file)"
+
+  log_check "$check_name"
+
+  # Keep passing checks compact; replay captured output only when debugging a failure.
+  set +e
+  { time {
+    (
+      set -euo pipefail
+      "$@"
+    ) >"$output_file" 2>&1
+  }; } 2>"$elapsed_file"
+  status=$?
+  set -e
+
+  elapsed_seconds="$(<"$elapsed_file")"
+  if ((status == 0)); then
+    printf ' (%s)\n' "$(format_duration "$elapsed_seconds")"
+  else
+    printf ' (failed after %s)\n' "$(format_duration "$elapsed_seconds")"
+  fi
+
+  if ((status != 0)) && [[ -s "$output_file" ]]; then
+    cat "$output_file"
+  fi
+
+  return "$status"
 }
 
 fail() {
@@ -51,15 +112,13 @@ require_command() {
 
 make_temp_file() {
   local path
-  path="$(mktemp)"
-  tmp_paths+=("$path")
+  path="$(mktemp "$tmp_root/file.XXXXXX")"
   printf '%s\n' "$path"
 }
 
 make_temp_dir() {
   local path
-  path="$(mktemp -d)"
-  tmp_paths+=("$path")
+  path="$(mktemp -d "$tmp_root/dir.XXXXXX")"
   printf '%s\n' "$path"
 }
 
@@ -82,8 +141,6 @@ assert_symlink() {
 
 check_shell_syntax() {
   local script_path
-
-  log_check "shell syntax"
 
   while IFS= read -r -d '' script_path; do
     check_shell_file_syntax "$script_path"
@@ -120,17 +177,14 @@ check_shell_file_syntax() {
 }
 
 check_shell_lint() {
-  log_check "shell static analysis"
   "$repo_root/scripts/shellcheck-dotfiles.bash" --all
 }
 
 check_shell_format() {
-  log_check "shell formatting"
   "$repo_root/scripts/shfmt-dotfiles.bash" --all --check
 }
 
 check_dev_tool_wrappers() {
-  log_check "dev tool wrappers"
   # VS Code probes ShellCheck with -V and may not use the workspace as cwd.
   (cd / && "$repo_root/scripts/shellcheck-dotfiles.bash" -V >/dev/null)
 }
@@ -139,7 +193,6 @@ check_managed_targets() {
   local expected
   local actual
 
-  log_check "managed target list"
   expected="$(make_temp_file)"
   actual="$(make_temp_file)"
 
@@ -155,7 +208,6 @@ check_temp_apply() {
   local rel_path
   local source_path
 
-  log_check "bootstrap in a temporary home"
   tmp_home="$(make_temp_dir)"
   manifest_path="$(make_temp_file)"
 
@@ -181,7 +233,6 @@ check_temp_apply() {
 check_live_home_converged() {
   local diff_output
 
-  log_check "live home convergence"
   diff_output="$(make_temp_file)"
   "$repo_root/bootstrap.sh" --dry-run --verbose >"$diff_output"
 
@@ -195,24 +246,91 @@ run_bash_fixture() {
   local fixture_name="$1"
   shift
 
-  # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" bash -lic 'set -e; source "$DOTFILES_VERIFY_FIXTURE"'
+  run_bash_fixtures "$fixture_name" -- "$@"
 }
 
 run_sh_fixture() {
   local fixture_name="$1"
   shift
 
-  # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" sh -lic 'set -e; . "$DOTFILES_VERIFY_FIXTURE"'
+  run_sh_fixtures "$fixture_name" -- "$@"
 }
 
 run_zsh_fixture() {
   local fixture_name="$1"
   shift
 
+  run_zsh_fixtures "$fixture_name" -- "$@"
+}
+
+run_bash_fixtures() {
+  local fixture_names=()
+
+  while [[ ${1:-} != -- ]]; do
+    fixture_names+=("$1")
+    shift
+  done
+  shift
+
   # Run as interactive login shells so startup files load before the fixture assertions.
-  env "$@" DOTFILES_VERIFY_FIXTURE="$fixture_root/$fixture_name" ZDOTDIR="$HOME" zsh -lic 'setopt ERR_EXIT; source "$DOTFILES_VERIFY_FIXTURE"'
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" bash -lic '
+    set -e
+    for fixture_name do
+      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
+      export DOTFILES_VERIFY_FIXTURE
+      source "$DOTFILES_VERIFY_FIXTURE"
+    done
+  ' bash "${fixture_names[@]}"
+}
+
+run_sh_fixtures() {
+  local fixture_names=()
+
+  while [[ ${1:-} != -- ]]; do
+    fixture_names+=("$1")
+    shift
+  done
+  shift
+
+  # Run as interactive login shells so startup files load before the fixture assertions.
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" sh -lic '
+    set -e
+    for fixture_name do
+      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
+      export DOTFILES_VERIFY_FIXTURE
+      . "$DOTFILES_VERIFY_FIXTURE"
+    done
+  ' sh "${fixture_names[@]}"
+}
+
+run_zsh_fixtures() {
+  local env_arg
+  local fixture_names=()
+  local zdotdir="$HOME"
+
+  while [[ ${1:-} != -- ]]; do
+    fixture_names+=("$1")
+    shift
+  done
+  shift
+
+  for env_arg in "$@"; do
+    case "$env_arg" in
+      HOME=*)
+        zdotdir="${env_arg#HOME=}"
+        ;;
+    esac
+  done
+
+  # Run as interactive login shells so startup files load before the fixture assertions.
+  env "$@" DOTFILES_VERIFY_FIXTURE_ROOT="$fixture_root" ZDOTDIR="$zdotdir" zsh -lic '
+    setopt ERR_EXIT
+    for fixture_name do
+      DOTFILES_VERIFY_FIXTURE="$DOTFILES_VERIFY_FIXTURE_ROOT/$fixture_name"
+      export DOTFILES_VERIFY_FIXTURE
+      source "$DOTFILES_VERIFY_FIXTURE"
+    done
+  ' zsh "${fixture_names[@]}"
 }
 
 assert_bash_startup() {
@@ -242,7 +360,6 @@ assert_zsh_rerunnable() {
 check_zsh_vi_mode_operators() {
   local tmp_home
 
-  log_check "zsh vi-mode operator smoke test"
   tmp_home="$(make_temp_dir)"
 
   HOME="$tmp_home" \
@@ -254,19 +371,33 @@ check_zsh_vi_mode_operators() {
   zsh "$fixture_root/zsh-vi-mode-operators.zsh" "$tmp_home"
 }
 
-assert_unsupported_fzf_shell_generators_are_quiet() {
+assert_shell_startup_edge_cases() {
+  local fixture_path
   local startup_stderr
+  local tmux_log
   local tmp_home
 
   tmp_home="$(make_temp_dir)"
   startup_stderr="$(make_temp_file)"
+  tmux_log="$(make_temp_file)"
+  fixture_path="$fixture_root/fake-fzf-no-shell-support:$fixture_root/fake-generated-completion-no-support:${PATH:-}"
 
   HOME="$tmp_home" \
     XDG_CONFIG_HOME="$tmp_home/.config" \
     XDG_STATE_HOME="$tmp_home/.local/state" \
     "$repo_root/bootstrap.sh" >/dev/null
+  ln -s "$fixture_root/fake-tmux/tmux" "$tmp_home/.local/bin/tmux"
 
-  assert_bash_startup \
+  run_sh_fixtures sh-startup.sh tmux-default-wrapper.sh -- \
+    -u XDG_CONFIG_HOME \
+    -u XDG_CACHE_HOME \
+    -u XDG_DATA_HOME \
+    -u XDG_STATE_HOME \
+    HOME="$tmp_home" \
+    DOTFILES_FAKE_TMUX_LOG="$tmux_log" \
+    2>"$startup_stderr"
+
+  run_bash_fixtures bash-startup.bash tmux-default-wrapper.sh -- \
     -u XDG_CONFIG_HOME \
     -u XDG_CACHE_HOME \
     -u XDG_DATA_HOME \
@@ -275,10 +406,11 @@ assert_unsupported_fzf_shell_generators_are_quiet() {
     -u HISTSIZE \
     -u HISTFILESIZE \
     HOME="$tmp_home" \
-    PATH="$fixture_root/fake-fzf-no-shell-support:${PATH:-}" \
-    2>"$startup_stderr"
+    PATH="$fixture_path" \
+    DOTFILES_FAKE_TMUX_LOG="$tmux_log" \
+    2>>"$startup_stderr"
 
-  assert_zsh_startup \
+  run_zsh_fixtures zsh-startup.zsh tmux-default-wrapper.sh -- \
     -u XDG_CONFIG_HOME \
     -u XDG_CACHE_HOME \
     -u XDG_DATA_HOME \
@@ -287,50 +419,14 @@ assert_unsupported_fzf_shell_generators_are_quiet() {
     -u HISTSIZE \
     -u SAVEHIST \
     HOME="$tmp_home" \
-    PATH="$fixture_root/fake-fzf-no-shell-support:${PATH:-}" \
+    PATH="$fixture_path" \
+    DOTFILES_FAKE_TMUX_LOG="$tmux_log" \
     2>>"$startup_stderr"
 
   if grep -q "unknown option: --\\(bash\\|zsh\\)" "$startup_stderr"; then
     cat "$startup_stderr" >&2
     fail "unsupported fzf shell generators should not print startup errors"
   fi
-}
-
-assert_unsupported_completion_generators_are_quiet() {
-  local startup_stderr
-  local tmp_home
-
-  tmp_home="$(make_temp_dir)"
-  startup_stderr="$(make_temp_file)"
-
-  HOME="$tmp_home" \
-    XDG_CONFIG_HOME="$tmp_home/.config" \
-    XDG_STATE_HOME="$tmp_home/.local/state" \
-    "$repo_root/bootstrap.sh" >/dev/null
-
-  assert_bash_startup \
-    -u XDG_CONFIG_HOME \
-    -u XDG_CACHE_HOME \
-    -u XDG_DATA_HOME \
-    -u XDG_STATE_HOME \
-    -u HISTFILE \
-    -u HISTSIZE \
-    -u HISTFILESIZE \
-    HOME="$tmp_home" \
-    PATH="$fixture_root/fake-generated-completion-no-support:${PATH:-}" \
-    2>"$startup_stderr"
-
-  assert_zsh_startup \
-    -u XDG_CONFIG_HOME \
-    -u XDG_CACHE_HOME \
-    -u XDG_DATA_HOME \
-    -u XDG_STATE_HOME \
-    -u HISTFILE \
-    -u HISTSIZE \
-    -u SAVEHIST \
-    HOME="$tmp_home" \
-    PATH="$fixture_root/fake-generated-completion-no-support:${PATH:-}" \
-    2>>"$startup_stderr"
 
   if grep -q "unknown command: completion" "$startup_stderr"; then
     cat "$startup_stderr" >&2
@@ -339,7 +435,6 @@ assert_unsupported_completion_generators_are_quiet() {
 }
 
 check_shell_startup() {
-  log_check "shell startup smoke tests"
   assert_sh_startup \
     -u XDG_CONFIG_HOME \
     -u XDG_CACHE_HOME \
@@ -426,29 +521,28 @@ check_shell_startup() {
     -u HISTSIZE \
     -u SAVEHIST
 
-  assert_unsupported_fzf_shell_generators_are_quiet
-  assert_unsupported_completion_generators_are_quiet
+  assert_shell_startup_edge_cases
 }
 
 check_static_analysis_suite() {
   log_suite "static analysis"
-  check_shell_syntax
-  check_shell_lint
+  run_timed_check "shell syntax" check_shell_syntax
+  run_timed_check "shell static analysis" check_shell_lint
 }
 
 check_linting_suite() {
   log_suite "linting"
-  check_shell_format
+  run_timed_check "shell formatting" check_shell_format
 }
 
 check_functionality_suite() {
   log_suite "functionality"
-  check_dev_tool_wrappers
-  check_managed_targets
-  check_temp_apply
-  check_live_home_converged
-  check_shell_startup
-  check_zsh_vi_mode_operators
+  run_timed_check "dev tool wrappers" check_dev_tool_wrappers
+  run_timed_check "managed target list" check_managed_targets
+  run_timed_check "bootstrap in a temporary home" check_temp_apply
+  run_timed_check "live home convergence" check_live_home_converged
+  run_timed_check "shell startup smoke tests" check_shell_startup
+  run_timed_check "zsh vi-mode operator smoke test" check_zsh_vi_mode_operators
 }
 
 main() {

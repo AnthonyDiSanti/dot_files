@@ -45,6 +45,9 @@ dotfiles_shell_file_dialect() {
     test/fixtures/verify/fake-generated-completion-no-support/docker)
       printf 'sh\n'
       ;;
+    test/fixtures/verify/fake-tmux/tmux)
+      printf 'sh\n'
+      ;;
     test/fixtures/verify/fake-clipboard-supported/dotfiles-clipboard)
       printf 'sh\n'
       ;;

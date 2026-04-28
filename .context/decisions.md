@@ -3,6 +3,18 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-28 — Treat tmux line-selection switching as an upstream bug
+- Decider: Anthony
+- Decision: Keep the current `home/.tmux.conf` Vim-style selection bindings as the correct local configuration, with fresh `V` using `select-line` as a workaround and mid-selection switches to `V` still using `rectangle-off ; selection-mode line`. Save the detailed upstream bug draft for later work against tmux itself.
+- Rationale: `selection-mode line` is the correct tmux command for switching an active selection into line mode, but tmux 3.6a and master lazily apply it and clobber the anchor row to the top of the visible viewport. `select-line` works only for fresh line-selection entry because it collapses to the current row, so it cannot preserve an existing multi-line range.
+- Consequences / follow-ups: Full draft lives at `.context/scratch/20260428-tmux-selection-mode-line-bug/report.md`. File or fix this upstream only at the very end of the project, after Neovim evaluation and tmux plugin evaluation. When tmux is fixed, the mid-selection path should work without config changes; fresh `V` may optionally migrate back to `begin-selection ; rectangle-off ; selection-mode line` for symmetry.
+
+## 2026-04-28 — Defer TPM until after Neovim
+- Decider: Anthony
+- Decision: Treat the current tmux configuration pass as complete without adding TPM or tmux plugins. Revisit TPM and likely candidates such as `tmux-resurrect` and `tmux-continuum` only after Neovim has been considered.
+- Rationale: The current work is focused on tmux configuration and clipboard behavior, while plugin-managed session persistence is a larger workflow decision. Deferring keeps this pass bounded and avoids introducing a plugin manager before the editor direction is settled.
+- Consequences / follow-ups: Do not add TPM in the clipboard/tmux branch. Track tmux plugin evaluation as a future workstream after Neovim.
+
 ## 2026-04-27 — Clipboard integrations must degrade quietly
 - Decider: Anthony
 - Decision: Wire zsh and tmux clipboard behavior through `dotfiles-clipboard` opportunistically, without breaking native app-local buffers or printing provider errors on unsupported systems. Zsh paste-time clipboard refresh requires all vi-mode CUTBUFFER producers to sync too, including delete/change/substitute widgets, otherwise native delete-then-put workflows degrade.

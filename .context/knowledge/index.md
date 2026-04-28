@@ -17,6 +17,7 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
 - [Oh My Bash comparison](oh-my-bash.md) — selective Bash ergonomics worth considering without adopting the framework.
 - [Clipboard integration](clipboard.md) — Vim/zsh/tmux clipboard plan and provider stance.
+- [Tmux configuration](tmux.md) — terminal capabilities, vi prompt/copy-mode keys, cwd-preserving splits, and editor support.
 - [Zsh vi mode](zsh-vi-mode.md) — native ZLE vi-mode widgets, text objects, surround, and plugin inspiration.
 - [Vim plugins (vim-plug)](vim.md) — tracked loader snapshot, local `plugged/`, Solarized 8 / truecolor, Mundo/python3.
 - [Solarized assets](solarized.md) — no vendored `settings/solarized`; where Vim vs other apps get colors.
