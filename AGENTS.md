@@ -48,6 +48,9 @@ Maintenance:
   - `home/.config/zsh/` — zsh-specific interactive setup.
   - `home/.local/bin/` — optional user CLI utilities installed to `~/.local/bin/` when present.
   - `agents/skills/` — canonical shared agent skill sources; expose them to each harness through symlink nodes in `home/` such as `home/.codex/skills/<skill>`.
+  - `agents/skills/_models/` — model-specific tuning notes for individual skills; these are development references, not runtime skill bodies.
+  - `agents/official-docs/` — authoritative cached vendor docs; do not hand-edit these source documents.
+  - `agents/model-guidance/` — repo-authored model guidance derived from official docs, used to tune agent instructions and skills.
   - `test/` — repo-local verification entrypoint (`test/verify.sh`) and test fixtures (`test/fixtures/`).
   - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `shell_files.bash`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
@@ -59,6 +62,9 @@ Maintenance:
   - Zsh-only shell setup: `home/.config/zsh/`.
   - CLI utilities: `home/.local/bin/`.
   - Shared agent skills: `agents/skills/<skill>/`, then add a real symlink node at the harness path under `home/`.
+  - Skill-specific model tuning notes: `agents/skills/_models/<skill>-<model>.md`.
+  - Official vendor prompt/migration docs: `agents/official-docs/<provider-model-topic>.md`.
+  - Derived agent model guidance: `agents/model-guidance/<provider-model>.md`.
   - Dotfiles: `home/` using literal target names and real symlink nodes where appropriate.
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).

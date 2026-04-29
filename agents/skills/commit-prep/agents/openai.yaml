@@ -1,6 +1,6 @@
 interface:
   display_name: "Commit Prep"
-  short_description: "Update docs/context/handoff and draft a commit message."
-  default_prompt: "Prepare the current work for commit: update durable docs/context/handoff as needed and draft a commit message."
+  short_description: "Inspect full dirty git state, update context, and draft a commit message."
+  default_prompt: "Prepare the current work for commit: inspect the full dirty git state, preserve the index exactly, update durable docs/context/handoff as needed, run relevant verification, and draft a commit message for all uncommitted changes."
 policy:
   allow_implicit_invocation: true

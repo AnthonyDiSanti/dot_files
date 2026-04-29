@@ -13,6 +13,7 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 
 ## Topics
 - [Bootstrap & symlinks](bootstrap.md) — repo-native home-tree bootstrap, managed-path state, and symlink behavior.
+- [Agent instructions](agent-instructions.md) — skills, prompt-guide notes, and model-specific instruction tuning.
 - [Codex skills](codex-skills.md) — local skill source layout, symlink deployment, and discovery gotchas.
 - [Codex approval rules](codex-rules.md) — rule-file locations, generated vs curated rules, and testing commands.
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
