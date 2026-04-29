@@ -87,3 +87,11 @@ and let `tmux -CC` sessions inherit the connecting session profile.
 Shared agent skill sources live under `agents/skills/`. Per-harness deployment
 paths live in `home/` as symlink nodes, such as
 `home/.codex/skills/commit-prep -> ../../../agents/skills/commit-prep`.
+
+## Agent Infrastructure
+
+Agent skills, official vendor docs, and model-specific guidance live under
+`agents/`. `agents/official-docs/` is an authoritative cache copied from vendor
+sources; `agents/model-guidance/` contains repo-authored interpretations and
+examples used to tune managed skills and agent instructions. Skill-specific
+model notes live under `agents/skills/_models/`.

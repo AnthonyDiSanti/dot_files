@@ -3,6 +3,24 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-04-29 — Store skill-specific model notes under `agents/skills/_models`
+- Decider: Anthony
+- Decision: Keep generic model guidance under `agents/model-guidance/`, and store model-specific notes for an individual skill under `agents/skills/_models/<skill>-<model>.md`.
+- Rationale: Model guidance should remain reusable across skills. Skill-specific assessments, eval notes, and prompt-shape decisions are useful, but they make the generic model guide harder to scan and maintain when embedded there.
+- Consequences / follow-ups: `commit-prep` now has GPT-5.5 notes plus future Claude Opus notes under `agents/skills/_models/`. When tuning another skill, add or update the matching per-skill model note instead of turning a generic model guide into a skill audit log.
+
+## 2026-04-29 — Commit prep drafts for the full dirty tree by default
+- Decider: Anthony
+- Decision: The `commit-prep` skill should inspect and draft against the full dirty working tree by default, including staged, unstaged, and untracked files. Staged files are user-owned review state, not a signal to limit commit scope.
+- Rationale: Anthony stages files incrementally while reviewing agent work. At any moment, the index may contain an arbitrary reviewed subset, while unstaged files may be reminders or the result of a later correction prompt. A staged-first commit message would routinely omit relevant work.
+- Consequences / follow-ups: Preserve the index exactly, but do not infer scope from it. Draft for staged-only, path-limited, or otherwise narrowed scope only when explicitly requested, and then list dirty files excluded from that requested scope.
+
+## 2026-04-28 — Separate official agent docs from model guidance
+- Decider: Anthony
+- Decision: Keep authoritative copied vendor docs under `agents/official-docs/` and repo-authored model interpretations under `agents/model-guidance/`, starting with GPT-5.5, Claude Opus 4.7, and Claude Opus 4.6. Tune the `commit-prep` skill for GPT-5.5 first.
+- Rationale: Prompt behavior differs materially by model version. The official docs are source material and should not be corrupted with repo-local edits. Derived guidance belongs next to them but separate, so skills can use local interpretations and examples without modifying the authoritative cache.
+- Consequences / follow-ups: Re-check official vendor docs before retuning a skill for a named model. `commit-prep` now follows GPT-5.5-style outcome-first structure with explicit invariants, success criteria, verification, and final-output shape.
+
 ## 2026-04-28 — Manage shared agent skills outside the home mirror
 - Decider: Anthony
 - Decision: Keep canonical shared agent skills under `agents/skills/<skill>/` and expose them to Codex through symlink nodes in the literal home mirror, such as `home/.codex/skills/<skill> -> ../../../agents/skills/<skill>`.
@@ -272,7 +290,7 @@ Keep newest decisions at the top (reverse chronological order).
 - Decision: Update `home/.codex/AGENTS.md` to require notebook/status updates after every substantial turn, generalize the knowledge lookup trigger, and require a proposed commit message for the full current uncommitted diff at the end of every turn.
 - Rationale: These behaviors are important across projects and should not rely only on repo-local instructions.
 - Alternatives considered: Keep the rules project-specific; rejected because the desired behavior is cross-project and should be enforced globally.
-- Consequences / follow-ups: Agents should keep project notebooks current proactively and always propose a commit message that covers staged and unstaged changes.
+- Consequences / follow-ups: Agents should keep project notebooks current proactively and always propose a commit message that covers the full dirty tree unless explicitly scoped narrower.
 
 ## 2026-04-13 — Lighten `code_template/docs` scaffolding
 - Decider: Anthony
