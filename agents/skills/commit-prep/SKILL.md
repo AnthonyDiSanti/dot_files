@@ -9,10 +9,6 @@ Use this skill at the end of a coherent work unit, before a commit, or before a
 handoff. The outcome is a repository that is easier to resume plus a commit
 message grounded in the actual working tree.
 
-This skill is tuned for GPT-5.5. Prefer outcome-first execution: preserve the
-invariants, inspect real state, update only useful durable notes, verify what is
-safe and relevant, then draft the message.
-
 ## Non-negotiable Invariants
 
 - Do not stage, unstage, commit, amend, reset, restore, rebase, discard, or
