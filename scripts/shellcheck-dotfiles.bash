@@ -5,17 +5,12 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
-shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=()
 files=()
 repo_all=0
 status=0
 
-if [[ ! -r "$shell_files_helper" ]]; then
-  echo "shellcheck-dotfiles: missing required helper: $shell_files_helper" >&2
-  exit 1
-fi
-source "$shell_files_helper"
+source "$repo_root/scripts/shell_files.bash"
 
 shellcheck_bin="${SHELLCHECK_BIN:-shellcheck}"
 if ! dotfiles_have_command "$shellcheck_bin"; then
@@ -38,7 +33,6 @@ lint_file() {
   local file="$1"
   local abs_path rel_path shell
   local shell_status
-  local extra_args=()
 
   abs_path="$(dotfiles_shell_file_abs_path "$file")"
   rel_path="$(dotfiles_shell_file_rel_path "$repo_root" "$abs_path")"
@@ -54,32 +48,7 @@ lint_file() {
     return 0
   fi
 
-  case "$rel_path" in
-    home/.config/bash/prompt.bash)
-      extra_args+=(--exclude=SC2016 --exclude=SC2034)
-      ;;
-    scripts/print-ansi-colors.sh | settings/git/colors.sh)
-      extra_args+=(--exclude=SC2016)
-      ;;
-    home/.config/bash/rc.bash)
-      extra_args+=(--exclude=SC2154)
-      ;;
-    home/.config/shell/paths.sh)
-      extra_args+=(--exclude=SC2034)
-      ;;
-    home/.config/shell/profile.sh)
-      extra_args+=(--exclude=SC3028)
-      ;;
-    test/verify.sh)
-      extra_args+=(--exclude=SC2016)
-      ;;
-  esac
-
-  if ((${#extra_args[@]})); then
-    run_shellcheck --shell="$shell" "${extra_args[@]}" "$file"
-  else
-    run_shellcheck --shell="$shell" "$file"
-  fi
+  run_shellcheck --shell="$shell" "$file"
 }
 
 while (($#)); do

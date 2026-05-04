@@ -1,0 +1,12 @@
+home_config: .claude/settings.json
+model_config_key: model
+skills_dir: .claude/skills
+
+model_aliases:
+  best: claude-opus-4-7
+  opus: claude-opus-4-7
+
+outputs:
+  - SKILL.md
+
+runner_args: [--permission-mode, acceptEdits, -p]

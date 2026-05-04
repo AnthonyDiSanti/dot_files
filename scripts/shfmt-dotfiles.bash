@@ -5,18 +5,13 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
-shell_files_helper="$repo_root/scripts/shell_files.bash"
 args=(-i 2 -ci -bn)
 files=()
 repo_all=0
 mode="diff"
 status=0
 
-if [[ ! -r "$shell_files_helper" ]]; then
-  echo "shfmt-dotfiles: missing required helper: $shell_files_helper" >&2
-  exit 1
-fi
-source "$shell_files_helper"
+source "$repo_root/scripts/shell_files.bash"
 
 shfmt_bin="${SHFMT_BIN:-shfmt}"
 if ! dotfiles_have_command "$shfmt_bin"; then

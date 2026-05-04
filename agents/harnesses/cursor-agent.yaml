@@ -1,0 +1,12 @@
+home_config: .config/cursor/cli-config.json
+model_config_key: modelId
+skills_dir: .cursor/skills
+
+model_aliases:
+  auto: composer-2-fast
+  default: composer-2-fast
+
+outputs:
+  - SKILL.md
+
+runner_args: [--print, --model, auto, --output-format, text, --trust, --force, --sandbox, disabled]

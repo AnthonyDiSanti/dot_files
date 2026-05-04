@@ -1,0 +1,9 @@
+home_config: .codex/config.toml
+model_config_key: model
+skills_dir: .agents/skills
+
+outputs:
+  - SKILL.md
+  - agents/openai.yaml
+
+runner_args: [exec, --ephemeral, --cd, "{{repo_root}}", --sandbox, workspace-write]

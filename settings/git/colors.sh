@@ -34,5 +34,7 @@ done
 NORMAL_AWK_FORMAT="$NORMAL_AWK_FORMAT\n"
 COLORED_AWK_FORMAT="$COLORED_AWK_FORMAT\n"
 
+# The AWK body needs literal $0/$1 fields; printf only injects the formats.
+# shellcheck disable=SC2016
 printf -v AWK_SCRIPT '{ if (match($0, "normal")) { printf "%s", $1, $2, $3, $4, $5, $6 } else { printf "%s", $1, $2, $3, $4, $5, $6 } }' "$NORMAL_AWK_FORMAT" "$COLORED_AWK_FORMAT"
 git config --global alias.colors "!git log -n1 --pretty=format:'$GIT_COLOR_TEST_FORMAT' | awk -F\| '$AWK_SCRIPT'"

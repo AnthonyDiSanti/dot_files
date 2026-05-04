@@ -1,0 +1,16 @@
+[submodule "agents/official-docs/gemini-cli"]
+	path = agents/official-docs/gemini-cli
+	url = https://github.com/google-gemini/gemini-cli.git
+	shallow = true
+[submodule "agents/official-docs/codex"]
+	path = agents/official-docs/codex
+	url = https://github.com/openai/codex.git
+	shallow = true
+[submodule "agents/official-docs/anthropic-skills"]
+	path = agents/official-docs/anthropic-skills
+	url = https://github.com/anthropics/skills.git
+	shallow = true
+[submodule "agents/official-docs/cursor-plugins"]
+	path = agents/official-docs/cursor-plugins
+	url = https://github.com/cursor/plugins.git
+	shallow = true

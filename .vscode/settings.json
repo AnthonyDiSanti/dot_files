@@ -31,5 +31,10 @@
   "shellcheck.useWorkspaceRootAsCwd": true,
   "files.associations": {
     "**/ghostty/config": "properties"
+  },
+  "yaml.schemas": {
+    "./agents/harnesses/harness.schema.json": [
+      "agents/harnesses/*.yaml"
+    ]
   }
 }

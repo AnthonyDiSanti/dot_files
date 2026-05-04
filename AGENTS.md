@@ -47,10 +47,19 @@ Maintenance:
   - `home/.config/bash/` — bash-specific interactive setup (prompt, system Git helper loading, WSL cursor tweak).
   - `home/.config/zsh/` — zsh-specific interactive setup.
   - `home/.local/bin/` — optional user CLI utilities installed to `~/.local/bin/` when present.
-  - `agents/skills/` — canonical shared agent skill sources; expose them to each harness through symlink nodes in `home/` such as `home/.codex/skills/<skill>`.
-  - `agents/skills/_models/` — model-specific tuning notes for individual skills; these are development references, not runtime skill bodies.
-  - `agents/official-docs/` — authoritative cached vendor docs; do not hand-edit these source documents.
-  - `agents/model-guidance/` — repo-authored model guidance derived from official docs, used to tune agent instructions and skills.
+  - `agents/skills/` — shared agent skill source and runtime artifacts; source skills are directories containing `SKILL.md` anywhere under `agents/skills/src/`, with optional delta-only `model-notes/`, `harness-notes/`, and `evals/`, and runtime artifacts are exposed to harnesses through symlink nodes in `home/`.
+  - `agents/prompts/` — canonical updater prompt source, optional delta-only prompt harness notes, harness-specific prompt artifacts, and prompt artifact digest stamps.
+  - `agents/harnesses/` — harness YAML configs and adapter docs for maintaining runtime artifacts.
+  - `agents/scripts/update-skill.bash` — fixed-point updater for one source skill across selected harness/model artifacts; `--harness` alone or `--model` alone filters existing artifacts, while `--harness` plus `--model` creates that explicit target if missing; `--force` re-runs selected targets on the first pass.
+  - `agents/scripts/update-prompt.bash` — fixed-point updater for one source prompt across selected harness prompt artifacts; `--harness` creates that explicit target if missing.
+  - `agents/scripts/update-all.bash` — fixed-point updater for maintained skill or prompt artifacts; `--type skill|prompt` selects the surface, `--prompt` is shorthand for prompt mode, and `--force` re-runs the selected matrix on the first pass.
+  - `agents/scripts/symlink-skill.bash` — deploys one runtime skill artifact into selected harness skill directories under a home tree, discovering configured harness/model targets from harness user config files unless `--harness --model` is explicit.
+  - `agents/scripts/symlink-all.bash` — deploys every selected runtime skill artifact into selected harness skill directories with the same target discovery and filtering semantics as `symlink-skill.bash`; accepts an optional `skills/src/`-relative prefix to deploy a whole source subtree such as a team-owned skill folder.
+  - `agents/official-docs/` — authoritative cached vendor docs and optional reference submodules for source/example trees such as Codex, Anthropic skills, Cursor plugins, and Gemini CLI; do not hand-edit copied vendor documents or files inside vendor submodules.
+  - `agents/models/` — model guidance derived from official docs.
+  - `home/.claude/` — managed Claude Code user-scope memory, settings, and skill deployment symlink nodes; Claude Code is intentionally pinned to Opus 4.6 for now.
+  - `home/.gemini/` — managed Gemini CLI user settings and skill deployment symlink nodes; do not manage Gemini credentials, account files, installation ids, trusted-folder state, history, tmp logs, or other local state.
+  - `home/.cursor/skills/` — managed Cursor Agent skill deployment symlink nodes; do not symlink the full stateful Cursor CLI config. This repo exports `CURSOR_CONFIG_DIR=$XDG_CONFIG_HOME/cursor`, so the live macOS config path is `~/.config/cursor/cli-config.json`; stable preferences are applied through `settings/cursor-agent-cli.sh`.
   - `test/` — repo-local verification entrypoint (`test/verify.sh`) and test fixtures (`test/fixtures/`).
   - `scripts/` — bootstrap-support helpers and small tools (e.g. `home_tree_manifest.sh`, `shell_files.bash`, `print-ansi-colors.sh`); not added to `PATH`.
   - `settings/` — macOS defaults scripts, Git config scripts, keybindings; see `settings/README.md` (Solarized is not vendored; Vim uses vim-solarized8 via vim-plug).
@@ -61,20 +70,57 @@ Maintenance:
   - Bash-only shell setup: `home/.config/bash/`.
   - Zsh-only shell setup: `home/.config/zsh/`.
   - CLI utilities: `home/.local/bin/`.
-  - Shared agent skills: `agents/skills/<skill>/`, then add a real symlink node at the harness path under `home/`.
-  - Skill-specific model tuning notes: `agents/skills/_models/<skill>-<model>.md`.
-  - Official vendor prompt/migration docs: `agents/official-docs/<provider-model-topic>.md`.
-  - Derived agent model guidance: `agents/model-guidance/<provider-model>.md`.
+  - Shared agent skill source: any directory under `agents/skills/src/` that contains `SKILL.md`; the skill directory name is the runtime skill id and must be unique across the source tree.
+  - Skill runtime artifacts: `agents/skills/artifacts/<harness>/<model>/skills/<skill>/`, then add a real symlink node at the harness path under `home/`.
+  - Optional skill-specific model tuning notes: `agents/skills/src/**/<skill>/model-notes/<model>.md`; add only when that skill/model pair has a real delta.
+  - Optional skill-specific harness tuning notes: `agents/skills/src/**/<skill>/harness-notes/<harness>.md`; add only when that skill/harness pair has a real delta.
+  - Skill eval fixtures: `agents/skills/src/**/<skill>/evals/`.
+  - Skill artifact input stamps: `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/inputs.sha256`.
+  - Prompt source: any directory under `agents/prompts/src/` that contains
+    `PROMPT.md`; the prompt directory name is the prompt id and must be unique
+    across the source tree.
+  - Prompt artifacts: `agents/prompts/harnesses/<harness>/<prompt>.md`.
+  - Optional prompt harness notes: `agents/prompts/src/**/<prompt>/harness-notes/<harness>.md`; add only for real prompt/harness deltas.
+  - Prompt artifact input stamps: `agents/prompts/.update-stamps/<harness>/<prompt>/inputs.sha256`.
+  - Harness configs and adapter docs: `agents/harnesses/`;
+    name `<harness>.yaml` and `<harness>.md` after the executable, e.g.
+    `claude.yaml` / `claude.md` for Claude Code's `claude` command and
+    `cursor-agent.yaml` / `cursor-agent.md` for Cursor Agent. Harness YAML also
+    records `home_config`, `skills_dir`, and `model_config_key` so symlink
+    scripts can deploy artifacts without implicit defaults; use optional
+    `model_aliases` there for documented harness-native aliases such as Claude
+    Code's `best`. `model_config_key` may be a dotted key for nested JSON config
+    such as Gemini's `model.name`.
+  - Official vendor prompt/migration docs: `agents/official-docs/<provider-model-topic>.md`; larger reference sets may live as optional pinned submodules, such as `agents/official-docs/codex`, `agents/official-docs/anthropic-skills`, `agents/official-docs/cursor-plugins`, and `agents/official-docs/gemini-cli`.
+  - Derived agent model guidance: `agents/models/<model>.md`.
   - Dotfiles: `home/` using literal target names and real symlink nodes where appropriate.
   - macOS defaults: `settings/osx_*.sh` (wire into `settings/osx_all.sh` if needed).
+  - Cursor Agent CLI preferences: `settings/cursor-agent-cli.json` plus `settings/cursor-agent-cli.sh`; preserve live auth/cache/local state by merging, not symlinking, the whole config file.
   - Git config: `settings/git/*.sh` (invoked by `settings/git.sh`).
   - Vim plugins: [vim-plug](https://github.com/junegunn/vim-plug); loader snapshot tracked at `home/.vim/autoload/plug.vim`; `:PlugInstall` populates local `~/.vim/plugged/`. Keep `home/.vimrc` free of stale references when plugins are removed.
 - “Do not touch” paths (if any):
   - Local plugin installs under `~/.vim/plugged/` follow normal `:PlugInstall` / `:PlugUpdate` workflows and are not committed.
+  - Skill runtime artifact contents under `agents/skills/artifacts/` must not
+    be hand-edited or directly generated. Use `agents/scripts/update-skill.bash`
+    or `agents/scripts/update-all.bash`; if the native harness cannot run here,
+    leave the artifact missing/stale and give Anthony the exact command to run.
+  - Prompt artifact contents under `agents/prompts/harnesses/` should be updated
+    through `agents/scripts/update-prompt.bash` or
+    `agents/scripts/update-all.bash --type prompt`; keep harness-specific runner
+    prose in prompt artifacts or prompt harness notes, not in harness YAML
+    `runner_args`. If the native harness cannot run here, leave the artifact
+    missing/stale and give Anthony the exact command to run.
+  - Vendor submodule contents under `agents/official-docs/`, currently
+    `agents/official-docs/codex`, `agents/official-docs/anthropic-skills`,
+    `agents/official-docs/cursor-plugins`, and
+    `agents/official-docs/gemini-cli`, must not be edited in place. Update the
+    pinned submodule commit or tag instead.
 
 ## 4) Commands
 Setup:
 - Install deps: `zsh`, `shellcheck`, `shfmt`, and `git` (required for `test/verify.sh` and Vim `:PlugInstall`, but not for `bootstrap.sh` itself), Vim 8+ with Python 3 linked if using vim-mundo (`:version` should show `+python3`).
+- Hydrate optional reference docs when needed:
+  `git submodule update --init --depth 1 agents/official-docs/codex agents/official-docs/anthropic-skills agents/official-docs/cursor-plugins agents/official-docs/gemini-cli`.
 - Env setup: `./bootstrap.sh` (POSIX `sh`; applies the repo-native symlink-backed home tree).
 
 Run:
@@ -89,21 +135,31 @@ Verify (targeted first, full at end):
 
 ## 5) Engineering standards
 - Formatting: Match existing style; 2-space indentation in shell scripts, keep shebangs consistent (`/usr/bin/env bash` vs `sh`).
-- Lint/format rules: `test/verify.sh` requires ShellCheck through `scripts/shellcheck-dotfiles.bash --all` and shfmt through `scripts/shfmt-dotfiles.bash --all --check`; VS Code ShellCheck uses the same wrapper to externalize shell dialect mapping and narrow path-specific suppressions. `scripts/shell_files.bash` owns Bash-only dev-tool shell file discovery/dialect classification; do not use it from POSIX deployment paths.
+- Lint/format rules: `test/verify.sh` requires ShellCheck through `scripts/shellcheck-dotfiles.bash --all` and shfmt through `scripts/shfmt-dotfiles.bash --all --check`; VS Code ShellCheck uses the same wrapper for shell dialect mapping and repo-aware file handling. Put intentional ShellCheck suppressions in the owning source file, not in the wrapper, unless the suppression is truly repo-global. `scripts/shell_files.bash` owns Bash-only dev-tool shell file discovery/dialect classification and excludes `.gitmodules` paths from broad repo scans; do not use it from POSIX deployment paths.
 - Types: Not applicable.
 - Error handling/logging: Prefer explicit error checks and clear `echo` output; keep shared helpers in `home/.config/shell/functions.sh`.
 - Shell data flow: Prefer explicit call-site data flow over string-encoded function names. When a helper consumes generated lines, make it read stdin and feed it with redirection/process substitution at the call site when shell semantics allow; document exceptions.
 - Testing expectations: Run `test/verify.sh` for bootstrap/dotfile changes; it checks shell syntax/static analysis/formatting, repo-native managed target mapping, temporary-home apply behavior, live-home convergence, and shell startup.
 - Dependency policy: Allowed, but keep vendored deps isolated and update them as cohesive version bumps.
 - Refactor stance: Prefer clarity and consistency, but avoid rewriting vendored directories.
+- Generated artifact policy: Do not manually patch runtime skill artifacts or
+  prompt artifacts to reflect source or instruction changes. Artifact content
+  changes must flow through the updater scripts so native-harness selection,
+  prompts, validation, and digest stamps stay trustworthy. Do not manually
+  bootstrap missing artifacts, and do not run `record-stamp` or otherwise update
+  digest stamps unless the user explicitly asks to mark artifacts current
+  without a native harness run.
+- Agent-note policy: Put shared artifact-production guidance in source prompts
+  or source skills. Keep model notes and harness notes optional and limited to
+  target-specific deltas that should affect the prompt or artifact digest.
 
 ## 6) Git commits (workflow)
 When a coherent unit of work is complete, pause and recommend a git commit with a proposed message. The message format must be:
-1) Title in third-person present tense and sentence-style capitalization, e.g. `Adds shell startup verification`
+1) Title in imperative mood and sentence-style capitalization, e.g. `Add shell startup verification`
 2) Blank line
-3) Bullet list of key changes, with each bullet starting capitalized and using third-person present tense, e.g. `- Adds ...`
+3) Bullet list of key changes, with each bullet starting capitalized and using imperative mood, e.g. `- Add ...`
 
-Avoid imperative verbs (`Add`), gerunds (`Adding`), past tense (`Added`), lowercase-leading bullets, and title-casing every word.
+Avoid third-person present (`Adds`), gerunds (`Adding`), past tense (`Added`), lowercase-leading bullets, and title-casing every word.
 
 ## 7) /.context — shared working memory (COMMITTED)
 This repo uses `/.context` as durable, agent-facing working memory.
