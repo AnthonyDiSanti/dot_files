@@ -1,0 +1,11 @@
+home_config: .gemini/settings.json
+model_config_key: model.name
+skills_dir: .gemini/skills
+
+model_aliases:
+  pro: gemini-3.1-pro-preview
+
+outputs:
+  - SKILL.md
+
+runner_args: [--skip-trust, --approval-mode, auto_edit, --include-directories, "{{repo_root}}", --output-format, text]

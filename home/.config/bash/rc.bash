@@ -22,6 +22,8 @@ __dotfiles_bash_source_first_git_prompt_candidate() {
   return 1
 }
 
+# Sourced from paths.sh; ShellCheck does not follow this dynamic startup layout.
+# shellcheck disable=SC2154
 if [[ ! -d "$dotfiles_bash_state_home" ]]; then
   mkdir -p "$dotfiles_bash_state_home"
 fi
@@ -66,6 +68,8 @@ __dotfiles_bash_configure_line_editor() {
 
 __dotfiles_bash_configure_line_editor
 
+# Sourced from paths.sh; ShellCheck does not follow this dynamic startup layout.
+# shellcheck disable=SC2154
 if [[ -r "$dotfiles_bash_config_home/tool-support.bash" ]]; then
   source "$dotfiles_bash_config_home/tool-support.bash"
 fi

@@ -3,11 +3,530 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
-## 2026-04-29 — Store skill-specific model notes under `agents/skills/_models`
+## 2026-05-03 — Merge Cursor Agent CLI preferences instead of symlinking state
 - Decider: Anthony
-- Decision: Keep generic model guidance under `agents/model-guidance/`, and store model-specific notes for an individual skill under `agents/skills/_models/<skill>-<model>.md`.
-- Rationale: Model guidance should remain reusable across skills. Skill-specific assessments, eval notes, and prompt-shape decisions are useful, but they make the generic model guide harder to scan and maintain when embedded there.
-- Consequences / follow-ups: `commit-prep` now has GPT-5.5 notes plus future Claude Opus notes under `agents/skills/_models/`. When tuning another skill, add or update the matching per-skill model note instead of turning a generic model guide into a skill audit log.
+- Decision: Standardize Cursor Agent CLI config on
+  `$XDG_CONFIG_HOME/cursor/cli-config.json` via `CURSOR_CONFIG_DIR`, but manage
+  only a repo-owned preference patch through `settings/cursor-agent-cli.sh`.
+- Rationale: Cursor's live `cli-config.json` mixes durable preferences with
+  auth metadata, privacy/cache data, model picker state, and CLI-managed fields.
+  Symlinking the whole file would let Cursor write local state into the repo.
+- Consequences / follow-ups: `~/.cursor/cli-config.json` is legacy for this
+  shell environment and should be moved aside rather than kept as a competing
+  active config. The current account-compatible preference remains Auto/default,
+  and `cursor-agent.yaml` maps both `auto` and `default` to
+  `composer-2-fast`.
+
+## 2026-05-03 — Keep shared agent-update policy in source files
+- Decider: Anthony
+- Decision: Shared artifact-production and commit-prep rules belong in the
+  canonical source prompts or source skills. `model-notes/` and
+  `harness-notes/` remain optional delta files, not required placeholders for
+  every model or harness.
+- Rationale: Repeating the same guardrails across every note file makes the
+  tree noisy and increases staleness without adding target-specific value.
+  Source files are the correct durable home for shared behavior, while notes
+  should exist only when they intentionally affect one prompt/artifact digest.
+- Consequences / follow-ups: The updater scripts already tolerate missing note
+  files. When adding a new model or harness, create notes only for real deltas;
+  do not add carbon-copy notes just to mirror the matrix.
+
+## 2026-05-03 — Do not manually bootstrap agent artifacts
+- Decider: Anthony
+- Decision: Runtime skill artifacts, prompt artifacts, and digest stamps must be
+  produced only by updater scripts invoking the selected harness, not by manual
+  file creation or direct agent patches.
+- Rationale: Manual bootstrapping makes generated artifacts look reviewed by a
+  target harness when they were not, and manual stamp updates hide the staleness
+  that should drive the next native generation run.
+- Consequences / follow-ups: Missing artifacts and missing/stale stamps are
+  valid pre-bootstrap state. If the current agent cannot run a required harness,
+  it must leave the artifact missing/stale and give Anthony the exact updater
+  command to run from a normal shell. `record-stamp` should be used only when
+  Anthony explicitly asks to mark artifacts current without a native harness run.
+
+## 2026-05-03 — Add prompt harness notes beside prompt source
+- Decider: Anthony
+- Decision: Add per-prompt `harness-notes/<harness>.md` files under
+  `agents/prompts/src/**/<prompt>/`, mirroring the skill harness-note pattern.
+- Rationale: Prompt artifacts are harness-scoped and can need runner-specific
+  guidance, especially for headless/stdin behavior, sandbox/auth limitations,
+  and placeholder preservation. Keeping those notes beside each source prompt
+  scopes staleness to the affected prompt/harness pair instead of mixing prompt
+  maintenance guidance into generic harness docs or YAML runner arguments.
+- Consequences / follow-ups: `update-prompt.bash` already passes matching prompt
+  harness notes into rendered maintenance prompts and includes them in prompt
+  artifact digests. The `update-skill-artifact` and `update-prompt-artifact`
+  source prompts now have notes for Codex, Claude Code, Cursor Agent, and
+  Gemini CLI.
+
+## 2026-05-03 — Add skill harness notes beside model notes
+- Decider: Anthony
+- Decision: Add per-skill `harness-notes/<harness>.md` files instead of
+  replacing `model-notes/` with a generalized artifact-notes layer.
+- Rationale: Harness notes and model notes align with the two stable artifact
+  axes. A generalized artifact-notes directory would let agents choose relevant
+  files dynamically, but including every note in every artifact digest would make
+  unrelated target changes stale across the matrix. Side-by-side harness notes
+  keep staleness scoped to the affected harness while still capturing
+  skill-specific runtime-shape guidance.
+- Consequences / follow-ups: `update-skill.bash` now passes matching
+  `harness-notes/<harness>.md` into the update prompt and includes it in the
+  artifact digest. `commit-prep` has initial notes for Codex, Claude Code,
+  Cursor Agent, and Gemini CLI.
+
+## 2026-05-03 — Maintain updater prompts as harness artifacts
+- Decider: Anthony
+- Decision: Store canonical updater prompt source under `agents/prompts/src/`,
+  materialize harness-specific prompt artifacts under
+  `agents/prompts/harnesses/<harness>/`, and track their freshness with
+  committed digest stamps under `agents/prompts/.update-stamps/`.
+- Rationale: Skill artifact generation and prompt artifact generation share the
+  same source-discovery, stale-checking, native-harness, and fallback mechanics,
+  but prompt artifacts are harness-scoped rather than harness/model-scoped.
+  Making prompts first-class artifacts lets harness-specific runner instructions
+  live in reviewable prompt text instead of opaque YAML argv strings.
+- Consequences / follow-ups: `update-prompt.bash` owns prompt artifact updates;
+  `update-skill.bash` consumes `agents/prompts/harnesses/<harness>/update-skill-artifact.md`
+  and refreshes that prompt artifact before running a native skill update.
+  `update-all.bash` defaults to skill mode but supports `--type prompt` and
+  `--prompt`. Gemini's former hardcoded `--prompt` runner prose now belongs in
+  the Gemini prompt artifacts, while `agents/harnesses/gemini.yaml` keeps only
+  structural CLI args.
+
+## 2026-05-03 — Deploy Gemini skills under `.gemini/skills`
+- Decider: Codex (model: gpt-5.5)
+- Decision: Add Gemini CLI as the `gemini` harness and deploy its
+  harness-specific skill artifacts under `home/.gemini/skills/`, not
+  `home/.agents/skills/`.
+- Rationale: Gemini supports both `.agents/skills` and `.gemini/skills`, but
+  Codex already uses `.agents/skills` for Anthony's active personal skill
+  deployment. Pointing Gemini at `.agents/skills` would make `symlink-all`
+  race the Codex symlink for the same skill id and whichever harness ran last
+  would clobber the other. Using `.gemini/skills` keeps Gemini deployment
+  product-specific and non-destructive.
+- Consequences / follow-ups: Gemini documents that same-tier `.agents/skills`
+  takes precedence over `.gemini/skills`, so a same-named Codex user skill can
+  shadow the Gemini-specific user skill. When testing Gemini-specific artifacts,
+  confirm the active path with `/skills list` or `gemini skills list`, or use a
+  workspace-level Gemini skill / temporary `.agents` removal for that skill.
+
+## 2026-05-03 — Keep Gemini account identity local
+- Decider: Anthony
+- Decision: Do not manage `~/.gemini/google_accounts.json` in this repo.
+- Rationale: The file appears to contain only the active and historical Google
+  account email addresses, not OAuth tokens, but those addresses are still
+  personally identifying account data. Syncing that preference is not valuable
+  enough to compromise the repo's current posture of keeping account files
+  local.
+- Consequences / follow-ups: Continue managing only safe Gemini settings such
+  as `home/.gemini/settings.json`. Keep `oauth_creds.json`,
+  `google_accounts.json`, `trustedFolders.json`, `installation_id`,
+  `state.json`, `projects.json`, history, and tmp logs outside the repo.
+
+## 2026-05-03 — Use optional source submodules for agent references
+- Decider: Anthony
+- Decision: Add shallow, pinned reference submodules under `agents/official-docs`
+  for `openai/codex` at tag `rust-v0.128.0`, `anthropics/skills` at commit
+  `5128e1865d670f5d6c9cef000e6dfc4e951fb5b9`, and `cursor/plugins` at commit
+  `7dd9fea1e0e9bb88fcf059f5e77eb5a9d31bef1e`.
+- Rationale: These repositories reduce manual maintenance for source-owned
+  reference material: Codex schemas, source docs, built-in skills, and protocol
+  details; Anthropic's official skill spec/templates/examples; and Cursor's
+  plugin schemas/examples. They are optional development references, so normal
+  bootstrap and verification should not require hydration.
+- Consequences / follow-ups: Keep copied developers.openai.com, Claude Code,
+  and Cursor docs when they are richer than the source repos; for example,
+  several `openai/codex` docs files only link back to public Codex docs. Do not
+  edit submodule files in place. Refresh by moving gitlinks to newer official
+  tags or commits, then review derived harness/model guidance.
+
+## 2026-05-03 — Exclude submodules from broad verification scans
+- Decider: Anthony
+- Decision: Repo-wide shell verification enumerators must treat paths listed in
+  `.gitmodules` as vendor/reference boundaries and exclude those paths from
+  syntax, ShellCheck, and shfmt scans.
+- Rationale: Optional reference submodules such as
+  `agents/official-docs/gemini-cli` are upstream-owned material. Hydrating them
+  should not cause `test/verify.sh` to lint, format, or otherwise validate the
+  upstream tree as if it were native dotfiles source.
+- Consequences / follow-ups: `scripts/shell_files.bash` now owns the submodule
+  exclusion for shell-file discovery, and `test/verify.sh` has a guard that
+  fails if emitted shell files are inside a `.gitmodules` path. Extend the same
+  boundary if future broad enumerators scan other file types.
+
+## 2026-05-03 — Use a positional skill prefix for bulk symlink deployment
+- Decider: Anthony
+- Decision: `agents/scripts/symlink-all.bash` accepts one optional positional
+  `skill-prefix` argument, interpreted as a path relative to
+  `agents/skills/src/`. The prefix deploys all source skills below that subtree
+  and is mutually exclusive with repeated `--skill` filters.
+- Rationale: Source skills are expected to be organized by team or domain, such
+  as `frontend/` or `services/`, and a team member should be able to deploy all
+  skills in that subtree without enumerating each skill. A positional prefix is
+  concise and does not currently conflict with likely future `symlink-all`
+  surfaces.
+- Consequences / follow-ups: Keep `--skill` for individual source skill
+  selection. If `symlink-all` later deploys non-skill surfaces, preserve the
+  current positional skill-prefix behavior unless a concrete ambiguity appears.
+
+## 2026-05-03 — Use a Gemini CLI submodule for reference docs
+- Decider: Anthony
+- Decision: Track `google-gemini/gemini-cli` as a shallow, pinned Git submodule
+  at `agents/official-docs/gemini-cli`, currently on tag `v0.40.1`.
+- Rationale: Gemini CLI docs are only needed for a niche agent-infrastructure
+  development workflow, and the upstream repo already contains a coherent docs
+  tree. A submodule makes versioning and refreshes explicit without bloating the
+  parent repo with a copied 4MB+ docs cache or requiring normal bootstrap users
+  to hydrate the reference material.
+- Consequences / follow-ups: Bootstrap and normal verification must not require
+  the Gemini submodule to be hydrated. Hydrate it with `git submodule update
+  --init --depth 1 agents/official-docs/gemini-cli` before working on Gemini
+  harness support or refreshing Gemini docs. The 2026-04-27 "avoid submodules by
+  default" decision still applies to runtime dependencies; this is an
+  explicitly scoped reference-doc exception.
+
+## 2026-05-03 — Normalize harness-native model aliases in harness YAML
+- Decider: Anthony
+- Decision: Runtime artifact model directories remain canonical/versioned, but
+  harness configs may declare `model_aliases` for native aliases exposed by that
+  harness. Claude Code now maps `best` and `opus` to `claude-opus-4-7` in
+  `agents/harnesses/claude.yaml`.
+- Rationale: Claude Code officially allows aliases in the `model` setting, and
+  `best` currently resolves through `opus` to Opus 4.7 on the Anthropic API.
+  Without a narrow alias layer, a valid user config such as `"model": "best"`
+  would make symlink deployment look for a non-canonical `claude/best`
+  artifact.
+- Consequences / follow-ups: Alias handling lives at the harness
+  config/deployment boundary, not in generic Bash special cases or model guides.
+  Do not map Claude `default` because it clears the model override and resolves
+  through account/provider policy. Add aliases for other harnesses only when
+  official docs expose stable alias semantics and corresponding artifacts exist.
+
+## 2026-05-02 — Add first-pass force refreshes for skill artifacts
+- Decider: Anthony
+- Decision: `agents/scripts/update-skill.bash` and
+  `agents/scripts/update-all.bash` accept `--force` to re-run selected runtime
+  skill artifacts even when their input digest stamps are current.
+- Rationale: Sometimes all selected artifacts need native-harness review or
+  regeneration even when source inputs have not changed. A force flag keeps that
+  workflow explicit without deleting stamps or hand-editing artifacts.
+- Consequences / follow-ups: `--force` only affects the first fixed-point pass.
+  Later passes return to normal staleness checks so follow-on changes still
+  converge. For `update-skill.bash`, `--force` applies to the default
+  `run-if-stale` action; use `--action run` for a one-shot unconditional run of
+  selected targets.
+
+## 2026-05-02 — Keep `update-all.bash` as a whole-surface updater
+- Decider: Anthony
+- Decision: `agents/scripts/update-all.bash` should accept harness/model target
+  filters but no skill-specific filter or positional skill argument. Use
+  `agents/scripts/update-skill.bash <skill>` for skill-specific artifact
+  refreshes.
+- Rationale: `update-all.bash` may later update other maintained agent surfaces,
+  such as tools or plugins. Harness/model filters generalize across those
+  surfaces, while a skill argument does not.
+- Consequences / follow-ups: `update-all.bash --skill ...` now fails with a
+  targeted error pointing users to `update-skill.bash <skill>`. Docs should
+  describe `update-all.bash` as a whole-surface updater, not a filtered skill
+  subset runner.
+
+## 2026-05-02 — Deploy Codex skills through `.agents/skills`
+- Decider: Anthony
+- Decision: Codex runtime skills should deploy through
+  `home/.agents/skills/<skill>`, matching Codex's documented user-skill path
+  `$HOME/.agents/skills/<skill>/SKILL.md`. Keep Codex config, global
+  instructions, rules, plugin settings, and other Codex client settings under
+  `home/.codex/`.
+- Rationale: Current public Codex docs list `$HOME/.agents/skills` for user
+  skills, `.agents/skills` for repo-scoped skills, and symlinked skill folders
+  as supported. Local smoke tests with `codex debug prompt-input` confirmed that
+  the installed CLI discovers both a plain temporary `$HOME/.agents/skills`
+  skill and a symlinked `commit-prep` skill pointing at this repo's runtime
+  artifact. Codex docs still place user config and global `AGENTS.md` under
+  `~/.codex`, so only skills move.
+- Consequences / follow-ups: `agents/harnesses/codex.yaml` now uses
+  `skills_dir: .agents/skills`, and `home/.agents/skills/commit-prep` points at
+  the Codex/GPT-5.5 runtime artifact. After bootstrap on an existing machine,
+  the old `~/.codex/skills/commit-prep` symlink should be pruned by the managed
+  target state.
+
+## 2026-05-02 — Produce runtime skill artifacts only through updater scripts
+- Decider: Anthony
+- Decision: Agents must not hand-edit or directly generate runtime skill
+  artifact contents under `agents/skills/artifacts/`. Artifact content changes
+  must flow through `agents/scripts/update-skill.bash` or
+  `agents/scripts/update-all.bash`, using the selected native harness whenever
+  possible.
+- Rationale: The updater scripts preserve the common prompt, harness adapter,
+  validation checks, content-digest stamps, and native-harness authorship. Manual
+  patches make artifacts look current without the target harness actually
+  reviewing or producing them.
+- Consequences / follow-ups: If auth, sandboxing, account limits, or missing
+  executables prevent the selected harness from running in the current agent
+  environment, leave the artifact stale and give Anthony the exact updater
+  command to run from a normal shell.
+
+## 2026-05-02 — Use imperative mood for commit message proposals
+- Decider: Anthony
+- Decision: Commit-message guidance should prefer imperative mood titles and
+  bullets (`Add`, `Fix`, `Keep`) instead of third-person present tense (`Adds`,
+  `Fixes`, `Keeps`). Repo-specific instructions still win when a repository
+  deliberately chooses a different format.
+- Rationale: Imperative mood matches the long-standing Git/Linux-kernel style:
+  describe what applying the commit does. The previous third-person style was a
+  repo-local preference, not the broader conventional default.
+- Consequences / follow-ups: `home/.codex/AGENTS.md`, project `AGENTS.md`, and
+  the canonical `commit-prep` source now encode the imperative default. Runtime
+  `commit-prep` artifacts should be refreshed by their native harnesses through
+  the updater scripts; do not hand-edit generated artifacts just to sync wording.
+
+## 2026-05-02 — Add Cursor Agent through skills only
+- Decider: Anthony
+- Decision: Add Cursor Agent as the `cursor-agent` harness with Composer 2 Fast
+  as the first model target, deploy `commit-prep` through
+  `home/.cursor/skills/commit-prep`, and leave the full Cursor CLI config local
+  for now.
+- Rationale: Cursor's CLI config contains model picker state, permissions,
+  auth/cache/privacy/server data, and other local state. Official docs default
+  to `~/.cursor/cli-config.json`, but this repo sets `XDG_CONFIG_HOME`, so the
+  live macOS path is `~/.config/cursor/cli-config.json`. Managing the whole file
+  as a dotfile would risk overwriting state; skill symlink nodes are the stable
+  deployment surface.
+- Consequences / follow-ups: `cursor-agent.yaml` uses
+  `home_config: .config/cursor/cli-config.json` and `model_config_key: modelId`
+  so live config discovery can read Cursor's configured model. Use explicit
+  `--harness cursor-agent --model composer-2-fast` when regenerating repo-home
+  symlinks because repo `home/` intentionally does not include a Cursor config
+  file.
+
+## 2026-05-02 — Use harness-native model ids for artifacts
+- Decider: Anthony
+- Decision: Use the model ids exposed by harness config files as this repo's
+  model artifact ids. Claude Code artifacts, model guides, model notes, stamps,
+  and symlink targets now use `claude-opus-4-6` and `claude-opus-4-7` rather
+  than repo-local dotted ids.
+- Rationale: Keeping a separate repo spelling such as `claude-opus-4.6` created
+  a normalization layer with no real benefit. Matching external model ids makes
+  home-config discovery direct and removes `model_aliases` from harness configs.
+- Consequences / follow-ups: Future model artifacts should prefer the canonical
+  id used by the harness/API config unless there is a concrete reason to add an
+  explicit mapping layer.
+
+## 2026-05-02 — Prefer implicit Codex skill invocation when safe
+- Decider: Anthony
+- Decision: Codex skill artifacts should generally set
+  `policy.allow_implicit_invocation: true` when the skill can be safely invoked
+  from its description. Use `false` only when implicit use would be unsafe or
+  likely to surprise the user.
+- Rationale: Anthony prefers skills to be available ergonomically without
+  explicit invocation by default, while still preserving a safety escape hatch
+  for high-risk or ambiguous behaviors.
+- Consequences / follow-ups: `agents/harnesses/codex.md` now frames implicit
+  invocation as the normal default posture for Codex `agents/openai.yaml`
+  artifacts.
+
+## 2026-05-02 — Add skill artifact symlink runners
+- Decider: Anthony
+- Decision: Add `agents/scripts/symlink-skill.bash` and
+  `agents/scripts/symlink-all.bash` to deploy maintained runtime skill artifacts
+  into harness skill directories under a selected home tree. Harness YAML now
+  records `home_config` and `skills_dir` so this deployment stays data-driven.
+- Rationale: Runtime artifact generation and home-tree deployment are separate
+  steps. The repo should be able to regenerate symlink nodes from harness/model
+  artifacts, discover the active model from managed or live harness config when
+  possible, and still bootstrap explicit harness/model targets before a config
+  exists.
+- Consequences / follow-ups: Without explicit `--harness --model`, symlink
+  runners inspect each harness's `home_config` under the selected `--home` tree,
+  derive the model, and symlink only matching artifacts. Runtime artifact model
+  directory names should match the ids exposed by harness config files, such as
+  Claude Code's `claude-opus-4-6`, to avoid a separate alias layer.
+
+## 2026-05-02 — Allow nested skill source folders
+- Decider: Anthony
+- Decision: Treat any directory below `agents/skills/src/` containing a
+  `SKILL.md` file as a source skill directory.
+  `agents/scripts/update-skill.bash` accepts either a globally unique skill
+  directory name or a path relative to `agents/skills/src/`; runtime artifacts
+  and stamps still use the skill directory name as the skill id.
+- Rationale: Teams should be able to organize canonical skill sources into
+  domain or ownership subdirectories without changing deployed harness shapes.
+  Runtime harnesses still expect flat `skills/<skill>/` deployment paths, so the
+  skill directory name remains the stable skill id.
+- Consequences / follow-ups: Source skill directory names must be unique across
+  the full `src/` tree and use the existing safe id characters. If duplicate
+  names are needed later, revisit artifact/stamp path design before allowing
+  them.
+
+## 2026-05-02 — Use SKILL frontmatter as canonical skill metadata
+- Decider: Anthony
+- Decision: Remove separate source `metadata.yaml` files and use canonical
+  `SKILL.md` frontmatter as the source of skill identity.
+- Rationale: The source `metadata.yaml` duplicated `SKILL.md` frontmatter
+  (`name` and `description`) and created a second source of truth. Harness
+  reification can derive runtime metadata such as Codex `agents/openai.yaml`
+  from the source skill frontmatter and body.
+- Consequences / follow-ups: The updater prompt no longer includes neutral
+  metadata as a separate input, artifact digest stamps no longer hash
+  `metadata.yaml`, and the skill-metadata schema was removed. Reintroduce a
+  separate source metadata file only if the repo needs cross-harness metadata
+  that does not belong in `SKILL.md` frontmatter.
+
+## 2026-05-02 — Drive harness behavior from harness YAML files
+- Decider: Anthony
+- Decision: Discover supported agent harnesses from
+  `agents/harnesses/<harness>.yaml`, with `<harness>` matching the executable
+  name. Keep agent-facing guidance in `agents/harnesses/<harness>.md`.
+- Rationale: Harness behavior should be driven by CLI inputs, filesystem
+  conventions, and small config files rather than Bash mappings. Adding a new
+  harness should primarily mean adding the harness config/doc, model guidance,
+  and artifacts.
+- Consequences / follow-ups: Harness YAML records runtime artifact `outputs` and
+  `runner_args`; the updater sends the rendered prompt to the harness executable
+  on stdin and expands `{{repo_root}}` in args. Bash still owns generic matrix,
+  freshness, prompting, and fallback control flow, but no longer maps harness
+  ids to display labels, executable names, runner args, or output paths.
+
+## 2026-05-02 — Align harness ids with executable names
+- Decider: Anthony
+- Decision: Use the actual executable name as the stable harness id. Claude
+  Code's harness id is `claude`, not `claude-code`; docs may still refer to the
+  product as Claude Code where that is the clearer human-facing name.
+- Rationale: A separate harness-to-command mapping adds avoidable indirection
+  now that target model/provider inference has been removed. The updater only
+  needs to know whether a harness is supported and whether a runner is
+  configured; command invocation should be obvious from the target id.
+- Consequences / follow-ups: Runtime artifacts, stamps, and harness adapters use
+  `agents/skills/artifacts/claude/...`,
+  `agents/skills/.update-stamps/claude/...`, and `agents/harnesses/claude.md`.
+  Future harness ids should match their command names unless there is a concrete
+  collision or portability issue.
+
+## 2026-05-02 — Resolve model guides directly by model id
+- Decider: Anthony
+- Decision: Treat harness and model as independent explicit target axes. Store
+  model guidance at `agents/models/<model>.md`, harness adapters at
+  `agents/harnesses/<harness>.md`, and runtime artifacts/stamps under
+  `<harness>/<model>/` paths.
+- Rationale: The updater never needs to infer an appropriate harness from a
+  model. A harness names the runtime shape being produced, while a model names
+  the guidance used to tune that artifact. Provider-prefix mappings in Bash add
+  false coupling and break down for harnesses that can target multiple providers.
+- Consequences / follow-ups: `agent-harnesses.bash` should not map harnesses to
+  model-guide provider prefixes. To add a new model, add
+  `agents/models/<model>.md`; to add a new harness, add
+  `agents/harnesses/<harness>.md` and the real harness runtime/runner behavior.
+
+## 2026-05-02 — Use axis-based skill artifact runners
+- Decider: Anthony
+- Decision: Rename the artifact production entrypoints to
+  `agents/scripts/update-skill.bash` and `agents/scripts/update-all.bash`.
+  Both runners accept `--harness` and `--model` as axis filters; passing both is
+  an explicit harness/model target and creates it if missing.
+- Rationale: The core workflows are updating one skill across targets, updating
+  every maintained artifact cell, or refreshing a filtered harness/model
+  subset. Putting full `--harness` / `--model` support on both public scripts is
+  easier to reason about than maintaining separate harness-axis and model-axis
+  wrapper scripts.
+- Consequences / follow-ups: `--harness` alone and `--model` alone select only
+  existing artifact directories on that axis. To bootstrap a new target, pass
+  both `--harness <harness>` and `--model <model>`; the runner then validates the
+  harness adapter and model guide before invoking the native or fallback harness.
+
+## 2026-05-02 — Add a matrix runner for existing skill artifacts
+- Decider: Anthony
+- Decision: Use `agents/scripts/update-all.bash` as the matrix runner
+  for refreshing every maintained skill artifact across selected harness/model
+  targets.
+- Rationale: The common "refresh everything already represented in artifacts"
+  workflow should not require manually looping over harness/model directories,
+  but the existing skill runner should remain the
+  source of truth for actual artifact updates.
+- Consequences / follow-ups: The all-artifacts runner discovers existing
+  harness/model directories by default, supports `--harness` and `--model`
+  filters, intentionally has no skill filter, and repeats matrix passes until the
+  source/artifact/stamp input digest is stable.
+
+## 2026-05-02 — Mirror skill artifact paths in stamp paths
+- Decider: Anthony
+- Decision: Store each skill artifact's input digest stamp at
+  `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/inputs.sha256`.
+- Rationale: The freshness unit is the concrete harness/model skill artifact, not
+  a whole harness/model run or a skill-wide batch. Mirroring the runtime artifact
+  path makes the tracked cell explicit and leaves room for future per-artifact
+  metadata beside the input digest.
+- Consequences / follow-ups: `update-skill.bash --action run` and
+  `record-stamp` update this file for one artifact. Aggregate runners only update
+  stamps indirectly by invoking that skill runner.
+
+## 2026-05-02 — Keep agent runner entrypoints explicitly Bash-suffixed
+- Decider: Anthony
+- Decision: Agent infrastructure runner scripts under `agents/scripts/` should
+  use `.bash` suffixes, such as `update-skill.bash`,
+  and `update-all.bash`.
+- Rationale: These are repo-local developer scripts rather than installed PATH
+  commands. The suffix makes their shell dialect visible in editors, linting, and
+  documentation while the shebang still supports direct execution.
+- Consequences / follow-ups: Keep shared libraries suffixed as `.bash` too. If a
+  runner later needs to be exposed as a stable extensionless command, add an
+  intentional shim rather than dropping the source-file suffix.
+
+## 2026-05-02 — Name runtime artifacts by harness and model
+- Decider: Anthony
+- Decision: Keep runtime skill artifacts under
+  `agents/skills/artifacts/<harness>/<model>/` and use harness/model artifact paths
+  such as `codex/gpt-5.5` and `claude/claude-opus-4-6`.
+- Rationale: The artifact ultimately has to satisfy a specific harness's runtime
+  shape and a specific target model's prompting needs. Naming the top-level
+  artifact by both pieces keeps those concerns visible while still allowing the
+  updater to use whatever local harness configuration the user has selected as
+  the authoring model.
+- Consequences / follow-ups: Do not maintain a separate default-target mapping
+  file. The home symlinks are the deployment mapping. `update-skill.bash`
+  updates one skill across selected harness/model artifact directories, and
+  `update-all.bash` bootstraps or refreshes all maintained skill artifacts for
+  selected harness/model targets.
+
+## 2026-05-02 — Use local harness configuration to author skill artifacts
+- Decider: Anthony
+- Decision: For skill artifact production, use each local harness configuration
+  as the authoring model instead of manually invoking a particular target model
+  version inside that harness.
+- Rationale: Exact self-authoring by every model version is overkill and becomes
+  messy across harnesses. The important boundary is the runtime artifact:
+  the generated skill still carries target-specific frontmatter and
+  model-guided instruction adjustments, while the native provider harness owns
+  the authoring workflow.
+- Consequences / follow-ups: `agents/scripts/update-skill.bash` must not pass
+  target-model CLI overrides such as Codex `--model` or Claude Code `--model`.
+  `commit-prep` has Claude Code artifacts for Opus 4.6 and Opus 4.7, but the
+  managed home symlink remains pointed at Opus 4.6 until Anthony opts into 4.7.
+
+## 2026-05-01 — Pin Claude Code skill work to Opus 4.6
+- Decider: Anthony
+- Decision: Manage Claude Code user-scope settings through `home/.claude/settings.json`, pin Claude Code to `claude-opus-4-6` for now, and expose the `commit-prep` Claude Opus 4.6 artifact through a directory symlink at `home/.claude/skills/commit-prep`.
+- Rationale: The repo wants real harness-specific artifacts to validate the multi-harness pipeline, but Anthony explicitly prefers Claude Code on Opus 4.6 rather than the latest Opus 4.7. Claude Code's documented personal skill path is `~/.claude/skills/<skill>/SKILL.md`, matching the directory-symlink deployment pattern already selected for Codex.
+- Consequences / follow-ups: `claude/claude-opus-4-6` remains the deployed
+  Claude Code artifact for now. Keep the Opus 4.7 artifact available for evaluation
+  or future opt-in.
+
+## 2026-05-01 — Use content-digest stamps for skill artifact freshness
+- Decider: Anthony
+- Decision: Selective skill artifact updates should use committed content-digest stamps under `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/`, not filesystem mtimes, Make-style timestamp checks, or files inside runtime artifact directories. `agents/scripts/update-skill.bash` should run selected artifacts until it reaches a fixed point.
+- Rationale: These generated/runtime artifacts are committed to Git, and Git checkouts can make mtime-based freshness unreliable or misleading. A digest over the canonical source, harness guide/config, model guide, optional model notes, updater prompt, and eval fixtures makes staleness explicit and copy-paste friendly. Keeping stamps outside `artifacts/` keeps deployed runtime skill directories free of build metadata.
+- Consequences / follow-ups: Each artifact records `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/inputs.sha256`. `update-skill.bash --action status|is-stale|run-if-stale|record-stamp` handles selected artifacts for one skill, while `update-all.bash` provides the higher-level fixed-point loop for all maintained skill artifacts across selected harness/model targets. Future updater-instruction artifacts should use the same digest/fixed-point pattern without requiring those instructions to be installed as a runtime skill.
+
+## 2026-05-01 — Maintain model-specific skill artifacts in place
+- Decider: Anthony
+- Decision: Keep canonical skill source under `agents/skills/src/` as
+  directories containing `SKILL.md`, runtime artifacts under
+  `agents/skills/artifacts/<harness>/<model>/skills/<skill>/`, and
+  skill-specific model notes beside the source skill under `model-notes/`.
+  Maintain existing written artifacts in place with
+  `agents/scripts/update-skill.bash` rather than wiping and regenerating them.
+- Rationale: Different models and harnesses need meaningfully different prompting and metadata, but each runtime skill should remain reviewable and hand-tunable. Updating existing artifacts preserves hard-won phrasing while still letting a harness/model-specific agent apply targeted retuning from the canonical source, model guide, harness adapter, and model notes.
+- Consequences / follow-ups: `commit-prep` now has a Codex/GPT-5.5 runtime artifact at `agents/skills/artifacts/codex/gpt-5.5/skills/commit-prep/`, and `home/.agents/skills/commit-prep` points at that artifact. Use `agents/scripts/update-skill.bash --harness codex --model gpt-5.5 --action check|print-prompt|run commit-prep` for the vertical slice. Future harnesses should add adapters and artifacts rather than changing the Codex runtime directly.
 
 ## 2026-04-29 — Commit prep drafts for the full dirty tree by default
 - Decider: Anthony
@@ -17,15 +536,20 @@ Keep newest decisions at the top (reverse chronological order).
 
 ## 2026-04-28 — Separate official agent docs from model guidance
 - Decider: Anthony
-- Decision: Keep authoritative copied vendor docs under `agents/official-docs/` and repo-authored model interpretations under `agents/model-guidance/`, starting with GPT-5.5, Claude Opus 4.7, and Claude Opus 4.6. Tune the `commit-prep` skill for GPT-5.5 first.
+- Decision: Keep authoritative copied vendor docs under `agents/official-docs/` and repo-authored model interpretations under `agents/models/`, starting with GPT-5.5, Claude Opus 4.7, and Claude Opus 4.6. Tune the `commit-prep` skill for GPT-5.5 first.
 - Rationale: Prompt behavior differs materially by model version. The official docs are source material and should not be corrupted with repo-local edits. Derived guidance belongs next to them but separate, so skills can use local interpretations and examples without modifying the authoritative cache.
 - Consequences / follow-ups: Re-check official vendor docs before retuning a skill for a named model. `commit-prep` now follows GPT-5.5-style outcome-first structure with explicit invariants, success criteria, verification, and final-output shape.
 
 ## 2026-04-28 — Manage shared agent skills outside the home mirror
 - Decider: Anthony
-- Decision: Keep canonical shared agent skills under `agents/skills/<skill>/` and expose them to Codex through symlink nodes in the literal home mirror, such as `home/.codex/skills/<skill> -> ../../../agents/skills/<skill>`.
+- Decision: Keep repo-managed agent skills outside the literal `home/` mirror
+  and expose deployed runtime artifacts to Codex through symlink nodes in the
+  mirror, such as `home/.agents/skills/<skill> -> ../../../agents/skills/artifacts/<harness>/<model>/skills/<skill>`.
 - Rationale: Agent skills may need to be deployed to multiple harness-specific locations over time, while sharing the same canonical source. Keeping the deployment path as a symlink node under `home/` preserves the readable `$HOME` mirror and lets bootstrap use its general symlink-to-symlink behavior instead of hardcoding Codex-specific directory logic.
-- Consequences / follow-ups: Codex discovers the two-hop layout `~/.codex/skills/<skill> -> repo/home/.codex/skills/<skill> -> repo/agents/skills/<skill>`, but did not discover the skill when only leaf files such as `SKILL.md` were symlinked. Restart Codex sessions after changing skill metadata.
+- Consequences / follow-ups: Codex discovers the two-hop layout
+  `~/.agents/skills/<skill> -> repo/home/.agents/skills/<skill> -> repo/agents/skills/artifacts/<harness>/<model>/skills/<skill>`,
+  but did not discover the skill when only individual files such as `SKILL.md` were
+  symlinked. Restart Codex sessions after changing skill metadata.
 
 ## 2026-04-28 — Manage iTerm2 Solarized Dark through a dynamic profile
 - Decider: Anthony

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Commit Prep"
+  short_description: "Update context and draft full-tree commit messages"
+  default_prompt: "Use $commit-prep to inspect the full dirty tree, preserve the git index, update durable context where useful, run relevant verification, and draft a commit message."
+
+policy:
+  allow_implicit_invocation: true

@@ -14,7 +14,11 @@ Curated notes that reduce repeated setup or debugging for this dotfiles repo. Ke
 ## Topics
 - [Bootstrap & symlinks](bootstrap.md) — repo-native home-tree bootstrap, managed-path state, and symlink behavior.
 - [Agent instructions](agent-instructions.md) — skills, prompt-guide notes, and model-specific instruction tuning.
+- [Agent reference submodules](agent-reference-submodules.md) — optional pinned vendor source/example trees under `agents/official-docs/`.
+- [Claude Code](claude-code.md) — skill discovery paths, settings, and current Opus 4.6 pin.
 - [Codex skills](codex-skills.md) — local skill source layout, symlink deployment, and discovery gotchas.
+- [Cursor Agent](cursor-agent.md) — skill discovery path, stateful CLI config boundary, and Composer 2 Fast artifact target.
+- [Gemini CLI](gemini-cli.md) — optional Gemini CLI docs submodule, managed settings, and pending harness bring-up references.
 - [Codex approval rules](codex-rules.md) — rule-file locations, generated vs curated rules, and testing commands.
 - [Shell initialization and shared functions](shell-init.md) — PATH, prompt, and shared shell helpers.
 - [Oh My Bash comparison](oh-my-bash.md) — selective Bash ergonomics worth considering without adopting the framework.

@@ -84,9 +84,11 @@ Rules:
 
 ## 5) Git commits (workflow)
 When a coherent unit of work is complete, pause and recommend a git commit with a proposed message. The message format must be:
-1. Title in present tense
+1. Title in imperative mood and sentence-style capitalization, e.g. `Add shell startup verification`
 2. Blank line
-3. Bullet list of key changes
+3. Bullet list of key changes, with each bullet starting capitalized and using imperative mood, e.g. `- Add ...`
+
+Avoid third-person present (`Adds`), gerunds (`Adding`), past tense (`Added`), lowercase-leading bullets, and title-casing every word.
 
 ## 6) Continuous improvement of instructions (silent edits allowed)
 This file should evolve as friction is discovered.

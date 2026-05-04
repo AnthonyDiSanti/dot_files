@@ -154,13 +154,7 @@ dotfiles_dir="$(
   pwd
 )"
 
-bootstrap_helper="$dotfiles_dir/scripts/home_tree_manifest.sh"
-if [ ! -r "$bootstrap_helper" ]; then
-  printf 'bootstrap: missing required helper: %s\n' "$bootstrap_helper" >&2
-  exit 1
-fi
-
-. "$bootstrap_helper"
+. "$dotfiles_dir/scripts/home_tree_manifest.sh"
 trap cleanup EXIT HUP INT TERM
 
 if [ "$list_managed" -eq 1 ]; then

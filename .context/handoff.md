@@ -1,13 +1,24 @@
 # Handoff
 
 ## Current State
-- What works: repo-native bootstrap (`bootstrap.sh`) installs the checked-out `home/` tree into `$HOME` without chezmoi, git submodules, or a Git runtime dependency; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `XDG_CONFIG_HOME` / `~/.config`; `home/.config/shell/paths.sh` exports default XDG base-dir variables and derives the shell's internal `dotfiles_*` path layer, bash/zsh history lives under `XDG_STATE_HOME` / `~/.local/state` with timestamp storage enabled, Bash/zsh line editors support prefix history search plus case-/hyphen-insensitive completion matching, zsh uses colored grouped/described completion presentation plus `zsh/complist` menu selection for ambiguous matches, zsh vi mode has cursor feedback, editor handoff, whole-buffer `ae`, quote/bracket text objects, and surround bindings, and bash/zsh tool support now prefers Homebrew/system completion frameworks while using active-Git and selected command-generated helpers only when their generators succeed; Vim plugins use **vim-plug** with a tracked `home/.vim/autoload/plug.vim` loader snapshot and local `~/.vim/plugged/` plugin clones after `:PlugInstall`; terminal Solarized Dark is managed for Ghostty and iTerm2; shared Codex skills live under `agents/skills/`, deploy through symlink nodes in `home/.codex/skills/`, official vendor docs live under `agents/official-docs/`, generic model guidance lives under `agents/model-guidance/`, and skill-specific model notes live under `agents/skills/_models/`.
+- What works: repo-native bootstrap (`bootstrap.sh`) installs the checked-out `home/` tree into `$HOME` without chezmoi or a Git runtime dependency, and it does not require optional reference submodules to be hydrated; shell startup now uses a POSIX baseline (`.profile` / `.shrc`) plus bash and zsh wrappers backed by `XDG_CONFIG_HOME` / `~/.config`; `home/.config/shell/paths.sh` exports default XDG base-dir variables and derives the shell's internal `dotfiles_*` path layer, bash/zsh history lives under `XDG_STATE_HOME` / `~/.local/state` with timestamp storage enabled, Bash/zsh line editors support prefix history search plus case-/hyphen-insensitive completion matching, zsh uses colored grouped/described completion presentation plus `zsh/complist` menu selection for ambiguous matches, zsh vi mode has cursor feedback, editor handoff, whole-buffer `ae`, quote/bracket text objects, and surround bindings, and bash/zsh tool support now prefers Homebrew/system completion frameworks while using active-Git and selected command-generated helpers only when their generators succeed; Vim plugins use **vim-plug** with a tracked `home/.vim/autoload/plug.vim` loader snapshot and local `~/.vim/plugged/` plugin clones after `:PlugInstall`; terminal Solarized Dark is managed for Ghostty and iTerm2; skill source lives as directories containing `SKILL.md` anywhere under `agents/skills/src/`, runtime artifacts live under `agents/skills/artifacts/<harness>/<model>/skills/`, updater prompt source/artifacts live under `agents/prompts/`, and Codex/Claude/Cursor/Gemini skills deploy through symlink nodes in `home/`; official vendor docs live under `agents/official-docs/`, with optional pinned reference submodules for Codex source, Anthropic skills, Cursor plugins, and Gemini CLI; model guidance lives under `agents/models/`; harness adapters live under `agents/harnesses/`.
 - Editor direction: **Vanilla Vim** is the target for dotfiles (Vim 8+ compatible plugins, no Neovim requirement) so SSH sessions can stay simple: get dotfiles on the machine, bootstrap, use `vim`. **Neovim** is explicitly a possible next step—see `.context/decisions.md`—not part of the current plugin migration.
-- What’s in progress: Agent instruction infrastructure is active on `feature/skill-commit-prep`. `agents/official-docs/` stores authoritative cached vendor docs for OpenAI GPT-5.5 migration/prompting and Anthropic prompting/Opus 4.7 migration; `agents/model-guidance/` stores repo-authored generic model guidance for GPT-5.5, Claude Opus 4.7, and Claude Opus 4.6; `agents/skills/_models/` stores per-skill model notes. `commit-prep` is tuned for GPT-5.5, treats the full dirty tree as the default commit scope while preserving staged state exactly, and has been validated after a session reload. Clipboard/register unification remains an active paused workstream on `feature/clipboard`; real WSL smoke testing still remains before considering clipboard v1 complete.
-- What’s broken / flaky: No known issues.
+- What’s in progress: Agent instruction infrastructure is active on `feature/multi-model-skill` and ready for commit. `commit-prep` has canonical source, optional model/harness notes for real target deltas, and an eval fixture; both updater prompts have canonical source, with prompt-specific harness notes only where a real harness delta remains. `SKILL.md` frontmatter is the canonical skill identity source; separate source `metadata.yaml` files were removed. Source skills and prompts may be nested anywhere below their `src/` roots; directory names remain runtime ids and must be globally unique. Runtime skill artifacts, prompt artifacts, and digest stamps are present for the current Codex, Claude, Cursor Agent, and Gemini targets after native updater-script regeneration; do not manually create, patch, or stamp them. `agents/scripts/update-skill.bash` refreshes harness-specific prompt artifacts before invoking native skill artifact production and passes matching skill `harness-notes/<harness>.md` and `model-notes/<model>.md` into both prompts and digests when those optional files exist; `agents/scripts/update-prompt.bash` maintains source prompts under `agents/prompts/src/` into harness artifacts under `agents/prompts/harnesses/` and passes matching prompt `harness-notes/<harness>.md` into both maintenance prompts and digests when present; `agents/scripts/update-all.bash` defaults to skill mode and supports `--type prompt` / `--prompt` for prompt updates. `agents/scripts/symlink-skill.bash` and `agents/scripts/symlink-all.bash` deploy runtime artifacts into selected home trees, discovering configured harness/model targets from harness home config files unless `--harness --model` is explicit; `symlink-all.bash [skill-prefix]` narrows bulk deployment to all source skills under a `skills/src/` subtree. Model guides resolve directly from `agents/models/<model>.md`; there is no provider-prefix mapping, while harness-native model aliases such as Claude Code's `best`/`opus` live in harness YAML and normalize to canonical artifact ids. Supported harnesses are discovered from `agents/harnesses/<harness>.yaml`, and the harness id must match the executable name. Clipboard/register unification remains an active paused workstream on `feature/clipboard`; real WSL smoke testing still remains before considering clipboard v1 complete.
+- What’s broken / flaky: Claude Code artifact production can fail when another
+  agent invokes `claude` from inside its own sandbox; hand Anthony the exact
+  updater command for a normal shell run. Cursor Agent sandbox mode is disabled
+  in the harness runner because `--sandbox enabled` is unavailable on this macOS
+  machine. Cursor Free plans can require `auto` instead of named models for
+  native production; `cursor-agent.yaml` maps `auto` and Cursor's self-repaired
+  `default` model id to the canonical `composer-2-fast` artifact target and
+  passes `--model auto` for headless print-mode compatibility. Cursor CLI
+  preferences are managed by merge through `settings/cursor-agent-cli.sh`; do
+  not symlink the full stateful `cli-config.json`. Gemini CLI can refresh
+  local OAuth only outside this sandbox, and native Gemini artifact runs can hit
+  `MODEL_CAPACITY_EXHAUSTED` for `gemini-3.1-pro-preview`.
 
 ## Next Steps (ordered)
-1. Commit the agent-instruction changes after review.
+1. Commit the multi-model skill changes after review.
 2. After the agent-instruction branch is done, return to the Windows/WSL clipboard and Windows Terminal Solarized work described below.
 3. Treat the OMB/OMZ inspiration pass as mostly complete; remaining shell items should be explicit standalone workstreams such as small directory helpers.
 4. After Neovim evaluation, revisit tmux TPM/plugins as a separate workstream, especially `tmux-resurrect` and `tmux-continuum`.
@@ -17,12 +28,15 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 
 ## Active Tasks
 - `01KQ6VIMODECLIPBOARD2026` — clipboard/register unification is active on `feature/clipboard`; macOS wrapper support, WSL wrapper support, broad zsh CUTBUFFER wiring, and tmux copy/import/paste integration are implemented for v1. Real WSL smoke testing remains.
-- `01KQ9AGENTINSTRUCTIONS2026` — agent instruction infrastructure is active on `feature/skill-commit-prep`; prompt guides are added and `commit-prep` is tuned for GPT-5.5, including full-dirty-tree commit scope by default. Reload validation passed; ready for commit after review.
+- `01KQ9AGENTINSTRUCTIONS2026` — agent instruction infrastructure is active on `feature/multi-model-skill` and ready for commit; `commit-prep` source is backed by optional model notes, optional harness notes, evals, harness configs/docs, source updater prompts, updater scripts, runtime artifacts, and digest stamps. The two updater prompts have optional prompt-specific harness notes only where a harness delta exists.
+- `01KQ9AGENTHARNESSVARIANTS2026` — add full artifact production support for all harnesses. Codex, Claude Code, Cursor Agent, and Gemini CLI now have harness YAML/docs and `commit-prep` artifact targets. Gemini deploys through `.gemini/skills` to avoid clobbering Codex's `.agents/skills`, with a documented same-name shadowing caveat. Current artifacts and stamps are present after updater-script regeneration.
 - `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; non-clipboard vi mode is merged, and clipboard/register unification is now active as a focused follow-up.
 
 ## Working Tree
-- Current branch: `feature/skill-commit-prep`; current uncommitted work adds `agents/official-docs/`, `agents/model-guidance/`, `agents/skills/_models/`, and retunes `agents/skills/commit-prep/SKILL.md` for GPT-5.5. At commit-prep time, the full dirty tree was staged and there were no unstaged/untracked files.
-- Last successful verification: `test/verify.sh` passed on 2026-04-29 during commit prep after reload validation, and the reloaded session exposed the current `commit-prep` skill metadata/body; Anthony previously confirmed `tmux -CC` preserves the Solarized dynamic profile colors.
+- Current branch: `feature/multi-model-skill`; current staged work restructures `commit-prep` into canonical source and adds harness/model/prompt updater infrastructure, runtime artifacts, digest stamps, home symlinks, and supporting docs/config.
+- Last successful full verification: `test/verify.sh` passed on 2026-05-04 in
+  37.0s after the ShellCheck suppression migration and runtime artifact
+  regeneration.
 
 ## Windows Terminal Solarized Plan
 - Work will continue on a Windows/WSL machine in a fresh session on `feature/clipboard`, then return to macOS for final verification.
@@ -36,7 +50,7 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 ## WSL Clipboard Smoke Plan
 - Run `dotfiles-clipboard status`; expected output is `wsl`.
 - Run `printf 'dotfiles-copy-test' | dotfiles-clipboard copy`, then paste in a Windows app or run `powershell.exe -NoLogo -NoProfile -Command 'Get-Clipboard -Raw'`.
-- Run `powershell.exe -NoLogo -NoProfile -Command 'Set-Clipboard -Value "alpha\`r\`nbeta"'`, then `dotfiles-clipboard paste | od -An -t x1`; expected bytes include `0a` between lines and no `0d`.
+- Run ``powershell.exe -NoLogo -NoProfile -Command 'Set-Clipboard -Value "alpha`r`nbeta"'``, then `dotfiles-clipboard paste | od -An -t x1`; expected bytes include `0a` between lines and no `0d`.
 - In zsh vi mode, yank/delete/change text at the prompt and confirm Windows paste receives the same text; then copy in Windows and confirm zsh `p`/`P` uses that clipboard text.
 - In tmux under WSL, use copy-mode `y`/`Enter`, prefix `]`, and prefix `C-y` to confirm copy/import/paste still work through the wrapper.
 
@@ -45,13 +59,245 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 - Full gate: `test/verify.sh`; it requires `shellcheck` and `shfmt`, then reports checks under static-analysis, linting, and functionality suite headers with parenthesized elapsed time on each completed check line. It runs `scripts/shfmt-dotfiles.bash --all --check` and `scripts/shellcheck-dotfiles.bash --all` before managed-target and startup checks. Multi-line startup probes live under `test/fixtures/verify/`. Add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-05-04 — **ShellCheck suppressions localized:** file-specific
+  ShellCheck suppressions now live as inline directives in the owning source
+  files rather than as a path-specific manifest in `scripts/shellcheck-dotfiles.bash`.
+  The wrapper remains responsible for repo scanning, dialect inference, zsh
+  skipping, submodule exclusion, and VS Code-compatible argument handling.
+- 2026-05-04 — **Agent artifacts regenerated:** prompt artifacts, skill
+  artifacts, and digest stamps are present for the current Codex, Claude,
+  Cursor Agent, and Gemini `commit-prep` targets after updater-script
+  regeneration. The branch is staged and ready for commit after
+  `test/verify.sh` passed in 37.0s.
+- 2026-05-03 — **Cursor CLI config reconciled:** Cursor Agent CLI config is now
+  standardized on `$XDG_CONFIG_HOME/cursor/cli-config.json` through exported
+  `CURSOR_CONFIG_DIR`; the repo manages only stable preferences via
+  `settings/cursor-agent-cli.sh` plus one self-contained JSON preference patch,
+  preserving live auth/cache/state. `cursor-agent.yaml` now maps both `auto` and Cursor's
+  self-repaired `default` model id to `composer-2-fast`.
+- 2026-05-03 — **Agent script output tightened:** `update-skill.bash`,
+  `update-prompt.bash`, and `update-all.bash` now default to concise bracketed
+  statuses plus fixed-point summaries, capture successful native harness
+  transcripts, and replay those transcripts only on failure or `--verbose`.
+  `symlink-skill.bash` and `symlink-all.bash` now print clearer user-facing
+  link summaries for the common deployment path.
+- 2026-05-03 — **Agent notes pruned to deltas:** shared artifact-production
+  and commit-prep rules now live in canonical source prompts/source skills.
+  Model notes, skill harness notes, and prompt harness notes are optional and
+  should exist only when they add target-specific guidance that should affect a
+  prompt or artifact digest.
+- 2026-05-03 — **Cursor Auto mapped:** Cursor Agent Free-plan runs can reject
+  named models and require `auto`. The harness YAML now maps `auto` to the
+  canonical `composer-2-fast` artifact target and discovers the live config at
+  `~/.config/cursor/cli-config.json` because this repo sets `XDG_CONFIG_HOME`.
+  Headless print mode still requires the runner to pass `--model auto`
+  explicitly. Keep the full Cursor config local because it contains
+  account/state fields.
+- 2026-05-03 — **Manual artifact bootstrap prohibited:** runtime skill
+  artifacts, prompt artifacts, and digest stamps must not be manually created,
+  patched, or stamped. Missing artifacts are valid pre-bootstrap state; Anthony
+  will run the updater scripts from a normal shell so each selected native
+  harness authors its own artifacts.
+- 2026-05-03 — **Prompt harness notes added then pruned:** both source updater
+  prompts support optional prompt-specific `harness-notes/` files.
+  `update-prompt.bash` includes a matching note in rendered maintenance prompts
+  and prompt artifact input digests when present. After moving shared rules into
+  canonical prompt source, only Gemini currently keeps prompt harness notes.
+- 2026-05-03 — **Skill harness notes added:** `commit-prep` now has
+  skill-specific notes under `agents/skills/src/commit-prep/harness-notes/` for
+  Codex, Claude Code, Cursor Agent, and Gemini CLI. `update-skill.bash` includes
+  the matching harness note in rendered update prompts and artifact input
+  digests, alongside existing model notes and eval fixtures.
+- 2026-05-03 — **Prompt artifact infrastructure added:** updater prompts now
+  have canonical source under `agents/prompts/src/`, intended harness-specific
+  artifacts under `agents/prompts/harnesses/`, and digest stamps under
+  `agents/prompts/.update-stamps/`. `update-prompt.bash` maintains prompt
+  artifacts, `update-skill.bash` consumes harness prompt artifacts and refreshes
+  `update-skill-artifact` when needed, and `update-all.bash` now supports
+  `--type prompt` plus `--prompt`. Runtime prompt artifacts and stamps were
+  later removed so native harnesses can regenerate them cleanly.
+- 2026-05-03 — **Commit-prep model notes refreshed:** Gemini 3.1 Pro Preview
+  notes now emphasize direct/outcome-first prompting, high-thinking local
+  config, target provenance, and concise final response expectations. Cursor
+  Composer 2 Fast notes and canonical `commit-prep` source now keep
+  commit-message guidance portable: follow the active repo's documented or
+  clearly established convention, falling back to imperative mood when no
+  convention is apparent.
+  `code_template/AGENTS.md` now uses the same imperative default.
+- 2026-05-03 — **Gemini model guidance expanded:** Anthony cached the Gemini 3
+  developer guide, Vertex Gemini 3 getting-started guide, and Vertex thinking
+  guide alongside the existing Gemini 3.1 Pro model reference. The official-docs
+  index now lists these sources, and `agents/models/gemini-3.1-pro-preview.md`
+  now captures stronger model guidance for thinking levels, temperature,
+  customtools, long context, multimodal/token behavior, and artifact provenance.
+- 2026-05-03 — **Gemini harness onboarded:** added `gemini` harness
+  YAML/docs, Gemini 3.1 Pro Preview commit-prep model notes, nested
+  `model.name` config discovery for symlink deployment, and a
+  `home/.gemini/skills/commit-prep` symlink target path. Gemini uses
+  `.gemini/skills` rather than `.agents/skills` so it cannot rewrite Codex's
+  active `.agents` deployment; same-named `.agents` skills still shadow
+  `.gemini` skills in Gemini's documented precedence. Native Gemini generation
+  was rerun through the updater-script flow before the branch was prepared for
+  commit.
+- 2026-05-03 — **Reference-submodule learnings distilled:** inspected the
+  pinned Codex, Anthropic skills, Cursor plugins, and Gemini CLI submodules and
+  recorded their reusable skill-design lessons in the relevant harness guides,
+  model README, skill model-notes, and
+  `.context/knowledge/agent-reference-submodules.md`. The distilled guidance is
+  ready to inform the next full skill regeneration pass.
+- 2026-05-03 — **Agent reference submodules expanded:** `openai/codex` is now
+  an optional pinned source snapshot at `agents/official-docs/codex`, checked
+  out at tag `rust-v0.128.0` to match local `codex-cli 0.128.0`. Optional
+  reference submodules were also added for `anthropics/skills` and
+  `cursor/plugins` to provide official skill specs/templates/examples and
+  Cursor plugin schemas/examples. The copied Codex web-doc exports remain in
+  place because the source repo often contains short link stubs rather than the
+  full public docs.
+- 2026-05-03 — **Gemini CLI docs moved to submodule:** the copied Gemini docs
+  cache was replaced with a shallow, pinned `google-gemini/gemini-cli`
+  submodule at `agents/official-docs/gemini-cli`, currently on tag `v0.40.1`
+  to match the locally installed `gemini` CLI. Bootstrap and normal verify must
+  not require it to be hydrated; hydrate with `git submodule update --init
+  --depth 1 agents/official-docs/gemini-cli` when working on Gemini support.
+  `home/.gemini/settings.json` now imports the safe local auth setting and pins
+  `gemini-3.1-pro-preview` with high thinking for coding work.
+- 2026-05-03 — **Submodules excluded from broad shell scans:** `scripts/shell_files.bash` now reads `.gitmodules` paths and excludes them from repo-wide shell syntax, ShellCheck, and shfmt enumeration. `test/verify.sh` has a dedicated guard to catch regressions.
+- 2026-05-03 — **Skill-prefix symlink deployment added:** `agents/scripts/symlink-all.bash [skill-prefix]` deploys all runtime skills whose source path is below the given `agents/skills/src/` subtree. The prefix is mutually exclusive with `--skill`, which remains the explicit individual-skill selector.
+- 2026-05-03 — **Per-harness config docs de-duplicated:** `claude.md`,
+  `codex.md`, and `cursor-agent.md` now point at their adjacent YAML files for
+  exact config values instead of mirroring YAML or runner argument snippets.
+  `agents/harnesses/README.md` keeps the generic schema example.
+- 2026-05-03 — **Harness docs and model aliases reconciled:** newly cached
+  Codex docs for advanced/sample config, hooks, memories, slash commands, and
+  feature maturity plus Claude Code docs for skills, settings, model config, and
+  the docs index are now listed in `agents/official-docs/README.md` and
+  reflected in harness guidance. Claude Code's documented `best` and `opus`
+  aliases now normalize through `agents/harnesses/claude.yaml` to the canonical
+  `claude-opus-4-7` artifact; Codex, Cursor, and Gemini do not currently have
+  repo-backed semantic model aliases.
+- 2026-05-02 — **Official-doc cache reconciled:** the newly cached Codex
+  harness docs, Claude Code CLI/keybinding docs, and Gemini CLI commands doc are
+  now listed in `agents/official-docs/README.md`. Codex is no longer recorded
+  as uncached for core harness surfaces. Remaining Gemini bring-up docs are
+  configuration, `GEMINI.md` context behavior, headless/non-interactive usage,
+  CLI reference, skills, and extensions.
+- 2026-05-02 — **Skill update runners gained force mode:**
+  `agents/scripts/update-skill.bash --force <skill>` and
+  `agents/scripts/update-all.bash --force` re-run selected targets on the first
+  fixed-point pass even when digest stamps are current, then return to normal
+  staleness checks on later passes. `update-skill.bash --force` applies only to
+  the default `run-if-stale` action; use `--action run` for a one-shot
+  unconditional run.
+- 2026-05-02 — **Codex/Claude harness docs expanded:** `agents/harnesses/codex.md`
+  now documents Codex skill discovery, progressive disclosure, directory-symlink
+  deployment, `agents/openai.yaml`, config precedence, `codex exec`, sandbox
+  defaults, and cached core Codex harness docs. `agents/harnesses/claude.md`
+  now documents Claude Code skill/frontmatter behavior, settings boundaries,
+  print-mode runner behavior, and remaining Claude Code docs to cache.
+  Codex skill deployment moved from the older `home/.codex/skills/` path to the
+  documented `home/.agents/skills/` path after `codex debug prompt-input`
+  verified both plain and symlinked `$HOME/.agents/skills` discovery.
+- 2026-05-02 — **Cursor/Composer guidance expanded:** cached Cursor docs are
+  now listed as captured in `agents/official-docs/README.md`. Composer 2 Fast
+  guidance now incorporates the Composer 2 technical report, Cursor CLI
+  automation behavior, Cursor rules/`AGENTS.md` behavior, MCP considerations,
+  artifact-production policy, prompt blocks, failure modes, and evaluation
+  checks at a depth comparable to the GPT/Claude model guides. Cursor exposes
+  both `agent` and `cursor-agent` aliases locally; the repo intentionally uses
+  `cursor-agent` as the unambiguous harness id. Runtime artifacts remain stale
+  until regenerated through the updater scripts.
+- 2026-05-02 — **Runtime artifact editing rule hardened:** project agent
+  instructions and agent docs now explicitly forbid hand-editing or directly
+  generating runtime skill artifact contents. Artifact changes must flow through
+  `agents/scripts/update-skill.bash` or `update-all.bash`; if the selected
+  harness cannot run in the current agent environment, leave the artifact stale
+  and hand Anthony the exact command to run. This rule is intentionally
+  repo-level, not global-agent guidance.
+- 2026-05-02 — **Commit-message style clarified:** managed personal Codex
+  instructions, project `AGENTS.md`, and canonical `commit-prep` source align
+  on using the active repo's documented or clearly established commit-message
+  convention first and imperative mood as the default fallback. Runtime
+  artifacts are intentionally left for native harness refreshes through the
+  updater scripts.
+- 2026-05-02 — **Official-doc filenames shortened:** `agents/official-docs/`
+  dropped redundant `anthropic-` and `openai-` filename prefixes. The directory
+  itself provides the vendor-doc context, while filenames now start with the
+  model/product name.
+- 2026-05-02 — **Harness runner args use inline arrays:** harness YAML now keeps
+  `runner_args` as compact inline YAML arrays while the Bash parser preserves
+  one argv entry per item, including quoted spaces/commas. Verification now has
+  an explicit harness-config parser check. Because harness configs participate
+  in artifact input digests, all current `commit-prep` artifact stamps report
+  stale until their native harnesses sign off again.
+- 2026-05-02 — **Native harness policy documented:** runtime skill artifacts
+  should be maintained through `agents/scripts/update-skill.bash` or
+  `update-all.bash` so the target harness adapter, common prompt, output checks,
+  and digest stamps are used. Cursor Agent native production uses
+  `--sandbox disabled` after Anthony explicitly approved relaxing Cursor's
+  unavailable sandbox mode on this machine. Future native Cursor regeneration
+  may still be blocked if the active account only permits Auto.
+- 2026-05-02 — **Harness model config keys made explicit:** `claude.yaml`,
+  `codex.yaml`, and `cursor-agent.yaml` all declare `model_config_key`.
+  `symlink-skill.bash` and verify no longer rely on a default `model` key.
+- 2026-05-02 — **Official docs disable markdownlint locally:**
+  `agents/official-docs/.markdownlint.json` disables all markdownlint rules
+  inside the cached vendor-docs tree so copied docs remain authoritative without
+  repo lint rewrites. The root `.markdownlintignore` attempt was removed because
+  it did not suppress VS Code diagnostics for opened files.
+- 2026-05-02 — **Claude signoff blocked by auth:** after updating the Claude
+  model guidance, a forced `claude` artifact update was attempted for
+  `commit-prep` but Claude Code returned an API 401 authentication error. The
+  Claude digest stamps were left stale so the next successful Claude run still
+  has to review the Opus 4.6 and 4.7 artifacts.
+- 2026-05-02 — **Harness schema moved beside harness configs:** the only
+  repo-local JSON schema now lives at `agents/harnesses/harness.schema.json`.
+  The separate `agents/schemas/` directory was removed; VS Code YAML schema
+  mapping and agent docs now point at the colocated schema.
+- 2026-05-02 — **Claude Opus 4.7 docs incorporated:** the cached Anthropic
+  extended-thinking and new-features docs now feed the Claude Opus 4.6 and 4.7
+  model guides. Both guides prefer adaptive thinking over manual budgets, note
+  thinking display defaults/cost tradeoffs, and require preserving thinking /
+  redacted-thinking blocks unchanged when continuing tool-use conversations; the
+  4.7 guide also records launch specifics for 1M context, 128k output,
+  high-resolution images, tokenizer changes, and task-budget semantics.
+- 2026-05-02 — **Cursor Agent Composer target added:** `cursor-agent` is now a
+  harness backed by `agents/harnesses/cursor-agent.yaml` and
+  `cursor-agent.md`. `commit-prep` has a Cursor Agent/Composer 2 Fast runtime
+  artifact, stamp, model notes, and deployment symlink under
+  `home/.cursor/skills/commit-prep`. Cursor's full `cli-config.json` remains
+  local state; repo-home deployment uses explicit `--harness cursor-agent
+  --model composer-2-fast`.
+- 2026-05-02 — **Claude model ids use harness-native names:** Claude Code
+  artifacts, model guides, model notes, stamps, and symlink targets now use
+  `claude-opus-4-6` / `claude-opus-4-7`, matching the model ids exposed by
+  Claude settings and Anthropic docs. The previous dotted repo-local ids were
+  removed; a later narrow `model_aliases` layer handles documented
+  harness-native aliases without changing canonical artifact ids.
+- 2026-05-02 — **Agent artifact runners are axis-based:** public runner entrypoints are now `agents/scripts/update-skill.bash` and `update-all.bash`, and both support `--harness` and `--model`. `--harness` alone or `--model` alone filters existing artifact directories; passing both creates that explicit harness/model target if missing. Runtime artifacts and stamps now use nested `<harness>/<model>/` paths, and model guides resolve directly from `agents/models/<model>.md` with no provider-prefix mapping. Separate `update-harness.bash` and `update-model.bash` wrappers were dropped to keep the interface small.
+- 2026-05-02 — **Harness ids match executables:** the Claude Code harness id is now `claude`, matching the `claude` executable. Claude runtime artifacts, stamps, and the harness adapter moved from `claude-code/...` to `claude/...`; docs still use "Claude Code" when referring to the product.
+- 2026-05-02 — **Harness behavior moved to YAML configs:** supported harnesses are now discovered from `agents/harnesses/<harness>.yaml`, with `<harness>` matching the executable name. The YAML config owns runtime output paths and runner args; `<harness>.md` remains the agent-facing guidance file. Missing harness prompts are now scoped to selected artifacts instead of a static global harness list.
+- 2026-05-02 — **Skill symlink runners added:** `agents/scripts/symlink-skill.bash` and `symlink-all.bash` deploy runtime artifacts into selected home trees. Harness YAML now records `home_config`, `skills_dir`, and explicit `model_config_key`; without explicit `--harness --model`, symlink runners inspect the selected home tree to discover the configured target model.
+- 2026-05-02 — **Nested skill source directories supported:** source skills are discovered as any directory below `agents/skills/src/` that contains `SKILL.md`. `update-skill.bash` accepts either a globally unique skill directory name or a `src`-relative path, while runtime artifacts/stamps still use the skill directory name as `<skill>` and reject duplicate names.
+- 2026-05-02 — **Source metadata file removed:** source `SKILL.md` frontmatter is now the canonical source of skill identity. The separate source `metadata.yaml` and its schema were removed, and Codex `agents/openai.yaml` reification should derive UI fields from the source skill frontmatter/body.
+- 2026-05-02 — **Skill-row updater creates missing artifacts:** `agents/scripts/update-skill.bash <skill>` now discovers existing harness/model artifact directories under `agents/skills/artifacts/` instead of only directories that already contain that skill. This makes the new-skill workflow fan out to all existing targets by default.
+- 2026-05-02 — **Official docs renamed with model context:** cached vendor docs under `agents/official-docs/` now include the relevant model-release context in their filenames. Anthropic rolling guides are tagged with Claude Opus 4.7 because that was the latest model release at capture time; OpenAI GPT-5.5 guides keep direct model-specific names. The document bodies were not edited; only filenames and index docs changed.
+- 2026-05-02 — **All-artifacts matrix runner added:** `agents/scripts/update-all.bash` discovers existing harness/model artifact directories, supports `--harness` and `--model`, intentionally omits skill filters so the command can remain a whole-surface updater, and repeats matrix passes until the source/artifact/stamp input digest is stable.
+- 2026-05-02 — **Artifact parser errors clarified:** `update-skill.bash` now separates unsupported harness/model paths, missing model segments, and unsupported models. Unknown models fail against the missing model guide and list supported models discovered from `agents/models/`.
+- 2026-05-02 — **Skill artifact stamps mirror artifact paths:** input digest stamps moved from the earlier flat artifact stamp shape to `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/inputs.sha256`. The skill runner still owns stamp writes; aggregate runners update stamps only by invoking that path.
+- 2026-05-02 — **Agent runners use Bash suffixes:** repo-local agent runner entrypoints use `.bash` suffixes, currently `agents/scripts/update-skill.bash` and `update-all.bash`. Diagnostics derive from the invoked script name.
+- 2026-05-02 — **Native harness production uses local configuration:** after installing `claude`, `commit-prep`'s Claude Opus 4.6 artifact was reviewed by Claude Code with no content edits needed, and Claude Code generated `agents/skills/artifacts/claude/claude-opus-4-7/skills/commit-prep/SKILL.md`. The updater invokes native harnesses without target-model CLI overrides; Claude Code uses `--permission-mode acceptEdits -p`, while Codex uses local configuration through `codex exec --ephemeral --cd ... --sandbox workspace-write`. This is a general policy for all harnesses, not a Claude-specific rule.
+- 2026-05-01 — **Multi-model skill vertical slice validated:** `commit-prep` now has canonical source, model notes, an eval fixture, and a Codex/GPT-5.5 runtime artifact. The active Codex deployment now points from `home/.agents/skills/commit-prep` to `agents/skills/artifacts/codex/gpt-5.5/skills/commit-prep`. `agents/scripts/update-skill.bash` updates selected artifacts for one skill and records digests under `.update-stamps/`. Full `test/verify.sh` passed in 22.0s.
+- 2026-05-01 — **Claude Code sidecar shape corrected:** Claude Code skill artifacts intentionally contain only `SKILL.md`; Codex's `agents/openai.yaml` is not portable metadata. The artifact updater now creates output directories from each harness adapter's configured output files, so `print-prompt` no longer recreates an empty `agents/` directory under Claude artifacts. Digest stamps were refreshed after verifying runtime outputs did not need content changes.
+- 2026-05-01 — **Claude Code skill artifact added:** `commit-prep` now has `agents/skills/artifacts/claude/claude-opus-4-6/skills/commit-prep/SKILL.md`, deployed through `home/.claude/skills/commit-prep`. `home/.claude/settings.json` pins Claude Code's initial model to `claude-opus-4-6`, and the Claude skill frontmatter also sets `model: claude-opus-4-6`. This machine does not have `claude` on PATH, so real Claude Code discovery of the symlinked directory still needs smoke testing elsewhere.
+- 2026-05-01 — **Artifact digest stamps moved out of runtime skills:** `.update-inputs.sha256` files were replaced by `agents/skills/.update-stamps/<harness>/<model>/skills/<skill>/inputs.sha256`, keeping deployed runtime artifact directories free of build/maintenance artifacts while preserving self-contained skill packages.
+- 2026-05-01 — **Agent harness preflight added:** production update runs prompt to skip selected targets requiring missing native harnesses or select an installed runner-capable fallback harness; non-interactive runs default to skip so verification does not hang. A planned task tracks adding full production support for additional harness artifacts.
 - 2026-04-29 — **Commit-prep reload validation passed:** after restarting the session, the current `commit-prep` skill metadata/body was available and used for this commit-prep pass. The full dirty tree is staged, with no unstaged or untracked files at the time of prep.
-- 2026-04-29 — **Skill-specific model notes split out:** `agents/model-guidance/` is now kept generic by model, while `agents/skills/_models/` stores per-skill model notes. Moved `commit-prep` GPT-5.5 assessment there and added future Claude Opus 4.7/4.6 notes without retuning the runtime skill for Claude yet.
+- 2026-04-29 — **Skill-specific model notes split out:** `agents/models/` is kept generic by model, while per-skill model notes now live beside each source skill under `model-notes/`. `commit-prep` has GPT-5.5 notes plus future Claude Opus 4.7/4.6 notes without retuning the runtime skill for Claude yet.
 - 2026-04-29 — **Commit-prep scope corrected:** `commit-prep` now treats the full dirty tree as default scope regardless of staged state. Staging remains user-owned review state and must be preserved exactly; staged-only/path-limited commit messages are only for explicit user-narrowed scope.
 - 2026-04-29 — **Model guidance refreshed against cached docs:** GPT-5.5 guidance now records source-backed versus creative drafting boundaries and image/detail implications for UI work. Claude Opus 4.7 and 4.6 guidance now better capture Anthropic's agentic-system advice around continuation state, file-grounded codebase claims, temporary scaffolding, subagent/tool restraint, and computer-use image fidelity. Official docs under `agents/official-docs/` were not edited.
-- 2026-04-29 — **Anthropic official docs cached:** `agents/official-docs/` now includes Anthropic prompting and Opus 4.7 migration docs alongside OpenAI GPT-5.5 migration/prompting. `agents/model-guidance/` remains the place for repo-authored interpretations and examples.
-- 2026-04-28 — **Agent docs split established:** `agents/official-docs/` is the authoritative cache for copied vendor docs, while `agents/model-guidance/` holds repo-authored interpretations and examples. `commit-prep` was retuned for GPT-5.5 around outcome-first instructions, explicit git-index invariants, success criteria, verification, and final response shape.
-- 2026-04-28 — **Codex skill source layout established:** canonical shared agent skills now live under `agents/skills/<skill>/`, with per-harness deployment paths represented as symlink nodes under `home/` such as `home/.codex/skills/commit-prep`. Codex did not discover a skill when only leaf files such as `SKILL.md` were symlinked, but a fresh prompt does discover the two-hop directory symlink layout and reports the canonical `agents/skills/commit-prep/SKILL.md` path.
+- 2026-04-29 — **Anthropic official docs cached:** `agents/official-docs/` now includes Anthropic prompting and Opus 4.7 migration docs alongside OpenAI GPT-5.5 migration/prompting. `agents/models/` remains the place for repo-authored interpretations and examples.
+- 2026-04-28 — **Agent docs split established:** `agents/official-docs/` is the authoritative cache for copied vendor docs, while `agents/models/` holds repo-authored interpretations and examples. `commit-prep` was retuned for GPT-5.5 around outcome-first instructions, explicit git-index invariants, success criteria, verification, and final response shape.
+- 2026-04-28 — **Codex skill source layout established:** repo-managed agent skills live outside `home/`, with per-harness deployment paths represented as symlink nodes under `home/` such as `home/.agents/skills/commit-prep`. Codex did not discover a skill when only individual files such as `SKILL.md` were symlinked, but a fresh prompt does discover the two-hop directory symlink layout. The current target of that symlink is the Codex/GPT-5.5 runtime artifact.
 - 2026-04-28 — **Kubeconfig stays local:** do not manage `home/.kube/config`; kubeconfigs are state/config hybrids and commonly gain credentials, cluster entries, exec auth config, and current-context changes. If tools such as the VS Code Kubernetes extension need `~/.kube/config` to exist, create a local empty placeholder outside the repo and merge real configs with `KUBECONFIG`.
 - 2026-04-28 — **iTerm2 Solarized Dark profile added:** bootstrap now symlinks `home/Library/Application Support/iTerm2/DynamicProfiles/solarized-dark.json` into iTerm2's watched dynamic-profile directory. The managed profile is named `Solarized Dark (dotfiles)`, inlines canonical Solarized colors, disables bright-bold color substitution, and sets minimum contrast to zero. Dynamic profiles cannot reliably mark themselves as default, so `settings/iterm2.sh` writes iTerm2's `Default Bookmark Guid` to the managed profile GUID. Because this path contains `Application Support`, bootstrap manifests/state now use tab-separated records so managed paths with spaces round-trip correctly.
 - 2026-04-28 — **iTerm2 tmux profile inheritance configured:** `settings/iterm2.sh` also writes `TmuxUsesDedicatedProfile=false`, matching iTerm2's documented behavior where control-mode tmux sessions inherit the profile of the session that ran `tmux -CC` instead of using iTerm2's special `tmux` profile. The local `tmux` profile was inspected and is effectively a copy of `Default` with no functional tmux-specific differences beyond `Has Hotkey=false`; Anthony confirmed this fixes `tmux -CC` Solarized colors.
@@ -103,7 +349,7 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 - 2026-04-26 — **Codex and git-spice completion fallbacks added:** added guarded command-generated completions for Codex and git-spice in Bash and zsh. The `gs` alias is now explicitly bound to git-spice completion when `gs` is aliased to `git-spice`, overriding zsh's stock Ghostscript completion only in that alias case.
 - 2026-04-26 — **Docker completion fallback added:** added guarded Docker generated completions to Bash and zsh startup. Bash still lets bash-completion register framework/snippet completions first via `complete -p docker`, and zsh still lets native/Homebrew functions win via `_comps[docker]`. tmux and Vim remain system-owned because tmux lacks a first-party generator, Homebrew supplies Bash tmux snippets, and zsh ships `_tmux` / `_vim`.
 - 2026-04-26 — **Working memory moved to `.context`:** renamed repo and template working-memory directories from `context/` to `.context/`, then updated AGENTS, README, settings, and template references to match the hidden directory.
-- 2026-04-26 — **Commit-message guidance tightened:** managed `home/.codex/AGENTS.md` and project `AGENTS.md` now require third-person present tense titles/bullets with sentence-style capitalization, and the global rule says to omit documentation or context-update bullets from mixed feature commit messages.
+- 2026-04-26 — **Commit-message guidance tightened:** managed `home/.codex/AGENTS.md` and project `AGENTS.md` were tightened around tense, sentence-style capitalization, and omitting routine documentation/context/test bullets from mixed feature commit messages. This was later superseded by the imperative-mood default recorded above.
 - 2026-04-26 — **RC local hooks target-aligned:** renamed the interactive rc override hooks from `.sh_local` / `.bash_local` / `.zsh_local` to `.shrc_local` / `.bashrc_local` / `.zshrc_local`, matching the managed startup files that source them. Profile-level hooks remain `.profile_local`, `.bash_profile_local`, and `.zprofile_local`.
 - 2026-04-26 — **Startup fixtures fail on assertion errors:** `test/verify.sh` now enables `errexit`/`ERR_EXIT` before sourcing startup fixtures so bare assertion commands reliably fail the suite. This exposed zsh's predefined `HISTSIZE=2000`, so `home/.config/zsh/rc.zsh` now pins the repo's intended `HISTSIZE`/`SAVEHIST` defaults before `.zshrc_local` can override them.
 - 2026-04-26 — **System-first completion pass:** added Bash and zsh completion loaders for Homebrew/package-manager completions, kept Git's active-install fallback, and added generated `gh`/`kubectl` completions when those commands exist. Bash treats an already-loaded framework as authoritative, then tries Homebrew formula prefixes, optional `pkg-config`, and conventional Ubuntu/Debian-style paths before installing guarded fallbacks. Zsh now prepends Homebrew site-functions before `compinit`, adds active-Git fallback only when no `_git` is visible in `fpath`, and uses generated completions only when `_comps[command]` is absent.

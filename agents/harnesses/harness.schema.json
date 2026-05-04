@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Harness Adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "home_config",
+    "model_config_key",
+    "skills_dir",
+    "outputs",
+    "runner_args"
+  ],
+  "properties": {
+    "home_config": {
+      "type": "string",
+      "pattern": "^[^/].*"
+    },
+    "model_config_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*$"
+    },
+    "skills_dir": {
+      "type": "string",
+      "pattern": "^[^/].*"
+    },
+    "model_aliases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._-]+$"
+      },
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9._-]+$"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[^/].*"
+      }
+    },
+    "runner_args": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

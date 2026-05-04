@@ -130,9 +130,10 @@ When you consult external/internal docs and find something repeatedly useful or 
 
 ## Commit message proposals
 - In a git worktree, inspect the full current uncommitted state at the end of every turn and provide a proposed commit message for all uncommitted changes, including staged changes.
-- Use the repo’s preferred commit-message format when one exists.
+- Use the repo’s preferred commit-message convention when one is documented or
+  obvious.
 - If no repo-specific format exists, default to: title, blank line, bullet list.
-- Write commit titles and bullet verbs in third-person present tense, such as `Adds`, `Fixes`, `Tightens`, `Omits`, or `Keeps`; avoid imperative (`Add`), gerund (`Adding`), past tense (`Added`), or lowercase-leading bullets.
+- Write commit titles and bullet verbs in imperative mood, such as `Add`, `Fix`, `Tighten`, `Omit`, or `Keep`; avoid third-person present (`Adds`), gerund (`Adding`), past tense (`Added`), or lowercase-leading bullets.
 - Use sentence-style capitalization: capitalize the first word and proper nouns, but do not title-case every word.
 - Omit routine supporting-maintenance bullets from commit messages when they only align with code or behavior changes; docs/context updates and test updates are assumed. Mention them explicitly only when they are the primary change or the main user-facing value.
 - If the working tree includes changes you did not make this turn, propose a message that covers the whole uncommitted diff and say so plainly.

@@ -1,0 +1,49 @@
+{
+  "approvalMode": "allowlist",
+  "attribution": {
+    "attributeCommitsToAgent": true,
+    "attributePRsToAgent": true
+  },
+  "editor": {
+    "vimMode": false
+  },
+  "hasChangedDefaultModel": true,
+  "maxMode": false,
+  "model": {
+    "modelId": "default",
+    "displayModelId": "auto",
+    "displayName": "Auto",
+    "displayNameShort": "Auto",
+    "aliases": [
+      "auto"
+    ],
+    "maxMode": false
+  },
+  "modelParameters": {
+    "composer-2": [
+      {
+        "id": "fast",
+        "value": "true"
+      }
+    ],
+    "default": []
+  },
+  "network": {
+    "useHttp1ForAgent": false
+  },
+  "permissions": {
+    "allow": [
+      "Shell(ls)"
+    ],
+    "deny": []
+  },
+  "sandbox": {
+    "mode": "disabled",
+    "networkAccess": "user_config_with_defaults"
+  },
+  "selectedModel": {
+    "modelId": "default",
+    "parameters": []
+  },
+  "version": 1
+}

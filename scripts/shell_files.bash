@@ -57,13 +57,56 @@ dotfiles_shell_file_dialect() {
   esac
 }
 
+dotfiles_emit_git_submodule_paths() {
+  local config_output
+  local config_line
+  local repo_root="$1"
+  local submodule_path
+
+  [[ -f "$repo_root/.gitmodules" ]] || return 0
+
+  config_output="$(
+    git -C "$repo_root" config \
+      --file .gitmodules \
+      --get-regexp '^submodule\..*\.path$' 2>/dev/null
+  )" || return 0
+
+  while IFS= read -r config_line; do
+    submodule_path=${config_line#* }
+    [[ "$submodule_path" != "$config_line" ]] || continue
+    [[ -n "$submodule_path" ]] || continue
+    printf '%s\n' "$submodule_path"
+  done <<<"$config_output"
+}
+
+dotfiles_path_is_in_git_submodule() {
+  local rel_path="$2"
+  local repo_root="$1"
+  local submodule_path
+
+  while IFS= read -r submodule_path; do
+    [[ -n "$submodule_path" ]] || continue
+    case "$rel_path" in
+      "$submodule_path" | "$submodule_path"/*)
+        return 0
+        ;;
+    esac
+  done < <(dotfiles_emit_git_submodule_paths "$repo_root")
+
+  return 1
+}
+
 dotfiles_emit_tracked_shell_files() {
   local repo_root="$1"
   local rel_path
   local abs_path
 
-  git -C "$repo_root" ls-files -z -- bootstrap.sh home scripts settings test \
+  git -C "$repo_root" ls-files -z -- agents bootstrap.sh home scripts settings test \
     | while IFS= read -r -d '' rel_path; do
+      # Submodules are vendor/reference boundaries; do not lint their contents
+      # even if future enumeration changes start surfacing nested files.
+      dotfiles_path_is_in_git_submodule "$repo_root" "$rel_path" && continue
+
       abs_path="$repo_root/$rel_path"
       [[ -f "$abs_path" ]] || continue
       dotfiles_shell_file_dialect "$abs_path" "$rel_path" >/dev/null || continue

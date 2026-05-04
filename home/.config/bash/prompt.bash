@@ -1,4 +1,6 @@
 # Setup prompt: ANSI SGR (raw) and paired PS_* wrappers (\[ \] for readline width on Bash PS1–PS4).
+# This sourced palette intentionally exposes colors the builtin prompt may not use.
+# shellcheck disable=SC2034
 COLOR_PREFIX='\e['
 BLACK="${COLOR_PREFIX}0;30m"
 PS_BLACK="\\[${BLACK}\\]"

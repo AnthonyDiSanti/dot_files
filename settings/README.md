@@ -3,6 +3,22 @@
 Scripts and assets for applying **macOS defaults**, **Git config**, and similar.
 See individual files and `settings/osx_all.sh` / `settings/git.sh` entry points.
 
+## Cursor Agent CLI
+
+`settings/cursor-agent-cli.sh` merges repo-managed Cursor Agent CLI preferences
+into the live `cli-config.json` while preserving Cursor-owned auth, cache, and
+local state. The shell startup layer exports `CURSOR_CONFIG_DIR` to
+`$XDG_CONFIG_HOME/cursor`, so the managed live path is normally
+`~/.config/cursor/cli-config.json`, not the official fallback
+`~/.cursor/cli-config.json`.
+
+- `settings/cursor-agent-cli.json` contains the stable preferences this repo
+  manages, including the required baseline fields for a new config and the
+  current Auto/default model selection required by the local Cursor Free-plan
+  CLI behavior.
+- Do not symlink the whole live Cursor config into the repo; it includes
+  auth-adjacent and CLI-managed state.
+
 ## Solarized (not vendored here)
 
 This repo **does not** ship the full [altercation/solarized](https://github.com/altercation/solarized) tree anymore. It was an unused **git submodule** (~19MB of reference ports for dozens of apps) and nothing in `bootstrap.sh` or shell automation consumed it.

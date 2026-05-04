@@ -7,6 +7,8 @@ fi
 . "$dotfiles_paths_bootstrap_home/paths.sh" || return 1
 unset dotfiles_paths_bootstrap_home
 
+# Bash gets a per-process guard token; POSIX shells safely fall back to $$.
+# shellcheck disable=SC3028
 dotfiles_guard_token=${BASHPID:-$$}
 
 dotfiles_path_prepend() {
