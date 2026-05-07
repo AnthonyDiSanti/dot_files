@@ -76,6 +76,9 @@ trust_level = "trusted"
 [projects."/home/anthony/code/teamtailor-export"]
 trust_level = "trusted"
 
+[projects."/home/anthony"]
+trust_level = "trusted"
+
 [projects."/home/anthony/code/dot_files"]
 trust_level = "trusted"
 

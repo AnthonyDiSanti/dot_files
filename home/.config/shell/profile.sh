@@ -40,6 +40,10 @@ if [ -d "$HOME/.local/bin" ]; then
   dotfiles_path_prepend "$HOME/.local/bin"
 fi
 
+if [ -d "$HOME/.npm-global/bin" ]; then
+  dotfiles_path_prepend "$HOME/.npm-global/bin"
+fi
+
 if [ -d "$HOME/bin" ]; then
   dotfiles_path_prepend "$HOME/bin"
 fi
