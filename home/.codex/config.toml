@@ -73,6 +73,9 @@ trust_level = "trusted"
 [projects."/Users/anthony"]
 trust_level = "trusted"
 
+[projects."/home/anthony/code/teamtailor-export"]
+trust_level = "trusted"
+
 [sandbox_workspace_write]
 network_access = true
 
