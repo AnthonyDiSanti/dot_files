@@ -6,7 +6,8 @@ alias lld='lla | grep "^d"'
 alias llf='lla | grep -v "^d"'
 
 # cd aliases
-alias -- -='cd -'
+# dash does not accept `alias --`, while bash/zsh need it for a `-` alias.
+alias -- -='cd -' 2>/dev/null || alias '-=cd -'
 alias cd..='cd ..'
 alias ..='cd ..'
 alias ...='cd ../..'

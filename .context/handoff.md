@@ -33,10 +33,16 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 - `01KPNZ3YBAKB9N4ZJEXW4P2EHP` — zsh migration remains active; non-clipboard vi mode is merged, and clipboard/register unification is now active as a focused follow-up.
 
 ## Working Tree
-- Current branch: `feature/multi-model-skill`; current staged work restructures `commit-prep` into canonical source and adds harness/model/prompt updater infrastructure, runtime artifacts, digest stamps, home symlinks, and supporting docs/config.
-- Last successful full verification: `test/verify.sh` passed on 2026-05-04 in
-  37.0s after the ShellCheck suppression migration and runtime artifact
-  regeneration.
+- Current branch: `main`; rebased onto fetched `origin/main` on 2026-05-08.
+  Local `main` is ahead by one commit (`0670b2c Add settings/windows-wsl/resolv.conf`).
+  Remaining uncommitted edits are `home/.codex/config.toml` (pre-existing
+  personal Codex config changes reapplied after autostash) and
+  `home/.config/shell/aliases.sh` (POSIX `-` alias portability fix found during
+  verification). `./bootstrap.sh` was applied to converge the live home after
+  upstream added agent skill/config symlink targets.
+- Last successful full verification: `PATH=/tmp/codex-shfmt:$PATH test/verify.sh`
+  passed on 2026-05-08 in 26.0s after downloading temporary `shfmt` v3.13.0
+  because this environment does not have a system `shfmt`.
 
 ## Windows Terminal Solarized Plan
 - Work will continue on a Windows/WSL machine in a fresh session on `feature/clipboard`, then return to macOS for final verification.
@@ -59,6 +65,14 @@ Reminder: if another already-bootstrapped machine has host-local rc overrides na
 - Full gate: `test/verify.sh`; it requires `shellcheck` and `shfmt`, then reports checks under static-analysis, linting, and functionality suite headers with parenthesized elapsed time on each completed check line. It runs `scripts/shfmt-dotfiles.bash --all --check` and `scripts/shellcheck-dotfiles.bash --all` before managed-target and startup checks. Multi-line startup probes live under `test/fixtures/verify/`. Add manual smoke tests for touched interactive tools such as Vim when behavior changes.
 
 ## Recent Updates (keep last ~15; prune older)
+- 2026-05-08 — **Main rebased and shell alias portability fixed:** `main` was
+  rebased onto fetched `origin/main`; conflict resolution kept upstream Codex
+  plugin entries, replayed the local WSL `resolv.conf` commit, and preserved the
+  pre-existing personal Codex config edit after autostash. Live home was
+  re-bootstrapped for upstream's new agent symlink targets. `aliases.sh` now
+  feature-detects the `alias --` form for the shared `-` alias so dash `/bin/sh`
+  startup stays quiet while bash/zsh keep their required option delimiter.
+  Full verification passed with temporary `shfmt` v3.13.0 on `PATH`.
 - 2026-05-04 — **ShellCheck suppressions localized:** file-specific
   ShellCheck suppressions now live as inline directives in the owning source
   files rather than as a path-specific manifest in `scripts/shellcheck-dotfiles.bash`.

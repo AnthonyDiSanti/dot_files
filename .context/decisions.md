@@ -3,6 +3,17 @@
 Decider format: `Anthony` for human decisions, `Codex (model: gpt-5.2-codex)` for agent decisions.
 Keep newest decisions at the top (reverse chronological order).
 
+## 2026-05-08 — Feature-detect the shared dash alias
+- Decider: Codex (model: gpt-5.5)
+- Decision: Define the shared `-` alias with `alias -- -='cd -'` when the
+  active shell supports it, and fall back to `alias '-=cd -'` for dash.
+- Rationale: `home/.config/shell/aliases.sh` is sourced by `sh`, bash, and zsh.
+  Bash and zsh need the `--` option delimiter for an option-shaped alias name,
+  while dash rejects `alias --` and fails shared `/bin/sh` startup.
+- Consequences / follow-ups: Keep option-shaped shared aliases behind
+  capability probes or move shell-specific forms into bash/zsh layers. Verify
+  shared alias changes with `sh`, bash, and zsh startup checks.
+
 ## 2026-05-03 — Merge Cursor Agent CLI preferences instead of symlinking state
 - Decider: Anthony
 - Decision: Standardize Cursor Agent CLI config on
